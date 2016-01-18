@@ -806,9 +806,9 @@ def mulligan(group):
 	draw = None
 	mute()
 	
-	if not confirm("Are you sure you want to Mulligan?"): return
+	if not confirm("Are you sure you want to Mulligan?"): return False
 	if draw == None: draw = askInteger("How many cards would you like to draw for your Mulligan?", len(me.hand))
-	if draw == None: return
+	if draw == None: return True
 	
 	for card in group:
 		card.moveToBottom(me.deck)
@@ -818,7 +818,8 @@ def mulligan(group):
 	for card in me.deck.top(draw):
 		card.moveTo(me.hand)
 	notify("{} mulligans and draws {} new cards.".format(me, draw))
-
+	
+	return True
 
 #------------------------------------------------------------------------------
 # Pile Actions
@@ -1049,8 +1050,9 @@ def placesetupcards():
 		if me.getGlobalVariable("setupOk") == "2":
 			placesetupcards()
 		else:
-			mulligan(me.hand)
-			me.setGlobalVariable("setupOk","2")
+			isMulligan = mulligan(me.hand)
+			if(isMulligan):
+				me.setGlobalVariable("setupOk","2")
 			placesetupcards()
 
 def endturn(group, x = 0, y = 0): 
