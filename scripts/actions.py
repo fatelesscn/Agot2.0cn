@@ -690,7 +690,8 @@ def subhousepow(ok = 1):
 def plotstyle(ok = 1):
 	mute()
 	global plotintable
-	if confirm("Do you want to put the plotcard in table?"):plotintable = 1
+	#if confirm("Do you want to put the plotcard in table?"):
+	plotintable = 1
 
 	
 #---------------------------
@@ -863,31 +864,31 @@ def setup(group, x = 0, y = 0):
 		table.create("656f69c4-c506-4014-932b-9dff4422f09e",300,-200)
 	else:
 		table.create("656f69c4-c506-4014-932b-9dff4422f09e",-320,100)
-	if confirm ("Need the quickbar?"):
-		if me.isInverted: 
-			table.create("342dd044-b0f7-4eef-a021-5b755397f9d4",-280,-50)
-			table.create("6a34f431-c468-4d31-8d8c-51aac6a66f89",-320,-50)
-			table.create("338370f8-3952-46a7-a3b9-a462a326e7bb",-360,-50)
-			table.create("9936a519-785c-4058-b060-4ca0a01258ea",-280,-90)
-			table.create("91e2e6b3-9929-4365-93b2-3d143a20e6ff",-280,-130)
-			table.create("c237b30d-6511-4646-a93a-49b63ff4aa22",-320,-130)
-			table.create("d6ac416d-0956-403f-a1bc-ed6e8c5ba4a9",-360,-130)
-			table.create("dac3d665-1af7-427e-9f50-36d77b93513c",-280,-170)
-			table.create("08e6fe74-098f-4429-9076-71235a67c9b0",-280,-210)
-			table.create("be7113f0-d44a-4923-bbc2-a2b3ad4cd948",-400,-50)
-			table.create("7e3783d4-150a-46dd-8bd7-ef3680744d8c",-400,-90)
-		else:
-			table.create("342dd044-b0f7-4eef-a021-5b755397f9d4",300,20)
-			table.create("6a34f431-c468-4d31-8d8c-51aac6a66f89",340,20)
-			table.create("338370f8-3952-46a7-a3b9-a462a326e7bb",380,20)
-			table.create("9936a519-785c-4058-b060-4ca0a01258ea",300,60)
-			table.create("91e2e6b3-9929-4365-93b2-3d143a20e6ff",300,100)
-			table.create("c237b30d-6511-4646-a93a-49b63ff4aa22",340,100)
-			table.create("d6ac416d-0956-403f-a1bc-ed6e8c5ba4a9",380,100)
-			table.create("dac3d665-1af7-427e-9f50-36d77b93513c",300,140)
-			table.create("08e6fe74-098f-4429-9076-71235a67c9b0",300,180)
-			table.create("be7113f0-d44a-4923-bbc2-a2b3ad4cd948",420,20)
-			table.create("7e3783d4-150a-46dd-8bd7-ef3680744d8c",420,60)
+	# if confirm ("Need the quickbar?"):
+	# 	if me.isInverted: 
+	# 		table.create("342dd044-b0f7-4eef-a021-5b755397f9d4",-280,-50)
+	# 		table.create("6a34f431-c468-4d31-8d8c-51aac6a66f89",-320,-50)
+	# 		table.create("338370f8-3952-46a7-a3b9-a462a326e7bb",-360,-50)
+	# 		table.create("9936a519-785c-4058-b060-4ca0a01258ea",-280,-90)
+	# 		table.create("91e2e6b3-9929-4365-93b2-3d143a20e6ff",-280,-130)
+	# 		table.create("c237b30d-6511-4646-a93a-49b63ff4aa22",-320,-130)
+	# 		table.create("d6ac416d-0956-403f-a1bc-ed6e8c5ba4a9",-360,-130)
+	# 		table.create("dac3d665-1af7-427e-9f50-36d77b93513c",-280,-170)
+	# 		table.create("08e6fe74-098f-4429-9076-71235a67c9b0",-280,-210)
+	# 		table.create("be7113f0-d44a-4923-bbc2-a2b3ad4cd948",-400,-50)
+	# 		table.create("7e3783d4-150a-46dd-8bd7-ef3680744d8c",-400,-90)
+	# 	else:
+	# 		table.create("342dd044-b0f7-4eef-a021-5b755397f9d4",300,20)
+	# 		table.create("6a34f431-c468-4d31-8d8c-51aac6a66f89",340,20)
+	# 		table.create("338370f8-3952-46a7-a3b9-a462a326e7bb",380,20)
+	# 		table.create("9936a519-785c-4058-b060-4ca0a01258ea",300,60)
+	# 		table.create("91e2e6b3-9929-4365-93b2-3d143a20e6ff",300,100)
+	# 		table.create("c237b30d-6511-4646-a93a-49b63ff4aa22",340,100)
+	# 		table.create("d6ac416d-0956-403f-a1bc-ed6e8c5ba4a9",380,100)
+	# 		table.create("dac3d665-1af7-427e-9f50-36d77b93513c",300,140)
+	# 		table.create("08e6fe74-098f-4429-9076-71235a67c9b0",300,180)
+	# 		table.create("be7113f0-d44a-4923-bbc2-a2b3ad4cd948",420,20)
+	# 		table.create("7e3783d4-150a-46dd-8bd7-ef3680744d8c",420,60)
 	notify("**{} is ready to setup**".format(me))
 	if me._id == 1:
 		if me.isInverted: 
@@ -3030,3 +3031,12 @@ def ondbclick(args):
 					whisper("card cant be selected")
 		else:
 			whisper("is not your turn")
+
+def test(group, x=0, y=0):
+	dlg = cardDlg(card for card in me.deck
+				if card.Type == "Location")
+	dlg.title = "These cards are Location"
+	dlg.text = "Declares 1 Location to select.  click close button if none or cancel"
+	dlg.min = 1
+	dlg.max = 1
+	savetargets = dlg.show()
