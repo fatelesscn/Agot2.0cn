@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<game name="AGOT2.0 CHTEST"
+      id="30c200c9-6c98-49a4-a293-106c06295c05"
+      octgnVersion="3.1.0.0"
+      version="1.1.0.2"
+      scriptVersion="3.1.0.2"
+      markersize="16"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      tags="OCTGN aGoT LCG Game of Thrones"
+      description="A Game of Thrones: The Card Game Second Edition, featuring cunning plots, iconic characters, and deadly encounters for two players. "
+      setsurl="http://tinyurl.com/qehmd3z"
+      gameurl="http://octgn.gamersjudgement.com/wordpress/agot2/"
+      authors="TassLehoff, Snowfrost, Khudzlin, Unfamiliar, Jackey"
+      iconurl="http://s29.postimg.org/qsmlsels5/Boite_de_base.png">
+
+    <scripts>
+        <script src="scripts/actions.py"/>
+        <script src="scripts/cardaction.py"/>
+    </scripts>
+    <globalvariables>
+	    <globalvariable name="firstplay" value="True" />
+        <globalvariable name="AID"       value="" />
+        <globalvariable name="BID"       value="" />
+		<globalvariable name="numplayer" value="0" />
+	</globalvariables>
+    <events>
+        <event name="OnDeckLoaded" action="onloaddeck" />
+        <event name="OnCardsMoved" action="onmoved" />
+        <event name="OnCardDoubleClicked" action="ondbclick" />
+    </events>
+
+    <proxygen definitionsrc="proxy/proxydef.xml">
+    </proxygen> 
+
+    <documents>  
+        <document name="keyword"
+                  icon="Documents/blank.png"
+                  src="Documents/keyword.jpg"/>
+        <document name="sequence"
+                  icon="Documents/blank.png"
+                  src="Documents/sequence.png"/>
+    </documents>
+    
+    <gameModes>
+        <gameMode name="Joust - Advanced Play"
+                  shortDescription="Use this matchmaking to find Joust advanced players."
+                  image="cards/advanced.jpg"
+                  playerCount="2" />
+                  
+        <gameMode name="Joust - Casual Play"
+                  shortDescription="Use this matchmaking to find Joust casual and newer players."
+                  image="cards/casual.jpg"
+                  playerCount="2" />
+    </gameModes>
+    
+    <card back="cards/back.png" front="cards/front.png" width="63" height="88" cornerRadius="2">
+        <property name="名称"          type="String"/>
+        <property name="阵营"          type="String"/>
+        <property name="类型"           type="String"/>
+        <property name="属性"         type="String"/>
+        <property name="能力"           type="String"/>
+        <property name="关键字"       type="String"/>
+        <property name="Faction"        type="String"/>
+        <property name="Type"           type="String"/>
+        <property name="Traits"         type="String"    textKind="Tokens"/>
+        <property name="Text"           type="String"/>
+        <property name="Keywords"       type="String"    textKind="Tokens"/>
+        <property name="Unique"         type="String"/>
+        <property name="Loyal"          type="String"/>
+        <property name="Cost"           type="String"/>
+        <property name="Strength"       type="String"/>
+        <property name="Military"       type="String"/>
+        <property name="Intrigue"       type="String"/>
+        <property name="Power"          type="String"/>
+        <property name="GoldIncome"     type="String"/>
+        <property name="Initiative"     type="String"/>
+        <property name="Reserve"        type="String"/>
+        <property name="PlotGoldIncome" type="String"/>
+        <property name="PlotInitiative" type="String"/>
+        <property name="PlotClaim"      type="String"/>
+        <property name="PlotReserve"    type="String"/>
+        <property name="Restricted"     type="String"/>
+        <property name="ErrataText"     type="String"/>
+        <property name="DeckLimit"      type="String"/>
+        <property name="Illustrator"    type="String"/>
+        <property name="CardNumber"     type="String"/>
+        <property name="Dominance"      type="String"     hidden="True"/>
+        <size name="HorizontalCards" width="88" height="63" backWidth="88" backHeight="63" back="cards/backH.png" front="cards/frontH.png" cornerRadius="2"/> 
+        <size name="TokenSize" width="35" height="35" back="cards/front.png" front="cards/front.png"/>
+        <size name="button" width="208" height="48" back="cards/front.png" front="cards/front.png"/>
+    </card>
+
+    <table name="Table" visibility="undefined" ordered="False" width="960" height="540" background="background/background.jpg" backgroundStyle="uniformToFill">       
+        <groupactions    menu="游戏设定">
+            <groupaction     menu="开局"                                      shortcut=""       default="False"      execute="setup"/>
+            <groupaction     menu="计算手牌上限"                    shortcut="ALT+R"  default="False"      execute="getreserve"/>
+            <groupaction     menu="计算权力标记"                     shortcut="CTRL+R" default="False"      execute="recalcPower"/>
+            <groupactions    menu="战略阶段">
+                <groupaction     menu="展示战略牌"                            shortcut="ALT+P"  default="False"      execute="revealplot"/>
+                <groupaction     menu="计算优先值"             shortcut=""       default="False"      execute="getInit"/>
+                <groupaction     menu="决定起始玩家"                 shortcut="ALT+I"  default="False"      execute="fp"/>
+            </groupactions>
+            <groupactions    menu="备战阶段">
+                <groupaction     menu="结算收入(双击战略牌)"   shortcut="ALT+G"  default="False"      execute="countincome"/>
+            </groupactions>
+            <groupactions    menu="争夺阶段">
+                <groupaction     menu="宣告争夺"                    shortcut="ALT+A"  default="False"      execute="challengeAnnounce"/>
+                <groupaction     menu="宣告防御者"                shortcut="ALT+D"  default="False"      execute="announceOpp"/>
+                <groupaction     menu="计算能力值"           shortcut="ALT+C"  default="False"      execute="challenge"/>
+                <groupaction     menu="结算争夺"           shortcut="ALT+Q"  default="False"      execute="challengecheck"/>
+            </groupactions>
+            <groupactions    menu="统御阶段">
+                <groupaction     menu="结算统御"                  shortcut="ALT+F"  default="False"      execute="dominance"/>
+            </groupactions>
+            <groupaction     menu="结束本回合"                                   shortcut="ALT+E"  default="False"      execute="endturn"/>
+        </groupactions>
+        <groupaction menu="test" default="False" shortcut="" execute="test" />
+        <groupactions    menu="声明">
+            <groupaction     menu="声明：行动完毕."                        shortcut="CTRL+D"  default="False"      execute="turnDone"/>
+            <groupaction     menu="声明：有行动/有疑问."                  shortcut="CTRL+Q" default="False"      execute="holdOn"/>
+        </groupactions>     
+        <groupactions    menu="[所有卡牌] 动作">
+            <groupaction     menu="重置所有卡牌"                         shortcut="F5"     default="False"     execute="restoreAll"/>
+            <groupaction     menu="清除所有争夺高亮标记"           shortcut="CTRL+C" default="False"     execute="cancelAllHighlight"/>
+            <groupaction     menu="重置到起始状态"         shortcut="ALT+S"  default="False"     execute="scoop"/>
+        </groupactions>             
+        <groupactions    menu="硬币和骰子">
+            <groupaction     menu="扔硬币"                                shortcut="CTRL+F"  default="False"     execute="flipCoin"/>
+            <groupaction     menu="扔6面骰子"                             shortcut=""  default="False"     execute="sixSided"/>
+            <groupaction     menu="扔12面骰子"                            shortcut=""  default="False"     execute="twelveSided"/>
+            <groupaction     menu="扔X面骰子"                             shortcut=""  default="False"     execute="xSided"/>
+        </groupactions>     
+        <groupactions    menu="管理">     
+            <groupaction     menu="Download: Images Packs"                     shortcut=""       default="False"      execute="googleDriveWebsite"/>
+            <groupaction     menu="Download: FFG's AGoT FAQ"                   shortcut=""       default="False"      execute="faqWebsite"/>
+        </groupactions>
+        <cardaction      menu="横置/未横置"                                    shortcut="F9"     default="False"     execute="kneel"/>
+        <cardaction      menu="翻面"                                      shortcut="F8"     default="False"     execute="flipcard"/>
+        <cardaction      menu="弃牌"                                        shortcut="DELETE" default="False"   execute="disc"/>
+        <cardaction      menu="移出游戏"                                                 default="False"   execute="remove"/>
+        <cardaction      menu="双击"                                                     default="True"    execute="defaultAction"/>
+        <cardactions     menu="争夺标记">
+            <cardaction      menu="军事争夺"                         shortcut="CTRL+M" default="False"     execute="addMilitaryHighlight"/>
+            <cardaction      menu="阴谋争夺"                         shortcut="CTRL+I" default="False"     execute="addIntrigueHighlight"/>
+            <cardaction      menu="权力争夺"                            shortcut="CTRL+P" default="False"     execute="addPowerHighlight"/>
+            <cardaction      menu="恢复"                                   shortcut="CTRL+N" default="False"     execute="cancelHighlight"/>
+        </cardactions>      
+        <cardactions     menu="权力标记">
+            <cardaction      menu="增加权力标记"                                  shortcut="F1"     default="False"     execute="addPower"/>
+            <cardaction      menu="减少权力标记"                                  shortcut="F2"     default="False"     execute="subPower"/>
+        </cardactions>      
+        <cardactions     menu="金币">
+            <cardaction      menu="增加金币"                                   shortcut="F3"     default="False"     execute="addGold"/>
+            <cardaction      menu="减少金币"                                   shortcut="F4"     default="False"     execute="subGold"/>
+        </cardactions>      
+        <cardactions     menu="能力值">
+            <cardaction      menu="增加能力值"                                    shortcut="SHIFT+F1" default="False"   execute="addSTR_Up"/>
+            <cardaction      menu="减少能力值"                                    shortcut="SHIFT+F2" default="False"   execute="subSTR_Up"/>
+        </cardactions>      
+        <cardactions     menu="焚烧标记">
+            <cardaction      menu="增加焚烧标记"                                   shortcut="SHIFT+F3" default="False"   execute="addBurn"/>
+            <cardaction      menu="移除焚烧标记"                                   shortcut="SHIFT+F4" default="False"   execute="subBurn"/>
+        </cardactions>
+        <cardactions     menu="红色标记">
+            <cardaction      menu="增加红色标记"                              shortcut="SHIFT+F5" default="False"   execute="addRedToken"/>
+            <cardaction      menu="减少红色标记"                              shortcut="SHIFT+F6" default="False"   execute="subRedToken"/>
+        </cardactions>
+        <cardactions     menu="蓝色标记">
+            <cardaction      menu="增加蓝色标记"                             shortcut="SHIFT+F7" default="False"   execute="addBlueToken"/>
+            <cardaction      menu="减少蓝色标记"                             shortcut="SHIFT+F8" default="False"   execute="subBlueToken"/>
+        </cardactions>
+        <cardactions     menu="卡牌信息">
+            <cardaction      menu="查字找阿梅"                                                                execute="displayCardText"/>
+            <cardaction      menu="不懂问老王"                                                      execute="displayErrata"/>
+            <cardaction      menu="在cardgamedb.com上搜索卡牌"                                  default="False"   execute="cardLookup"/>
+        </cardactions>
+    </table>
+    
+    <player summary=" 权力标记: {#Power} / 金币: {#Gold} / 手牌上限: {#Reserve} / 优先值: {#Initiative}/ 能力值: {#Str} ">
+        <counter name="Power"       icon="counters/power.png"/>
+        <counter name="Gold"        icon="counters/gold.png"/>
+        <counter name="Reserve"     icon="counters/reserve.png"/>
+        <counter name="Initiative"  icon="counters/initiative.png"/>
+        <counter name="Str"         icon="counters/str.png"/>
+        <globalvariable name="setupOk"   value="0" />
+        <globalvariable name="turn"      value="0" />
+        
+        <hand name="Hand" visibility="me" ordered="True"     width="63" height="88" icon="groups/hand.png">            
+            <groupaction menu="随机弃除1张手牌"                     shortcut="F12"                                     execute="randomDiscard"/>
+            <groupaction menu="随机弃除多张手牌"                                                                   execute="discardMany"/>
+            <groupaction menu="部署重调"                    shortcut="F6"                                      execute="mulligan"/>
+            <cardaction  menu="支付金币打出/进场(双击卡牌)"                                                             execute="play"      default="True"/>
+        </hand>
+        
+        <group name="Deck" visibility="none"                  width="63" height="88" icon="groups/faction.png">
+            <groupaction menu="洗牌"                            shortcut="CTRL+S"                                  execute="shuffle"/>
+            <groupaction menu="补牌"                               shortcut="CTRL+D" default="True"                   execute="draw"/>
+            <groupaction menu="补多张牌"                          shortcut="CTRL+SHIFT+D"                            execute="drawMany"/>
+            <groupaction menu="从牌堆顶部弃除"                                                                 execute="discardManyFromTop"/>
+			<cardaction menu="移动到牌堆底"                                                                 execute="movetobottom"/>
+        </group>
+        
+        <group name="Plot Deck" visibility="me"               width="63" height="88" icon="groups/plot.png">
+            <groupaction menu="随机选取1张"                                                                           execute="drawRandom"/>
+        </group>
+        <group name="Used Plot Pile" visibility="all"         width="63" height="88" icon="groups/plot.png"           collapsed="True">
+        <groupaction     menu="洗入战略牌堆"                                                                  execute="shuffleToPlot"/>
+        </group>
+        <group name="Dead Pile" visibility="all"              width="63" height="88" icon="groups/dead.png">      
+        </group>
+        
+        <group name="Discard Pile" visibility="all"           width="63" height="88" icon="groups/discard.png"> 
+            <groupaction menu="洗入牌堆"                                                                   execute="reshuffle"/>
+            <groupaction menu="随机选择1张加入手牌"                                                               execute="moveOneRandom"/>
+        </group>
+    </player>
+	<shared>
+        <group name="Titles" visibility="none"                width="63" height="88"                                  collapsed="True">
+            <groupaction menu="洗混"                                                                               execute="shuffle"/>
+            <groupaction menu="创建头衔牌"                                                                         execute="createTitles"/>
+			<groupaction menu="移除1张头衔牌"                                                                  execute="removeTitles"/>
+			<cardaction  menu="选取头衔牌"                                                             execute="chooseTitle"      default="True"/>
+        </group>
+    </shared>
+    <deck>
+        <section name="Faction"     group="Hand"/>
+        <section name="Agenda"      group="Hand"/>
+        <section name="Characters"  group="Deck"/>
+        <section name="Locations"   group="Deck"/>
+        <section name="Events"      group="Deck"/>
+        <section name="Attachments" group="Deck"/>
+        <section name="Plots"       group="Plot Deck"/>
+    </deck>
+</game>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+
+<set name="00-Markers"
+	 id="d2e1abfc-fead-4067-a3b7-14973a19ca21" 
+	 gameId="30c200c9-6c98-49a4-a293-106c06295c05" 
+	 gameVersion="1.0.0.8" 
+	 version="1.8">
+	 
+	<markers>
+		<marker id="4e8046ba-759b-428c-917f-7e9268a5af90" name="gold"/>
+		<marker id="d115ea96-ed05-4bf7-ba22-a34c8675c676" name="power"/>
+		<marker id="7898d5a0-1d59-42b2-bbfb-5051cc420cd8" name="STR_Up"/>
+		<marker id="c272aa0c-f283-4ff5-b545-a5a3f150e6da" name="Burn"/>
+		<marker id="6238a357-41b7-4bca-b394-925fc1b2caf8" name="TokenRed"/>
+		<marker id="99452bc7-d95b-4c54-8577-41d98dd3e30b" name="TokenBlue"/>
+		<marker id="7e9610d4-c06d-437d-a5e6-100000000001" name="MilitaryIcon"/>
+		<marker id="0cabfb36-01b4-46c4-bb2a-42889fb63e8b" name="IntrigueIcon"/>
+		<marker id="a6b9db40-b0ad-4b22-b049-5837c4ece904" name="PowerIcon"/>		
+	</markers>
+	<cards>
+    <card id="73a6655b-60b6-4080-b428-f4e0099e0f77" name="1st Player Token">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="656f69c4-c506-4014-932b-9dff4422f09e" name="Done Token">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="342dd044-b0f7-4eef-a021-5b755397f9d4" name="quickrevealplot" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="6a34f431-c468-4d31-8d8c-51aac6a66f89" name="quickgetInit" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="338370f8-3952-46a7-a3b9-a462a326e7bb" name="quickfp" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="9936a519-785c-4058-b060-4ca0a01258ea" name="quickcountincome" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="91e2e6b3-9929-4365-93b2-3d143a20e6ff" name="quickchallengeAnnounce" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="c237b30d-6511-4646-a93a-49b63ff4aa22" name="quickannounceOpp" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="d6ac416d-0956-403f-a1bc-ed6e8c5ba4a9" name="quickchallenge" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="dac3d665-1af7-427e-9f50-36d77b93513c" name="quickdominance" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="08e6fe74-098f-4429-9076-71235a67c9b0" name="quickendturn" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="be7113f0-d44a-4923-bbc2-a2b3ad4cd948" name="quickgetreserve" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="7e3783d4-150a-46dd-8bd7-ef3680744d8c" name="quickrecalcPower" size="TokenSize">
+      <property name="Type" value="Internal" />
+	</card>
+	<card id="584a37d7-5a30-4018-ae21-0ad325203fa0" name="nextbutton" size="button">
+      <property name="Type" value="Internal" />
+	</card>
+	</cards>
+</set>

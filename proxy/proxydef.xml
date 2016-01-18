@@ -1,0 +1,3607 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<templates>
+	
+	<blocks>
+		<!-- Dummy blocks used if a template section only looks for conditionals -->
+		<block type="text" id="dummyText">
+			<location x="0" y="0"/>
+			<text color="#FFFFFF" size="0"/>
+			<border color="#FFFFFF" size="0"/>
+		</block>
+		<block type="text" id="default">
+			<location x="10" y="25"/>
+			<text color="#000000" size="30"/>
+		</block>
+		<block type="overlay" id="dummyOverlay" src="proxy/proxyImages/dummy.png">
+			<location x="0" y="0"/> 
+		</block>
+		
+		<!-- New Lannister blocks for cards -->
+		<block type="text" id="cardCost-2">
+			<location x="24" y="23"/>
+			<text color="#FFFFFF" size="42" font="fonts/cost_str.ttf"/>
+			<wordwrap height="48" width="48" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="textGold-2">
+			<location x="193" y="500"/>
+			<text color="#FFFFFF" size="36" font="fonts/cost_str.ttf"/>
+			<wordwrap height="70" width="45" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="textReserve-2">
+			<location x="193" y="500"/>
+			<text color="#FFFFFF" size="36" font="fonts/cost_str.ttf"/>
+			<wordwrap height="70" width="45" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="textInitiative-2">
+			<location x="193" y="500"/>
+			<text color="#FFFFFF" size="36" font="fonts/cost_str.ttf"/>
+			<wordwrap height="70" width="45" align="center" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="cardGold-2" src="proxy/proxyImages/income.png">
+			<location x="179" y="485"/>
+		</block>
+		<block type="overlay" id="cardReserve-2" src="proxy/proxyImages/reserve.png">
+			<location x="179" y="485"/>
+		</block>
+		<block type="overlay" id="cardInitiative-2" src="proxy/proxyImages/initiative.png">
+			<location x="179" y="485"/>
+		</block>
+		<!-- New Lannister Location blocks for cards -->
+		<block type="text" id="LocationCardName-2">
+			<location x="29" y="320" rotate="270"/>
+			<text color="#000000" size="22" font="fonts/name.ttf"/>
+			<wordwrap height="34" width="200" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="LocationCardTraits-2">
+			<location x="50" y="390"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="340" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="LocationCardKeywords-2">
+			<location x="75" y="423"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="290"/>
+		</block>
+		<block type="text" id="LocationCardText-2">
+			<location x="75" y="450"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="148" width="290" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="LocationUniqueYes-2" src="proxy/proxyImages/uniqueYes.png">
+			<location x="35" y="100"/>
+		</block>
+		<block type="overlay" id="LocationLoyalYes-2" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="13" y="399"/>
+		</block>
+		<!-- New Lannister Character blocks for cards -->
+		<block type="text" id="CharacterCardName-2">
+			<location x="114" y="356"/>
+			<text color="#000000" size="20" font="fonts/name.ttf"/>
+			<wordwrap height="32" width="220" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="CharacterCardTraits-2">
+			<location x="65" y="400"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="300" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="CharacterCardKeywords-2">
+			<location x="38" y="423"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="340"/>
+		</block>
+		<block type="text" id="CharacterCardText-2">
+			<location x="38" y="455"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="100" width="340" shrinktofit="True"/>
+		</block>
+		<block type="text" id="cardSTR-2">
+			<location x="27" y="339"/>
+			<text color="#FFFFFF" size="42" font="fonts/cost_str.ttf"/>
+			<wordwrap height="65" width="42" align="center" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="CharacterUnique-2" src="proxy/proxyImages/uniqueYes.png">
+			<location x="98" y="360"/>
+		</block>
+		<block type="overlay" id="militaryBlock-2" src="proxy/proxyImages/militaryIcon.png">
+			<location x="15" y="100"/>
+		</block>
+		<block type="overlay" id="intrigueBlock-2" src="proxy/proxyImages/IntrigueIcon.png">
+			<location x="15" y="180"/>
+		</block>
+		<block type="overlay" id="powerBlock-2" src="proxy/proxyImages/powerIcon.png">
+			<location x="15" y="260"/>
+		</block>
+		<block type="overlay" id="Loyal-2" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="346" y="389"/>
+		</block>
+		<!-- New Lannister Attachment secific blocks -->
+		<block type="text" id="AttachmentCardName-2">
+			<location x="114" y="535"/>
+			<text color="#000000" size="20" font="fonts/name.ttf"/>
+			<wordwrap height="32" width="220" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="AttachmentCardTraits-2">
+			<location x="48" y="370"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="320" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="AttachmentCardKeywords-2">
+			<location x="48" y="400"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="320"/>
+		</block>
+		<block type="text" id="AttachmentCardText-2">
+			<location x="48" y="425"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="148" width="320" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="AttachmentUnique-2" src="proxy/proxyImages/uniqueYes.png">
+			<location x="93" y="538"/>
+		</block>
+		<block type="overlay" id="AttachmentLoyalYes-2" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="341" y="68"/>
+		</block>
+		
+		<!-- Generic blocks for cards -->
+		<block type="text" id="cardCost">
+			<location x="24" y="23"/>
+			<text color="#FFFFFF" size="42" font="fonts/cost_str.ttf"/>
+			<wordwrap height="48" width="48" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="textGold">
+			<location x="190" y="498"/>
+			<text color="#FFFFFF" size="36" font="fonts/cost_str.ttf"/>
+			<wordwrap height="70" width="45" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="textReserve">
+			<location x="190" y="498"/>
+			<text color="#FFFFFF" size="36" font="fonts/cost_str.ttf"/>
+			<wordwrap height="70" width="45" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="textInitiative">
+			<location x="190" y="498"/>
+			<text color="#FFFFFF" size="36" font="fonts/cost_str.ttf"/>
+			<wordwrap height="70" width="45" align="center" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="cardGold" src="proxy/proxyImages/income.png">
+			<location x="179" y="485"/>
+		</block>
+		<block type="overlay" id="cardReserve" src="proxy/proxyImages/reserve.png">
+			<location x="179" y="485"/>
+		</block>
+		<block type="overlay" id="cardInitiative" src="proxy/proxyImages/initiative.png">
+			<location x="179" y="485"/>
+		</block>
+		
+		<!-- Location specific blocks -->
+		<block type="text" id="LocationCardName">
+			<location x="29" y="320" rotate="270"/>
+			<text color="#000000" size="22" font="fonts/name.ttf"/>
+			<wordwrap height="34" width="200" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="LocationCardTraits">
+			<location x="50" y="380"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="340" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="LocationCardKeywords">
+			<location x="75" y="410"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="290"/>
+		</block>
+		<block type="text" id="LocationCardText">
+			<location x="75" y="432"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="130" width="300" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="LocationUniqueYes" src="proxy/proxyImages/uniqueYes.png">
+			<location x="35" y="100"/>
+		</block>
+		<block type="overlay" id="LocationLoyalYes" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="13" y="397"/>
+		</block>
+		
+		<!-- Character specific blocks -->
+		<block type="text" id="CharacterCardName">
+			<location x="114" y="351"/>
+			<text color="#000000" size="20" font="fonts/name.ttf"/>
+			<wordwrap height="32" width="220" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="CharacterCardTraits">
+			<location x="65" y="394"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="300" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="CharacterCardKeywords">
+			<location x="38" y="419"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="340"/>
+		</block>
+		<block type="text" id="CharacterCardText">
+			<location x="38" y="450"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="100" width="340" shrinktofit="True"/>
+		</block>
+		<block type="text" id="cardSTR">
+			<location x="25" y="337"/>
+			<text color="#FFFFFF" size="42" font="fonts/cost_str.ttf"/>
+			<wordwrap height="65" width="42" align="center" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="CharacterUnique" src="proxy/proxyImages/uniqueYes.png">
+			<location x="98" y="355"/>
+		</block>
+		<block type="overlay" id="militaryBlock" src="proxy/proxyImages/militaryIcon.png">
+			<location x="12" y="90"/>
+		</block>
+		<block type="overlay" id="intrigueBlock" src="proxy/proxyImages/IntrigueIcon.png">
+			<location x="12" y="170"/>
+		</block>
+		<block type="overlay" id="powerBlock" src="proxy/proxyImages/powerIcon.png">
+			<location x="12" y="250"/>
+		</block>
+		<block type="overlay" id="CharacterLoyalYes" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="348" y="386"/>
+		</block>
+			
+		<!-- Agenda specific blocks -->
+		<block type="text" id="agendaName">
+			<location x="95" y="35"/>
+			<text color="#000000" size="20" font="fonts/name.ttf"/>
+			<wordwrap height="32" width="242" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="agendaTraits">
+			<location x="58" y="345"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="322" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="agendaKeywords">
+			<location x="70" y="370"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="290" shrinktofit="True"/>
+		</block>
+		<block type="text" id="agendaCardText">
+			<location x="70" y="390"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="160" width="290" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="AgendaUnique" src="proxy/proxyImages/uniqueYes.png">
+			<location x="70" y="40"/>
+		</block>
+		
+		<!-- Title specific blocks -->
+		<block type="text" id="TitleName">
+			<location x="93" y="55"/>
+			<text color="#000000" size="20" font="fonts/name.ttf"/>
+			<wordwrap height="32" width="242" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="titleCardText">
+			<location x="75" y="265"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="200" width="290" shrinktofit="True"/>
+		</block>
+		
+		<!-- House specific blocks -->
+		<block type="text" id="HouseName">
+			<location x="245" y="45"/>
+			<text color="#000000" size="80" font="fonts/name.ttf"/>
+			<wordwrap height="90" width="300" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="houseCardText">
+			<location x="75" y="265"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="50" width="100" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		
+		<!-- Plot specific blocks -->
+		<block type="text" id="plotGold">
+			<location x="12" y="223"/>
+			<text color="#000000" size="32" font="fonts/cost_str.ttf"/>
+			<wordwrap height="60" width="58" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="plotInitiative">
+			<location x="73" y="223"/>
+			<text color="#000000" size="32" font="fonts/cost_str.ttf"/>
+			<wordwrap height="60" width="60" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="plotClaim">
+			<location x="135" y="223"/>
+			<text color="#000000" size="32" font="fonts/cost_str.ttf"/>
+			<wordwrap height="60" width="52" align="center" shrinktofit="True"/>
+		</block>
+				<block type="text" id="PlotReserve">
+			<location x="554" y="351"/>
+			<text color="#000000" size="30" font="fonts/cost_str.ttf"/>
+		</block>
+		<block type="text" id="plotCardTitle">
+			<location x="160" y="225"/>
+			<text color="#000000" size="25" font="fonts/name.ttf"/>
+			<wordwrap height="34" width="250"  valign="center" align="far" shrinktofit="True"/>
+		</block>
+		<block type="text" id="plotTraits">
+			<location x="250" y="276"/>
+			<text color="#000000" size="16" font="fonts/traits.ttf"/>
+		</block>
+		<block type="text" id="plotCardKeywords">
+			<location x="26" y="288"/>
+			<text color="#000000" size="16" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="510"/>
+		</block>
+		<block type="text" id="plotCardText">
+			<location x="26" y="308"/>
+			<text color="#000000" size="18" font="fonts/text.ttf"/>
+			<wordwrap height="55" width="510" shrinktofit="True"/>
+		</block>
+		
+		<!-- Event secific blocks -->
+		<block type="text" id="eventCardTitle">
+			<location x="93" y="35"/>
+			<text color="#000000" size="22" font="fonts/name.ttf"/>
+			<wordwrap height="35" width="260" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="eventTraits">
+			<location x="40" y="400"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="340" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="eventCardKeywords">
+			<location x="48" y="420"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="320"/>
+		</block>
+		<block type="text" id="eventCardText">
+			<location x="48" y="420"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="140" width="320" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="EventUniqueYes" src="proxy/proxyImages/uniqueYes.png">
+			<location x="98" y="39"/>
+		</block>
+		<block type="overlay" id="EventLoyalYes" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="348" y="65"/>
+		</block>
+		
+		<!-- Attachment secific blocks -->
+		<block type="text" id="AttachmentCardName">
+			<location x="110" y="529"/>
+			<text color="#000000" size="20" font="fonts/name.ttf"/>
+			<wordwrap height="32" width="220" align="center" valign="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="AttachmentCardTraits">
+			<location x="48" y="366"/>
+			<text color="#000000" size="21" font="fonts/traits.ttf"/>
+			<wordwrap height="34" width="320" align="center" shrinktofit="True"/>
+		</block>
+		<block type="text" id="AttachmentCardKeywords">
+			<location x="48" y="396"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="34" width="320"/>
+		</block>
+		<block type="text" id="AttachmentCardText">
+			<location x="48" y="421"/>
+			<text color="#000000" size="20" font="fonts/text.ttf"/>
+			<wordwrap height="110" width="322" shrinktofit="True"/>
+		</block>
+		<block type="overlay" id="AttachmentUnique" src="proxy/proxyImages/uniqueYes.png">
+			<location x="93" y="532"/>
+		</block>
+		<block type="overlay" id="AttachmentLoyalYes" src="proxy/proxyImages/Loyal/Loyal.png">
+			<location x="343" y="60"/>
+		</block>
+	</blocks>
+	
+<!-- DEFAULT TEMPLATE -->
+	<template src="proxy/proxyImages/unknownCard.png" default="True">
+		<matches>
+			<match name="dummy" value="dummy"/>
+		</matches>
+		<overlayblocks>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		<textblocks>
+			<link block="default">
+				<property name="Name"/>
+			</link>
+			<link block="dummyText"/>
+		</textblocks>
+	</template>
+	
+<!-- TEST CARD TEMPLATE -->
+	<template src="proxy/proxyImages/testCard.jpg" default="False">
+		<matches>
+			<match name="Type" value="Test Card"/>
+		</matches>
+		<overlayblocks>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		<textblocks>
+			<link block="default">
+				<property name="Name"/>
+			</link>
+			<link block="dummyText"/>
+		</textblocks>
+	</template>
+	
+<!-- ATTACHMENT CARD TEMPLATE -->
+	<!-- Baratheon Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Barat.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Baratheon."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+
+	<!-- Night's Watch Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Night.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Night's Watch."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+
+	<!-- Tyrell Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Tyrell.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Tyrell."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Greyjoy Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Grey.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Greyjoy."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Martell Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Martell.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Martell."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Neutral Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Neutral.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Neutral."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Stark Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Stark.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Stark."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Targaryen Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Targ.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Targaryen."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/>
+				</if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link>
+				</else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Lannister Attachment Card template -->
+	<template src="proxy/proxyImages/Attachments/attach_Lanni.png" default="False">
+		<matches>
+			<match name="Type" value="Attachment"/>
+			<match name="Faction" value="Lannister."/>
+		</matches>
+		
+		<overlayblocks>		
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AttachmentUnique-2"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="AttachmentLoyalYes-2"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold-2"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve-2"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative-2"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost-2">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold-2" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve-2" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative-2" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="dummyOverlay"/>
+			<link block="AttachmentCardName-2">
+				<property name="Name"/>
+			</link>
+			<link block="AttachmentCardTraits-2">
+				<property name="Traits"/>
+			</link>
+			<link block="AttachmentCardKeywords-2">
+				<property name="Keywords"/>
+			</link>
+			<link block="AttachmentCardText-2">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Agenda Card template -->
+	<template src="proxy/proxyImages/agendaBackground.png" default="False">
+		<matches>
+			<match name="Type" value="Agenda"/>
+		</matches>
+		
+		<overlayblocks>
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="AgendaUnique"/> </if>
+			</conditional>
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="agendaName">
+				<property name="Name"/>
+			</link>
+			<link block="agendaTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="agendaKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="agendaCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Title Card template -->
+	<template src="proxy/proxyImages/title.png" default="False">
+		<matches>
+			<match name="Type" value="Title"/>
+		</matches>
+		
+		<textblocks>
+			<link block="TitleName">
+				<property name="Name"/>
+			</link>
+			<link block="titleCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- House Card template -->
+	<template src="proxy/proxyImages/house.png" default="False">
+		<matches>
+			<match name="Type" value="Faction"/>
+		</matches>
+		
+		<textblocks>
+			<link block="HouseName">
+				<property name="Name"/>
+			</link>
+			<link block="houseCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+<!-- PLOT CARD TEMPLATE -->
+	<template src="proxy/proxyImages/plotBackground-2.png" default="False">
+		<matches>
+			<match name="Type" value="Plot"/>
+		</matches>
+		<textblocks>
+			<link block="plotInitiative">
+				<property name="PlotInitiative"/>
+			</link>
+			<link block="plotGold">
+				<property name="PlotGoldIncome"/>
+			</link>
+			<link block="plotClaim">
+				<property name="PlotClaim"/>
+			</link>
+						<link block="PlotReserve">
+				<property name="PlotReserve"/>
+			</link>
+			<link block="plotCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="plotTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="plotCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="plotCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+<!-- EVENT CARD TEMPLATE -->
+	<!-- Lannister -->
+	<template src="proxy/proxyImages/Event/eventLa.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Lannister."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost-2">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Stark -->
+	<template src="proxy/proxyImages/Event/eventSt.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Stark."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Neutral -->
+	<template src="proxy/proxyImages/Event/eventNe.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Neutral."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Night's Watch -->
+	<template src="proxy/proxyImages/Event/eventNi.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Night's Watch."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Targaryen -->
+	<template src="proxy/proxyImages/Event/eventTa.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Targaryen."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Tyrell -->
+	<template src="proxy/proxyImages/Event/eventTr.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Tyrell."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Baratheon -->
+	<template src="proxy/proxyImages/Event/eventBa.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Baratheon."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Greyjoy -->
+	<template src="proxy/proxyImages/Event/eventGr.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Greyjoy."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	<!-- Martell -->
+	<template src="proxy/proxyImages/Event/eventMa.png" default="False">
+		<matches>
+			<match name="Type" value="Event"/>
+			<match name="Faction" value="Martell."/>
+		</matches>
+		
+		<overlayblocks>	
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="EventUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="EventLoyalYes"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+			
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			<link block="eventCardTitle">
+				<property name="Name"/>
+			</link>
+			<link block="eventTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="eventCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="eventCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+				
+<!-- LOCATION CARD TEMPLATE -->	
+	<!-- Lannister Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Lanni.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Lannister."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes-2"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold-2"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve-2"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative-2"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost-2">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold-2" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve-2" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative-2" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName-2">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits-2">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords-2">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText-2">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>	
+
+		<!-- Night's Watch Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Night.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Night's Watch."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Tyrell Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Tyrell.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Tyrell."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Baratheon Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Barat.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Baratheon."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Greyjoy Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Grey.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Greyjoy."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Martell Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Martell.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Martell."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Neutral Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Neutral.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Neutral."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Stark Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Stark.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Stark."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Targaryen Location Card template -->
+	<template src="proxy/proxyImages/Locations/loc_Targ.png" default="False">
+		<matches>
+			<match name="Type" value="Location"/>
+			<match name="Faction" value="Targaryen."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="LocationUniqueYes"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="LocationLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			<link block="dummyOverlay"/>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="LocationCardName">
+				<property name="Name"/>
+			</link>
+			<link block="LocationCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="LocationCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="LocationCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+<!-- CHARACTER CARD TEMPLATE -->
+	<!-- Lannister Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Lanni.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Lannister."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique-2"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock-2"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock-2"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock-2"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="Loyal-2"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold-2"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve-2"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative-2"/> </else>
+			</conditional>
+			
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost-2">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR-2">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold-2" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve-2" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative-2" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName-2">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits-2">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords-2">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText-2">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+
+		<!-- Night's Watch Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Night.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Night's Watch."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+			<!-- Tyrell Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Tyrell.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Tyrell."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Baratheon Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Barat.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Baratheon."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Greyjoy Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Grey.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Greyjoy."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Martell Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Martell.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Martell."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Neutral Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Neutral.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Neutral."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Stark Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Stark.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Stark."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+	<!-- Targaryen Character Card template -->
+	<template src="proxy/proxyImages/Characters/char_Targ.png" default="False">
+		<matches>
+			<match name="Type" value="Character"/>
+			<match name="Faction" value="Targaryen."/>
+		</matches>
+		
+		<overlayblocks>			
+			<!-- Unique test -->
+			<conditional>
+				<if property="Unique" value="Yes">
+					<link block="CharacterUnique"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Loyal" value="Yes">
+					<link block="CharacterLoyalYes"/> </if>
+			</conditional>
+			
+			<!-- Character Icon Blocking -->
+			<conditional>
+				<if property="Military" value="1">
+					<link block="militaryBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Intrigue" value="1">
+					<link block="intrigueBlock"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Power" value="1">
+					<link block="powerBlock"/> </if>
+			</conditional>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardGold"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardReserve"/> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="cardInitiative"/> </else>
+			</conditional>
+			
+			<!-- Naval -->
+			<conditional>
+				<if property="Enhancement" contains="Naval-Military">
+					<link block="navalMil"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Intrigue">
+					<link block="navalInt"/> </if>
+			</conditional>
+			<conditional>
+				<if property="Enhancement" contains="Naval-Power">
+					<link block="navalPower"/> </if>
+			</conditional>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<!-- Card Cost -->
+					<link block="cardCost">
+						<property name="Cost"/>
+					</link>
+			
+			<!-- Strength -->
+					<link block="cardSTR">
+						<property name="Strength"/>
+					</link>
+			
+			<!-- Gold/Intrigue/Initiative -->
+			<conditional>
+				<if property="GoldIncome" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textGold" >
+						<property name="GoldIncome"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Reserve" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textReserve" >
+						<property name="Reserve"/>
+					</link> </else>
+			</conditional>
+			<conditional>
+				<if property="Initiative" value="">
+					<link block="dummyOverlay"/> </if>
+				<else>
+					<link block="textInitiative" >
+						<property name="Initiative"/>
+					</link> </else>
+			</conditional>
+			
+			<link block="CharacterCardName">
+				<property name="Name"/>
+			</link>
+			<link block="CharacterCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="CharacterCardKeywords">
+				<property name="Keywords"/>
+			</link>
+			<link block="CharacterCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>
+	
+<!-- HELP CARD TEMPLATE -->
+	<template src="proxy/proxyImages/agendaBackground.png" default="False">
+		<matches>
+			<match name="Type" value="Help"/>
+		</matches>
+		
+		<overlayblocks>
+			<link block="dummyOverlay"/>
+		</overlayblocks>
+		
+		<textblocks>
+			<link block="helpName">
+				<property name="Name"/>
+			</link>
+			<link block="helpCardTraits">
+				<property name="Traits"/>
+			</link>
+			<link block="helpCardText">
+				<property name="Text"/>
+			</link>
+		</textblocks>
+	</template>	
+</templates>
