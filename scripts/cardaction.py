@@ -23,9 +23,10 @@ leavedeck = dict( # A dictionary which holds all cards action
              BenjenStark =            ("Benjen Stark", "dcbbfe54-078f-44c9-88e7-02efe235911c", "deck"),
              SerDavosSeaworth =       ("Ser Davos Seaworth", "813fb666-b32f-4ae9-b2ac-3fe09adccf9a", "deck"))
 
+leavereacion = dict( # A dictionary which holds all cards action
+             JoffreyBaratheon =       ("Joffrey Baratheon", "df79718d-b01d-4338-8907-7b6abff58303", "Traits", "Lord./Lady.", "1 power", 3),
+             RobbStark =              ("Robb Stark", "d892faa0-09c4-41ec-8705-abe2c1c87c83", "Faction", "Stark.", "stand", 1))
 
-eventinsert = 0
-eventcard = []
 
 def debug(str):
 	mute()

@@ -72,11 +72,28 @@ sessionpass = ""
 selectedcard = []
 stealthcount = 0
 cardkilllist = []
-killabilitytmp = []
 smcount = 1
 kbcount = 1
+recount = 1
 abilityattach = {}
 leavecardtype = []
+leavetablecard = []
+reactionattach = {}
+reactioncardlimit = {}
+intertreaction = 0
+isinsertreaction = 0
+interruptreaction = []
+
+savetargettmp = []
+inserttargettmp = []
+interruptcancelcardtmp = []
+interruptcancelplayertmp = []
+interruptcanceledcardtmp = []
+interruptcancellastcardtmp = []
+interruptlibtmp = {}
+interruptcanceloktmp = 1
+saveactionplayertmp = []
+mainpasstmp = ""
 
 import re
 import time
@@ -1442,7 +1459,7 @@ def balancechallengefinish(challenge,winplay):
 						randomDiscard(me.hand)
 					else:
 						remoteCall(otherplayer, "randomDiscard", [otherplayer.hand])
-				challengebalanceover(table)
+				challengebalanceover(1)
 			if challenge == 3:
 				if winplay == me:
 					if otherplayer.counters['Power'].value >= claim:
@@ -1458,9 +1475,9 @@ def balancechallengefinish(challenge,winplay):
 					else:
 						subhousepow(me.counters['Power'].value)
 						remoteCall(otherplayer, "addhousepow", me.counters['Power'].value)
-				challengebalanceover(table)
+				challengebalanceover(1)
 	else:
-		challengebalanceover(table)
+		challengebalanceover(1)
 
 def intomil(group):
 	mute()
@@ -1472,7 +1489,7 @@ def intomil(group):
 	sessionpass = "milkillplayerselect"
 	whisper("**selectmode**")
 
-def challengebalanceover(group):
+def challengebalanceover(count):
 	mute()
 	global winplayer
 	global attacker
@@ -1490,10 +1507,14 @@ def challengebalanceover(group):
 	global saveactionplayer
 	global interruptpass
 	global cardkilllist
+	global abilityattach
+	global leavecardtype
+	global leavetablecard
+	global reactionattach
+	global reactioncardlimit
 	for card in table:
 		card.highlight = None
 		card.target(False)
-	notify("challenge balance over.")
 	winplayer = []
 	attacker = []
 	defender = []
@@ -1511,13 +1532,14 @@ def challengebalanceover(group):
 	interruptcancelok = 1
 	interruptlib = {}
 	cardkilllist = []
+	abilityattach = {}
+	leavecardtype = []
+	leavetablecard = []
+	reactionattach = {}
+	reactioncardlimit = {}
+	if count == 1:remoteCall(otherplayer, "challengebalanceover", [2])
+	else:notify("challenge balance over.")
 
-	remoteCall(otherplayer, "getwinner", [winplayer,unopposed,challengetype])
-	remoteCall(otherplayer, "getattacker", [attacker,challengetype])
-	remoteCall(otherplayer, "getdefender", [defender])
-	remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
-	remoteCall(otherplayer, "getinterruptpass", [interruptpass])
-	remoteCall(otherplayer, "getcardkilllist", [cardkilllist])
 
 def challengeAnnounce(group, x=0, y=0):
 	mute()
@@ -1593,7 +1615,7 @@ def Militarychallenge(claim = 0):
 		if cards == []:return
 	else:
 		if claim == 0:
-			challengebalanceover(table)
+			challengebalanceover(1)
 			sessionpass = ""
 			selectedcard = []
 			return
@@ -1628,7 +1650,7 @@ def Militarychallenge(claim = 0):
 	if discard != claim and c == 0:
 		Militarychallenge(claim-discard)
 	if discard == claim:
-		challengebalanceover(table)
+		challengebalanceover(1)
 	#cardlist.reverse()
 
 def intointerruptevent(count):
@@ -1671,7 +1693,7 @@ def miljudgementfinished(mfcard,claim,count):
 		if len(cardkilllist) > 0:
 			remoteCall(otherplayer, "characterkilled", [cardkilllist,1])
 		else:
-			challengebalanceover(table)
+			challengebalanceover(1)
 
 def getcardkilllist(listkill):
 	global cardkilllist
@@ -2372,6 +2394,8 @@ def setTimer(player,actioninsert,group,x = 0,y = 0):
 def updateTimer(endTime,notifications,actioninsert):
     mute()
     global timerIsRunning
+    global interruptreactioncard
+    global isinsertreaction
     list = []
     currentTime = time.time()
     if currentTime>notifications[-1]:
@@ -2394,7 +2418,12 @@ def updateTimer(endTime,notifications,actioninsert):
 			else:interruptcanceledcard.arrow(interruptcancellastcard)
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(otherplayer,"interruptlibadd",[interruptpass])
-			remoteCall(otherplayer, "interruptevent", ["interruptcancel",1])
+			if isinsertreaction == 3:
+				isinsertreaction = 0
+				remoteCall(otherplayer, "interruptreaction", [interruptreactioncard,3])
+				interruptreactioncard = []
+			else:
+				remoteCall(otherplayer, "interruptevent", ["interruptcancel",1])
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -2411,7 +2440,10 @@ def interruptevent(actioninsert,interruptpasscount):
 	global saveactionplayer
 	global sessionpass
 	global leavecardtype
-
+	global abilityattach
+	global reactionattach
+	global isinsertreaction
+	global interruptreactioncard
 	savetargets = []
 	inserttargets = []
 	interruptcards = []
@@ -2425,6 +2457,7 @@ def interruptevent(actioninsert,interruptpasscount):
 	sourcecard = []
 	duplicatecard = []
 	cardtype = ""
+	debug(isinsertreaction)
 	if actioninsert == "miljudgementfp":
 		debug(interruptpasscount)
 		for card in mjfinishcard:
@@ -2465,7 +2498,7 @@ def interruptevent(actioninsert,interruptpasscount):
 					return
 			if sessionpass == "savecardselectok":	
 				inserttargets = selectedcard
-				if inserttargets == None:
+				if inserttargets == []:
 					if interruptpasscount == 2:
 						f = (card for card in table  
 						if card.name == "1st Player Token")
@@ -2474,10 +2507,12 @@ def interruptevent(actioninsert,interruptpasscount):
 							else:remoteCall(otherplayer, "miljudgementfinished", [mjfinishcard,claimtmp,1])
 					else:
 						interruptpasscount += 1
+						sessionpass = ""
 						remoteCall(otherplayer, "interruptevent", ["miljudgementfp",interruptpasscount])
 					return
 				else:
 					#inserttarget = inserttargets
+					sessionpass = ""
 					for card in inserttargets:
 						if card.filter == WaitColor:
 							savetarget.highlight = None
@@ -2515,13 +2550,54 @@ def interruptevent(actioninsert,interruptpasscount):
 				if card1.controller == me:miljudgementfinished(mjfinishcard,claimtmp,1)
 				else:remoteCall(otherplayer, "miljudgementfinished", [mjfinishcard,claimtmp,1])
 	if actioninsert == "interruptcancel":
+		if isinsertreaction == 1 and mainpass == "":
+			isinsertreaction = 0
+			if interruptpasscount < 2:
+				interruptpasscount += 1
+				remoteCall(otherplayer, "interruptevent", ["interruptcancel",interruptpasscount])
+				return
+			if interruptpasscount == 2 and actioninsert == "interruptcancel":
+				notify("结算,弃掉插入的牌")
+				debug(interruptcancelok)
+				debug(inserttarget)
+				for usecard in table:
+					if usecard.highlight == interruptcolor or usecard.highlight == sacrificecolor:
+						if usecard.controller == me:disc(usecard)
+						else:remoteCall(otherplayer, "disc", [usecard])
+				if mainpass == "leave":
+					if interruptcancelok == 1:
+						leavecardtype.append(inserttarget._id)
+						remoteCall(inserttarget.controller,"leaveforability",[inserttarget])
+					else:
+						remoteCall(inserttarget.controller,"abilityattachsub",[inserttarget])
+						if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+						else:interruptevent("characterkill",1)
+				elif mainpass == "leavereaction":
+					if interruptcancelok == 1:
+						remoteCall(inserttarget.controller,"reactionforability",[inserttarget])
+					else:
+						remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
+						if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["leavetable",1])
+						else:reaction("leavetable",1)
+				else:
+					if interruptcancelok == 1:
+						savetarget.highlight = milsavecolor
+						savepassfinish(1)
+					else:
+						if inserttarget.type != "Character":
+							if inserttarget.controller == me:disc(inserttarget)
+							else:remoteCall(otherplayer, "disc", [inserttarget])
+					notify("结算over")
+					if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
+					else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
+			return
 		debug(interruptcancelcard)
 		if interruptpasscount < 2:
-			choiceList = ['interrupt', 'Pass']
+			choiceList = ['interrupt', 'cancel']
 			colorList = ['#ae0603' ,'#006b34']
 			choice = askChoice("Do you want to interrupt {}'s {} ?".format(interruptcancelplayer,interruptcancelcard.name), choiceList,colorList)
 		if interruptpasscount == 2:
-			choiceList = ['interrupt', 'End']
+			choiceList = ['interrupt', 'cancel']
 			colorList = ['#ae0603' ,'#006b34']
 			choice = askChoice("Do you want to interrupt {}'s {} ?".format(interruptcancelplayer,interruptcancelcard.name), choiceList,colorList)
 		if choice == 1:
@@ -2572,15 +2648,26 @@ def interruptevent(actioninsert,interruptpasscount):
 							debug(inserttarget)
 							debug(interruptcancelok)
 							for usecard in table:
-								if usecard.highlight == interruptcolor:
+								if usecard.highlight == interruptcolor or usecard.highlight == sacrificecolor:
 									if usecard.controller == me:disc(usecard)
 									else:remoteCall(otherplayer, "disc", [usecard])	
 							if mainpass == "leave":
 								if interruptcancelok == 1:
 									leavecardtype.append(inserttarget._id)
 									remoteCall(inserttarget.controller,"leaveforability",[inserttarget])
-								if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
-								else:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+								else:
+									remoteCall(inserttarget.controller,"abilityattachsub",[inserttarget])
+									if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+									else:interruptevent("characterkill",1)
+							elif mainpass == "leavereaction":
+								remoteCall(me,"savetargetinserttarget",[savetargettmp,inserttargettmp,interruptcancelcardtmp,interruptcancelplayertmp,interruptcancellastcardtmp,interruptcanceledcardtmp,interruptcanceloktmp,saveactionplayertmp,mainpasstmp])
+								remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+								if interruptcancelok == 1:
+									remoteCall(inserttarget.controller,"reactionforability",[inserttarget])
+								else:
+									remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
+									if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["leavetable",1])
+									else:reaction("leavetable",1)
 							else:
 								if interruptcancelok == 1:
 									savetarget.highlight = milsavecolor
@@ -2603,15 +2690,26 @@ def interruptevent(actioninsert,interruptpasscount):
 						debug(interruptcancelok)
 						debug(inserttarget)
 						for usecard in table:
-							if usecard.highlight == interruptcolor:
+							if usecard.highlight == interruptcolor or usecard.highlight == sacrificecolor:
 								if usecard.controller == me:disc(usecard)
 								else:remoteCall(otherplayer, "disc", [usecard])
 						if mainpass == "leave":
 							if interruptcancelok == 1:
 								leavecardtype.append(inserttarget._id)
 								remoteCall(inserttarget.controller,"leaveforability",[inserttarget])
-							if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
-							else:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+							else:
+								remoteCall(inserttarget.controller,"abilityattachsub",[inserttarget])
+								if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+								else:interruptevent("characterkill",1)
+						elif mainpass == "leavereaction":
+							remoteCall(me,"savetargetinserttarget",[savetargettmp,inserttargettmp,interruptcancelcardtmp,interruptcancelplayertmp,interruptcancellastcardtmp,interruptcanceledcardtmp,interruptcanceloktmp,saveactionplayertmp,mainpasstmp])
+							remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+							if interruptcancelok == 1:
+								remoteCall(inserttarget.controller,"reactionforability",[inserttarget])
+							else:
+								remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
+								if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["leavetable",1])
+								else:reaction("leavetable",1)
 						else:		
 							if interruptcancelok == 1:
 								savetarget.highlight = milsavecolor
@@ -2635,6 +2733,15 @@ def interruptevent(actioninsert,interruptpasscount):
 							remoteCall(me, "interruptevent", ["interruptcancel",interruptpasscount])
 							return
 					else:cardeffect(card,"interrupt")
+					if isinsertreaction == 0:
+						if interruptcancelcard.highlight == sacrificecolor and interruptcancelcard.controller != me:
+							for card in table:
+								for d in leavereacion:
+									if card.model == leavereacion[d][1] and card.controller != me:
+										if leavereacion[d][2] == "Faction":
+											if interruptcancelcard.Faction.find(leavereacion[d][3]) != -1:
+												interruptreactioncard = card
+												isinsertreaction = 3
 					interruptcancelplayer = me
 					interruptcancellastcard = interruptcanceledcard
 					interruptcanceledcard = card
@@ -2645,21 +2752,45 @@ def interruptevent(actioninsert,interruptpasscount):
 				else:interruptcancelok = 1
 				remoteCall(me, "setTimer", [me,"interruptcanceled",table])
 		if choice == 2:
+			if isinsertreaction == 0:
+				if interruptcancelcard.highlight == sacrificecolor and interruptcancelcard.controller != me:
+					for card in table:
+						for d in leavereacion:
+							if card.model == leavereacion[d][1] and card.controller != me:
+								if leavereacion[d][2] == "Faction":
+									if interruptcancelcard.Faction.find(leavereacion[d][3]) != -1:
+										remoteCall(otherplayer, "interruptreaction", [card,interruptpasscount])
+										isinsertreaction = 1
+										return
 			if interruptpasscount < 2:
 				interruptpasscount += 1
 				remoteCall(otherplayer, "interruptevent", ["interruptcancel",interruptpasscount])
 				return
 			if interruptpasscount == 2 and actioninsert == "interruptcancel":
+				notify("结算,弃掉插入的牌")
+				debug(interruptcancelok)
+				debug(inserttarget)
 				for usecard in table:
-					if usecard.highlight == interruptcolor:
+					if usecard.highlight == interruptcolor or usecard.highlight == sacrificecolor:
 						if usecard.controller == me:disc(usecard)
 						else:remoteCall(otherplayer, "disc", [usecard])
 				if mainpass == "leave":
 					if interruptcancelok == 1:
 						leavecardtype.append(inserttarget._id)
 						remoteCall(inserttarget.controller,"leaveforability",[inserttarget])
-					if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
-					else:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+					else:
+						remoteCall(inserttarget.controller,"abilityattachsub",[inserttarget])
+						if inserttarget.controller == me:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
+						else:interruptevent("characterkill",1)
+				elif mainpass == "leavereaction":
+					remoteCall(me,"savetargetinserttarget",[savetargettmp,inserttargettmp,interruptcancelcardtmp,interruptcancelplayertmp,interruptcancellastcardtmp,interruptcanceledcardtmp,interruptcanceloktmp,saveactionplayertmp,mainpasstmp])
+					remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+					if interruptcancelok == 1:
+						remoteCall(inserttarget.controller,"reactionforability",[inserttarget])
+					else:
+						remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
+						if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["leavetable",1])
+						else:reaction("leavetable",1)
 				else:
 					if interruptcancelok == 1:
 						savetarget.highlight = milsavecolor
@@ -2675,21 +2806,35 @@ def interruptevent(actioninsert,interruptpasscount):
 		debug("aaaaaa")
 		debug(abilityattach)
 		if len(abilityattach) > 0:
-			if sessionpass == "killabilityok":
-				killcards = selectedcard
-				if killcards == None:
+			if sessionpass == "":
+				choiceList = ['interrupt', 'cancel']
+				colorList = ['#006b34' ,'#ae0603']
+				choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
+				if choice == 1:
+					intocharacterkill(abilityattach,interruptpasscount)
+					return
+				else:
 					if interruptpasscount == 2:
 						cardleavetable(1)
 					else:
 						interruptpasscount += 1
 						remoteCall(otherplayer, "interruptevent", ["characterkill",interruptpasscount])
 					return
+			if sessionpass == "killabilityok":
+				killcards = selectedcard
+				if killcards == []:
+					if interruptpasscount == 2:
+						cardleavetable(1)
+					else:
+						interruptpasscount += 1
+						sessionpass = ""
+						remoteCall(otherplayer, "interruptevent", ["characterkill",interruptpasscount])
+					return
 				else:
 					debug(killcards[0])
 					killcard = killcards[0]
+					sessionpass = ""
 					remoteCall(otherplayer, "checkinterruptkill", [killcard])
-			else:
-				intocharacterkill(abilityattach,interruptpasscount)
 		else:
 			if interruptpasscount == 2:
 				cardleavetable(1)
@@ -2720,7 +2865,6 @@ def checkinterruptkill(killcard):
 	global inserttarget
 	global interruptcancelok
 	global mainpass
-	global leavecardtype
 
 	if checkcountercharater(killcard):
 		interruptcancelcard = killcard
@@ -2800,7 +2944,33 @@ def cardeffect(card,actioninsert):
 				if  saveaction[d][2] == "sacrifice":card.highlight = sacrificecolor
 				if  saveaction[d][2] == "kneel":kneel(card)
 	if actioninsert == "interrupt":
-		card.highlight = interruptcolor
+		for d in counterevent:
+			if card.model == counterevent[d][1]:
+				if  counterevent[d][2] == "sacrifice":card.highlight = sacrificecolor
+				else:card.highlight = interruptcolor
+
+def savetargetinserttargettmp(savetargetn,inserttargetn,interruptcancelcardn,interruptcancelplayern,interruptcancellastcardn,interruptcanceledcardn,interruptcancelokn,saveactionplayern,mainpassn):
+	mute()
+	global savetargettmp
+	global inserttargettmp
+	global interruptcancelcardtmp
+	global interruptcancelplayertmp
+	global interruptcanceledcardtmp
+	global interruptcancellastcardtmp
+	global interruptlibtmp
+	global interruptcanceloktmp
+	global saveactionplayertmp
+	global mainpasstmp
+
+	interruptcanceloktmp = interruptcancelokn
+	savetargettmp = savetargetn
+	inserttargettmp = inserttargetn
+	interruptcancelcardtmp = interruptcancelcardn
+	interruptcancelplayertmp = interruptcancelplayern
+	interruptcancellastcardtmp = interruptcancellastcardn
+	interruptcanceledcardtmp = interruptcanceledcardn
+	saveactionplayertmp =  saveactionplayern
+	mainpasstmp = mainpassn
 
 def savetargetinserttarget(savetargetn,inserttargetn,interruptcancelcardn,interruptcancelplayern,interruptcancellastcardn,interruptcanceledcardn,interruptcancelokn,saveactionplayern,mainpassn):
 	mute()
@@ -2830,22 +3000,21 @@ def characterkilled(cardbekill,count):
 	global abilityattach
 	c = 0
 	list = []
-	for card in table if card.type == "Attachment":
-		list.append(card)
+	for card in table:
+		if card.type == "Attachment":
+			list.append(card)
 	for card in cardbekill:
 		for d in cardkill:
 			if card.model == cardkill[d][1] and card.controller == me and cardkill[d][2] != "link":
 				if cardkill[d][4] == "Attachment":
 					if len(list) > 0:
 						if not abilityattach.has_key(card._id):
-							abilityattach[card._id]=[]
-							abilityattach[card._id].append(card._id)
-						else:abilityattach[card._id].append(card._id)
+							abilityattach[card._id] = 1
+						else:abilityattach[card._id] += 1
 				elif cardkill[d][4] != "Attachment":
 					if not abilityattach.has_key(card._id):
-						abilityattach[card._id]=[]
-						abilityattach[card._id].append(card._id)
-					else:abilityattach[card._id].append(card._id)
+						abilityattach[card._id] = 1
+					else:abilityattach[card._id] += 1
 	debug(abilityattach)
 	for card in cardbekill:
 		for d in cardkill:
@@ -2853,9 +3022,8 @@ def characterkilled(cardbekill,count):
 				for cards in table:
 					if cards.controller == me and cards.name == cardkill[d][6]:
 						if not abilityattach.has_key(cards._id):
-							abilityattach[cards._id]=[]
-							abilityattach[cards._id].append(card._id)
-						else:abilityattach[cards._id].append(card._id)
+							abilityattach[cards._id] = 1
+						else:abilityattach[cards._id] += 1
 	debug(abilityattach)
 	if count == 1:remoteCall(otherplayer, "characterkilled", [cardbekill,2])
 	else:remoteCall(otherplayer, "interruptevent", ["characterkill",1])
@@ -2869,7 +3037,6 @@ def leaveforability(card):
 	debug(card)
 	global abilityattach
 	global sessionpass
-	global killabilitytmp
 	sessionpass = ""
 	c = ""
 	leavecardtype.append(card._id)
@@ -2890,10 +3057,8 @@ def leaveforability(card):
 				if cardkill[d][4] == "Character" and cardkill[d][3] == "kneel":
 					c = "kneelplayer"
 					#kneelplayer(table)
-			if len(abilityattach[card._id]) == 1:del abilityattach[card._id]
-			else:
-				abilityattach[card._id].remove(killabilitytmp)
-				killabilitytmp = []
+	abilityattach[card._id] -= 1
+	if abilityattach[card._id] == 0:del abilityattach[card._id]
 	if c == "discattch":
 		discattch(table)
 		return
@@ -2927,9 +3092,12 @@ def kneelplayer(group, x=0, y=0):
 def cardleavetable(count):
 	mute()
 	global leavecardtype
+	global abilityattach
+	global leavetablecard
 	debug(leavecardtype)
 	for card in table:
 		if card.highlight == miljudgecolor and card.controller == me:
+			leavetablecard.append(card)
 			if card._id in leavecardtype:
 				notify("{} killed {}.".format(me,card))
 				for d in leavedeck:
@@ -2943,9 +3111,167 @@ def cardleavetable(count):
 				notify("{} killed {}.".format(me,card))
 				card.moveTo(me.piles['Dead pile'])
 	leavecardtype = []
-	if count == 1:remoteCall(otherplayer, "cardleavetable", [2])
+	abilityattach = []
+	if count == 1:
+		remoteCall(otherplayer, "getleavetablecard", [leavetablecard])
+		remoteCall(otherplayer, "cardleavetable", [2])
 	else:
-		challengebalanceover(table)
+		remoteCall(otherplayer, "getleavetablecard", [leavetablecard])
+		f = (card for card in table  
+				if card.name == "1st Player Token")
+		for card1 in f:
+			if card1.controller == me:
+				checkreactioncard(1)
+			else:
+				remoteCall(otherplayer, "checkreaction", [1])
+
+def getleavetablecard(leavetablecardn):
+	global leavetablecard
+	leavetablecard = leavetablecardn
+
+
+def reaction(actioninsert,reactioncount):
+	mute()
+	global sessionpass
+	if actioninsert == "leavetable":
+		if len(reactionattach) > 0:
+			if sessionpass == "":
+				choiceList = ['reaction', 'cancel']
+				colorList = ['#006b34' ,'#ae0603']
+				choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
+				if choice == 1:
+					intoreaction(reactionattach,reactioncount)
+					return
+			if sessionpass == "reactionok":
+				reactioncards = selectedcard
+				if reactioncards == []:
+					if reactioncount == 2:
+						challengebalanceover(1)
+					else:
+						reactioncount += 1
+						sessionpass = ""
+						remoteCall(otherplayer, "reaction", ["leavetable",reactioncount])
+					return
+				else:
+					debug(reactioncards[0])
+					reactioncard = reactioncards[0]
+					sessionpass = ""
+					remoteCall(otherplayer, "checkreaction", [reactioncard])
+		else:
+			if reactioncount == 2:
+				challengebalanceover(1)
+			else:
+				reactioncount += 1
+				remoteCall(otherplayer, "reaction", ["leavetable",reactioncount])
+			return
+
+def checkreaction(reactioncard):
+	mute()
+	global interruptcancelcard
+	global interruptcancelplayer
+	global inserttarget
+	global interruptcancelok
+	global mainpass
+	global leavecardtype
+	global sessionpass
+
+	sessionpass = ""
+	if checkcountercharater(reactioncard):
+		remoteCall(otherplayer,"savetargetinserttargettmp",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		remoteCall(me,"savetargetinserttargettmp",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		interruptcancelcard = reactioncard
+		interruptcancelplayer = otherplayer
+		inserttarget = interruptcancelcard
+		mainpass = "leavereaction"
+		interruptcancelok = 1
+		remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		remoteCall(me, "interruptevent", ["interruptcancel",2])
+	else:
+		remoteCall(otherplayer,"reactionforability",[reactioncard])
+
+def intoreaction(cards,count):
+	mute()
+	global sessionpass
+	global recount
+	sessionpass = ""
+	targetTuple = ([card._id for card in table if card.controller == me and cards.has_key(card._id)], me._id) 
+	setGlobalVariable("tableTargets", str(targetTuple))
+	setGlobalVariable("selectmode", "1")
+	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**selectmode**")
+	sessionpass = "reaction"
+	recount = count
+
+def reactionforability(card):
+	mute()
+	debug(card)
+	global reactionattach
+	global sessionpass
+	global reactioncardlimit
+	global intertreaction
+	sessionpass = ""
+	c = 0
+	for d in leavereacion:
+		if card.model == leavereacion[d][1] and card.controller == me:
+			if re.search('\d\spower', leavereacion[d][4]):
+				powadd = re.search('\d\spower', leavereacion[d][4]).group()
+				card.markers[Power] += (int(powadd[0]))
+				notify("{} reaction add 1 pow to him".format(card))
+				if not reactioncardlimit.has_key(card._id):
+					reactioncardlimit[card._id] = 1
+				else:reactioncardlimit[card._id] += 1
+				if reactioncardlimit[card._id] == leavereacion[d][5]:
+					del reactionattach[card._id]
+					c = 1
+			if leavereacion[d][2] == "Faction" and leavereacion[d][4] == "stand":
+				for cards in table:
+					if cards.type == "Character" and cards.controller == me:
+						cards.orientation = 0
+				notify("{} reaction stand each character".format(card))
+				if not reactioncardlimit.has_key(card._id):
+					reactioncardlimit[card._id] = 1
+				else:reactioncardlimit[card._id] += 1
+				if reactioncardlimit[card._id] == leavereacion[d][5]:
+					del reactionattach[card._id]
+					c = 1
+	debug(intertreaction)
+	if intertreaction != 0 and intertreaction < 3:
+		intertreaction = 0
+		remoteCall(otherplayer, "interruptevent", ["interruptcancel",intertreaction])	
+		return
+	if intertreaction == 3:
+		intertreaction = 0
+		interruptevent("interruptcancel",1)	
+		return
+	if c == 0:
+		reactionattach[card._id] -= 1
+		if reactionattach[card._id] == 0:del reactionattach[card._id]
+	remoteCall(otherplayer, "reaction", ["leavetable",1])
+
+
+def checkreactioncard(count):
+	mute()
+	global reactionattach
+	for card in table:
+		for d in leavereacion:
+			if card.model == leavereacion[d][1] and card.controller == me:
+				for cards in leavetablecard:
+					if leavereacion[d][2] == "Traits":
+					 	if leavereacion[d][3] == "Lord./Lady.":
+					 		if cards.Traits.find("Lord.") !=-1 or cards.Traits.find("Lady.") !=-1:
+								if not reactionattach.has_key(card._id):
+									reactionattach[card._id] = 1
+								else:reactionattach[card._id] += 1
+					elif leavereacion[d][2] == "Faction":
+						if cards.Faction.find(leavereacion[d][3]) != -1 and cards.controller == me:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
+	debug("reactionattach")
+	debug(reactionattach)
+	if count == 1:remoteCall(otherplayer, "checkreactioncard", [2])
+	else:remoteCall(otherplayer, "reaction", ["leavetable",1])
+
 
 def selectstealth(group, x=0, y=0):
 	mute()
@@ -3048,12 +3374,10 @@ def next(group, x=0, y=0):
 	global stealthcount
 	global savetarget
 	global abilityattach
-	global killabilitytmp
 	debug(sessionpass)
 	selectedcard = []
 	list = []
 	listsave = []
-	tmp = []
 	for card in table:
 		if card.targetedBy == me:
 			selectedcard.append(card)
@@ -3085,18 +3409,18 @@ def next(group, x=0, y=0):
 		if len(selectedcard) > 1:
 			whisper("You must select only one attachment to discard.")
 			return
-		else:
+		elif len(selectedcard) == 1:
 			for card in table:
-					card.target(False)
+				card.target(False)
 			remoteCall(selectedcard[0].controller, "disc", [selectedcard[0]])
 	if sessionpass == "kneel":
 		if len(selectedcard) > 1:
 			whisper("You must select only one character to kneel.")
 			return
-		else:
+		elif len(selectedcard) == 1:
 			for card in table:
-					card.target(False)
-			selectedcard[0].orientation = 1
+				card.target(False)
+			remoteCall(selectedcard[0].controller, "kneel", [selectedcard[0]])
 	if sessionpass == "miljudgementselect":
 		if len(selectedcard) > 1:
 			whisper("You must select only one character to save.")
@@ -3127,29 +3451,22 @@ def next(group, x=0, y=0):
 		if len(selectedcard) > 1:
 			whisper("You must select only one Character.")
 			return
-		debug(abilityattach)
-		if len(selectedcard) == 1 and len(abilityattach[selectedcard[0]._id]) > 1:
-			for card in table:
-					card.target(False)
-			targetTuple = ([card._id for card in table if card._id in abilityattach[selectedcard[0]._id]], me._id) 
-			setGlobalVariable("tableTargets", str(targetTuple))
-			setGlobalVariable("selectmode", "1")
-			notify("**selectmode**")
-			notify("**choose one**")
-			killabilitytmp = selectedcard[0]
-			sessionpass = "killabilitychooseone"
-			return
 	if sessionpass == "killabilitychooseone":
 		if len(selectedcard) > 1:
 			whisper("You must select only one Character.")
+			return
+	if sessionpass == "reaction":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to reaction.")
 			return
 	for cardn in table:
 		if cardn.name == "nextbutton" and cardn.controller == me:
 			cardn.delete()
 			stealthcount = 0
 	setGlobalVariable("selectmode", "0")
-	for card in table:
-		card.target(False)
+	if intertreaction == 0:
+		for card in table:
+			card.target(False)
 	if sessionpass == "milselect":
 		sessionpass = "milselectok"
 		announceMil(table)
@@ -3179,15 +3496,12 @@ def next(group, x=0, y=0):
 		interruptevent("miljudgementfp",smcount)
 	if sessionpass == "killability":
 		sessionpass = "killabilityok"
-		interruptevent("characterkill",kbcount)
-	if sessionpass == "killabilitychooseone":
-		sessionpass = "killabilityok"
-		tmp = killabilitytmp
-		killabilitytmp = selectedcard[0]._id
-		selectedcard = [tmp]
-		interruptevent("characterkill",kbcount)
+		interruptevent("characterkill",1)
 	if sessionpass == "discattch" or sessionpass == "kneel":
 		remoteCall(otherplayer,"interruptevent",["characterkill",1])
+	if sessionpass == "reaction":
+		sessionpass = "reactionok"
+		reaction("leavetable",1)
 
 def stealthcard(group, x=0, y=0):
 	mute()
@@ -3259,3 +3573,23 @@ def checksavecard(savecard):
 						if saveaction[d][4] == "all":list.append(c)
 						elif saveaction[d][4] == Faction:list.append(c)
 	return list
+
+def reactionattachsub(card):
+	mute()
+	global reactionattach
+	reactionattach[card._id] -= 1
+	if reactionattach[card._id] == 0:del reactionattach[card._id]
+
+
+def abilityattachsub(card):
+	mute()
+	global abilityattach
+	abilityattach[card._id] -= 1
+	if abilityattach[card._id] == 0:del abilityattach[card._id]
+
+def interruptreaction(card,count):
+	mute()
+	global intertreaction
+	intertreaction = count
+	reactionattach[card._id] = 1
+	reaction("leavetable",1)
