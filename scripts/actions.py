@@ -96,7 +96,7 @@ interruptlibtmp = {}
 interruptcanceloktmp = 1
 saveactionplayertmp = []
 mainpasstmp = ""
-
+insertreactioncard = []
 import re
 import time
 
@@ -2421,8 +2421,7 @@ def updateTimer(endTime,notifications,actioninsert):
 			else:interruptcanceledcard.arrow(interruptcancellastcard)
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(otherplayer,"interruptlibadd",[interruptpass])
-			else:
-				remoteCall(otherplayer, "interruptevent", ["interruptcancel",1])
+			remoteCall(otherplayer, "interruptevent", ["interruptcancel",1])
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -2457,7 +2456,6 @@ def interruptevent(actioninsert,interruptpasscount):
 	duplicatecard = []
 	cardtype = ""
 	tmp = []
-	debug(isinsertreaction)
 	if actioninsert == "miljudgementfp":
 		debug(interruptpasscount)
 		for card in mjfinishcard:
@@ -2551,6 +2549,7 @@ def interruptevent(actioninsert,interruptpasscount):
 				else:remoteCall(otherplayer, "miljudgementfinished", [mjfinishcard,claimtmp,1])
 	if actioninsert == "interruptcancel":
 		debug(interruptcancelcard)
+		debug(interruptlib)
 		if interruptpasscount < 2:
 			choiceList = ['interrupt', 'cancel']
 			colorList = ['#ae0603' ,'#006b34']
@@ -2595,25 +2594,16 @@ def interruptevent(actioninsert,interruptpasscount):
 			if interruptcards == None:
 				if interruptpasscount == 2:
 					if len(interruptlib) > 0 and interruptcancellastcard != []:
+						e = 0
 						if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
-							f = 0
-							e = 0
 							playertmp = []
 							cardtmp = []
-							for card in table:
-								if card.Type == "Character" and card.controller == interruptlib["pass"+str(interruptpass)][0].controller and card.orientation == 0:
-									f = 1
-						if isinsertreaction == 0 and f == 1:
-							for card in table:
-								for d in leavereacion:
-									if card.model == leavereacion[d][1] and card.controller == interruptlib["pass"+str(interruptpass)][0].controller:
-										if leavereacion[d][2] == "Faction":
-											if interruptlib["pass"+str(interruptpass)][0].Faction.find(leavereacion[d][3]) != -1:
-												#setGlobalVariable("insertre", "1")
-												isinsertreaction = 1
-												playertmp = interruptlib["pass"+str(interruptpass)][0].controller
-												cardtmp = card
-												e = 1
+							if isinsertreaction == 0 and orientationintable(interruptlib["pass"+str(interruptpass)][0]):
+								if checkinsertreaction(interruptlib["pass"+str(interruptpass)][0]):
+									isinsertreaction = 1
+									playertmp = interruptlib["pass"+str(interruptpass)][0].controller
+									cardtmp = insertreactioncard
+									e = 1
 						if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 						else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 						del interruptlib["pass"+str(interruptpass)]
@@ -2622,28 +2612,20 @@ def interruptevent(actioninsert,interruptpasscount):
 						if e == 1:
 							setGlobalVariable("insertre", "1")
 							backupinterruptlib(1)
+							remoteCall(otherplayer, "backupinterruptlib", [1])
 							remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 							return
 						if interruptpass > 0:
-							if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
-							f = 0
 							e = 0
-							playertmp = []
-							cardtmp = []
-							for card in table:
-								if card.Type == "Character" and card.controller == interruptlib["pass"+str(interruptpass)][0].controller and card.orientation == 0:
-									f = 1
-							if isinsertreaction == 0 and f == 1:
-								for card in table:
-									for d in leavereacion:
-										if card.model == leavereacion[d][1] and card.controller == interruptlib["pass"+str(interruptpass)][0].controller:
-											if leavereacion[d][2] == "Faction":
-												if interruptlib["pass"+str(interruptpass)][0].Faction.find(leavereacion[d][3]) != -1:
-													#setGlobalVariable("insertre", "1")
-													isinsertreaction = 1
-													playertmp = interruptlib["pass"+str(interruptpass)][0].controller
-													cardtmp = card
-													e = 1
+							if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
+								playertmp = []
+								cardtmp = []
+								if isinsertreaction == 0 and orientationintable(interruptlib["pass"+str(interruptpass)][0]):
+									if checkinsertreaction(interruptlib["pass"+str(interruptpass)][0]):
+										isinsertreaction = 1
+										playertmp = interruptlib["pass"+str(interruptpass)][0].controller
+										cardtmp = insertreactioncard
+										e = 1
 							if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 							else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 							del interruptlib["pass"+str(interruptpass)]
@@ -2652,6 +2634,7 @@ def interruptevent(actioninsert,interruptpasscount):
 							if e == 1:
 								setGlobalVariable("insertre", "2")
 								backupinterruptlib(1)
+								remoteCall(otherplayer, "backupinterruptlib", [1])
 								remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 								return
 						if interruptpass == 0:
@@ -2692,20 +2675,16 @@ def interruptevent(actioninsert,interruptpasscount):
 							else:remoteCall(me, "interruptevent", ["interruptcancel",1])
 					else:
 						if interruptpass > 0:
-							for card in table:
-								if card.Type == "Character" and card.controller == interruptlib["pass"+str(interruptpass)][0].controller and card.orientation == 0:
-									f = 1
-							if isinsertreaction == 0 and f == 1:
-								for card in table:
-									for d in leavereacion:
-										if card.model == leavereacion[d][1] and card.controller == interruptlib["pass"+str(interruptpass)][0].controller:
-											if leavereacion[d][2] == "Faction":
-												if interruptlib["pass"+str(interruptpass)][0].Faction.find(leavereacion[d][3]) != -1:
-													#setGlobalVariable("insertre", "1")
-													isinsertreaction = 1
-													playertmp = interruptlib["pass"+str(interruptpass)][0].controller
-													cardtmp = card
-													e = 1
+							e = 0
+							if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
+								playertmp = []
+								cardtmp = []
+								if isinsertreaction == 0 and orientationintable(interruptlib["pass"+str(interruptpass)][0]):
+									if checkinsertreaction(interruptlib["pass"+str(interruptpass)][0]):
+										isinsertreaction = 1
+										playertmp = interruptlib["pass"+str(interruptpass)][0].controller
+										cardtmp = insertreactioncard
+										e = 1
 							if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 							else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 							del interruptlib["pass"+str(interruptpass)]
@@ -2714,6 +2693,7 @@ def interruptevent(actioninsert,interruptpasscount):
 							if e == 1:
 								setGlobalVariable("insertre", "3")
 								backupinterruptlib(1)
+								remoteCall(otherplayer, "backupinterruptlib", [1])
 								remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 								return
 						notify("结算,弃掉插入的牌")
@@ -2775,17 +2755,49 @@ def interruptevent(actioninsert,interruptpasscount):
 				return
 			if interruptpasscount == 2 and actioninsert == "interruptcancel":
 				if len(interruptlib) > 0 and interruptcancellastcard != []:
+					e = 0
+					if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
+						playertmp = []
+						cardtmp = []
+						if isinsertreaction == 0 and orientationintable(interruptlib["pass"+str(interruptpass)][0]):
+							if checkinsertreaction(interruptlib["pass"+str(interruptpass)][0]):
+								isinsertreaction = 1
+								playertmp = interruptlib["pass"+str(interruptpass)][0].controller
+								cardtmp = insertreactioncard
+								e = 1
 					if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 					else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 					del interruptlib["pass"+str(interruptpass)]
 					remoteCall(otherplayer,"interruptlibdel",[interruptpass])
 					interruptpass -= 1
+					if e == 1:
+						setGlobalVariable("insertre", "1")
+						backupinterruptlib(1)
+						remoteCall(otherplayer, "backupinterruptlib", [1])
+						remoteCall(playertmp, "interruptreaction", [cardtmp,1])
+						return
 					if interruptpass > 0:
+						e = 0
+						if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
+							playertmp = []
+							cardtmp = []
+							if isinsertreaction == 0 and orientationintable(interruptlib["pass"+str(interruptpass)][0]):
+								if checkinsertreaction(interruptlib["pass"+str(interruptpass)][0]):
+									isinsertreaction = 1
+									playertmp = interruptlib["pass"+str(interruptpass)][0].controller
+									cardtmp = insertreactioncard
+									e = 1
 						if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 						else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 						del interruptlib["pass"+str(interruptpass)]
 						remoteCall(otherplayer,"interruptlibdel",[interruptpass])
 						interruptpass -= 1
+						if e == 1:
+							setGlobalVariable("insertre", "2")
+							backupinterruptlib(1)
+							remoteCall(otherplayer, "backupinterruptlib", [1])
+							remoteCall(playertmp, "interruptreaction", [cardtmp,1])
+							return
 					if interruptpass == 0:
 						notify("结算,弃掉插入的牌")
 						debug(inserttarget)
@@ -2824,11 +2836,27 @@ def interruptevent(actioninsert,interruptpasscount):
 						else:remoteCall(me, "interruptevent", ["interruptcancel",1])
 				else:
 					if interruptpass > 0:
+						e = 0
+						if interruptlib["pass"+str(interruptpass)][0].highlight == sacrificecolor:
+							playertmp = []
+							cardtmp = []
+							if isinsertreaction == 0 and orientationintable(interruptlib["pass"+str(interruptpass)][0]):
+								if checkinsertreaction(interruptlib["pass"+str(interruptpass)][0]):
+									isinsertreaction = 1
+									playertmp = interruptlib["pass"+str(interruptpass)][0].controller
+									cardtmp = insertreactioncard
+									e = 1
 						if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 						else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 						del interruptlib["pass"+str(interruptpass)]
 						remoteCall(otherplayer,"interruptlibdel",[interruptpass])
 						interruptpass -= 1
+						if e == 1:
+							setGlobalVariable("insertre", "3")
+							backupinterruptlib(1)
+							remoteCall(otherplayer, "backupinterruptlib", [1])
+							remoteCall(playertmp, "interruptreaction", [cardtmp,1])
+							return
 					notify("结算,弃掉插入的牌")
 					debug(interruptcancelok)
 					debug(inserttarget)
@@ -3178,7 +3206,7 @@ def reaction(actioninsert,reactioncount):
 					return
 				if choice == 2:
 					if reactioncount == 2:
-						if getGlobalVariable("insertre") != "0":
+						if getGlobalVariable("insertre") != "":
 							restoreinterruptlib(1)
 							return
 						challengebalanceover(1)
@@ -3203,7 +3231,7 @@ def reaction(actioninsert,reactioncount):
 					remoteCall(otherplayer, "checkreaction", [reactioncard])
 		else:
 			if reactioncount == 2:
-				if getGlobalVariable("insertre") != "0":
+				if getGlobalVariable("insertre") != "":
 					restoreinterruptlib(1)
 					return
 				challengebalanceover(1)
@@ -3233,6 +3261,7 @@ def checkreaction(reactioncard):
 		mainpass = "leavereaction"
 		interruptcancelok = 1
 		remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		debug("888888888888888888")
 		remoteCall(me, "interruptevent", ["interruptcancel",2])
 	else:
 		remoteCall(otherplayer,"reactionforability",[reactioncard])
@@ -3283,13 +3312,8 @@ def reactionforability(card):
 					del reactionattach[card._id]
 					c = 1
 	debug(intertreaction)
-	if intertreaction != 0 and intertreaction < 3:
-		intertreaction = 0
-		remoteCall(otherplayer, "interruptevent", ["interruptcancel",intertreaction])	
-		return
-	if intertreaction == 3:
-		intertreaction = 0
-		interruptevent("interruptcancel",1)	
+	if getGlobalVariable("insertre") != "":
+		restoreinterruptlib(1)
 		return
 	if c == 0:
 		reactionattach[card._id] -= 1
@@ -3652,11 +3676,8 @@ def backupinterruptlib(count):
 	interruptlib = {}
 	interruptpasstmp = interruptpass
 	interruptpass = 0
-	if count == 1:
-		remoteCall(otherplayer,"backupinterruptlib",[2])
-	else:
-		remoteCall(otherplayer,"savetargetinserttargettmp",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
-		remoteCall(me,"savetargetinserttargettmp",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+	savetargetinserttargettmp(savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass)
+
 
 def restoreinterruptlib(count):
 	mute()
@@ -3664,21 +3685,30 @@ def restoreinterruptlib(count):
 	global interruptlib
 	global interruptpass
 	global interruptpasstmp
-	interruptlibt = interruptlibtmp
+	global interruptcancellastcard
+	global interruptcanceledcard
+	global interruptcancelcard
+	interruptlib = interruptlibtmp
 	interruptlibtmp = {}
 	interruptpass = interruptpasstmp
 	interruptpasstmp = 0
 	if count == 1:
-		remoteCall(otherplayer,"backupinterruptlib",[2])
+		remoteCall(otherplayer,"restoreinterruptlib",[2])
 	else:
-		remoteCall(me,"savetargetinserttarget",[savetargettmp,inserttargettmp,interruptcancelcardtmp,interruptcancelplayertmp,interruptcancellastcardtmp,interruptcanceledcardtmp,interruptcanceloktmp,saveactionplayertmp,mainpasstmp])
-		remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
-		if getGlobalVariable("insertre") != "1":
+		savetargetinserttarget(savetargettmp,inserttargettmp,interruptcancelcardtmp,interruptcancelplayertmp,interruptcancellastcardtmp,interruptcanceledcardtmp,interruptcanceloktmp,saveactionplayertmp,mainpasstmp)
+		remoteCall(otherplayer,"savetargetinserttarget",[savetargettmp,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		debug("interruptlib")
+		debug(interruptlib)
+		debug(getGlobalVariable("insertre"))
+		debug(interruptpass)
+		if getGlobalVariable("insertre") == "1":
 			if interruptlib["pass"+str(interruptpass)][0].controller == me:disc(interruptlib["pass"+str(interruptpass)][0])
 			else:remoteCall(otherplayer, "disc", [interruptlib["pass"+str(interruptpass)][0]])
 			del interruptlib["pass"+str(interruptpass)]
 			remoteCall(otherplayer,"interruptlibdel",[interruptpass])
 			interruptpass -= 1
+		if getGlobalVariable("insertre") == "1" or getGlobalVariable("insertre") == "2":
+			setGlobalVariable("insertre", "")
 			if interruptpass == 0:
 				notify("结算,弃掉插入的牌")
 				debug(inserttarget)
@@ -3714,8 +3744,13 @@ def restoreinterruptlib(count):
 				interruptcancelcard = interruptcanceledcard
 				remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 				if interruptlib["pass"+str(interruptpass)][2] == me:remoteCall(otherplayer, "interruptevent", ["interruptcancel",1])
-				else:remoteCall(me, "interruptevent", ["interruptcancel",1])
-		if getGlobalVariable("insertre") != "3":
+				else:
+					debug(interruptlib)
+					debug(interruptcancelcard)
+					remoteCall(me, "interruptevent", ["interruptcancel",1])
+					return
+		if getGlobalVariable("insertre") == "3":
+			setGlobalVariable("insertre", "")
 			notify("结算,弃掉插入的牌")
 			debug(interruptcancelok)
 			debug(inserttarget)
@@ -3768,3 +3803,24 @@ def savetargetinserttargettmp(savetargetn,inserttargetn,interruptcancelcardn,int
 	interruptcanceledcardtmp = interruptcanceledcardn
 	saveactionplayertmp =  saveactionplayern
 	mainpasstmp = mainpassn
+
+def orientationintable(cards):
+	mute()
+	c = 0
+	for card in table:
+		if card.Type == "Character" and card.controller == cards.controller and card.orientation == 0:
+			c = 1
+	if c == 1:return True
+
+def checkinsertreaction(cards):
+	mute()
+	global insertreactioncard
+	c = 0
+	for card in table:
+		for d in leavereacion:
+			if card.model == leavereacion[d][1] and card.controller == cards.controller:
+				if leavereacion[d][2] == "Faction":
+					if cards.Faction.find(leavereacion[d][3]) != -1:
+						c = 1
+						insertreactioncard = card
+	if c == 1:return True
