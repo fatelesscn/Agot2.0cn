@@ -26,6 +26,7 @@ leaveandabilitycolor = "#20124d"
 leaveonlycolor = "#e06666"
 abilitycolor = "#a32f5b"
 Stealthcolor = "#ffffff"
+cantchallengecolor = "#fffacd"
 GameURL = "http://octgn.gamersjudgement.com/wordpress/agot2/"
 FAQ_URL = "https://images-cdn.fantasyflightgames.com/filer_public/03/43/034309e6-c3a2-4575-8062-32ede5798ef8/gt01_rules-reference-web.pdf"
 #add
@@ -85,6 +86,7 @@ reactioncardlimit = {}
 intertreaction = 0
 isinsertreaction = 0
 interruptreaction = []
+nextcardtmp = []
 
 savetargettmp = []
 inserttargettmp = []
@@ -171,6 +173,7 @@ def announceMil(group, x = 0, y = 0):
 	global challengetype
 	global selectedcard
 	global sessionpass
+	global stealthcount
 	stealth = ""
 	stealthcount = 0
 	if sessionpass != "milselectok":
@@ -211,6 +214,7 @@ def announceMil(group, x = 0, y = 0):
 				if re.search(r'stealth',c.keywords,re.I):   #stealth
 					stealth = "0"
 					stealthcount += 1
+					if c.model == afterchallengereacion['Ghost'][1]:setGlobalVariable("cantchallenge", "1")
 		notify("**{} declares MIL attackers.**".format(me))
 		if getGlobalVariable("automode") == "1":
 			attacker = me
@@ -225,6 +229,7 @@ def announceMil(group, x = 0, y = 0):
 				notify("{} is ready to use the stealth keyword.".format(me))
 				if getGlobalVariable("automode") == "1":
 					selectstealth(table)
+					return
 			else:
 				notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
@@ -279,6 +284,7 @@ def announceInt(group, x = 0, y = 0):
 				notify("{} is ready to use the stealth keyword.".format(me))
 				if getGlobalVariable("automode") == "1":
 					selectstealth(table)
+					return
 			else:
 				notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
@@ -332,6 +338,7 @@ def announcePow(group, x = 0, y = 0):
 				notify("{} is ready to use the stealth keyword.".format(me))
 				if getGlobalVariable("automode") == "1":
 					selectstealth(table)
+					return
 			else:
 				notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
@@ -387,7 +394,19 @@ def announceOpp(group, x = 0, y = 0):
 						sessionpass = "intdefselect"
 						notify("**selectmode**")
 				elif choice == 2:
-					notify("{} declares no defenders.".format(me))
+					if getGlobalVariable("automode") == "1":
+						c = 0
+						for card in table:
+							if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0 and card.highlight != IntrigueColor:
+								card.highlight = IntrigueColor
+								card.orientation = 1
+								c = 1
+						if c == 0:notify("{} declares no defenders.".format(me))
+						else:
+							setGlobalVariable("bedefend","")
+							notify("**{} declares INT defenders.**".format(me))
+					else:
+						notify("{} declares no defenders.".format(me))
 					defender = me
 					remoteCall(otherplayer, "getdefender", [me])
 			if challengetype == 3:
@@ -483,9 +502,25 @@ def defInt(group, x = 0, y = 0):
 				c.target(True)
 			c.highlight = IntrigueColor
 			c.orientation = 1
+		if getGlobalVariable("automode") == "1":
+			for card in table:
+				if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0 and card.highlight != IntrigueColor:
+					card.highlight = IntrigueColor
+					card.orientation = 1
+			setGlobalVariable("bedefend","")
 		notify("**{} declares INT defenders.**".format(me))
 	else:
-		notify("{} declares no defenders.".format(me))
+		if getGlobalVariable("automode") == "1":
+			c = 0
+			for card in table:
+				if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0 and card.highlight != IntrigueColor:
+					card.highlight = IntrigueColor
+					card.orientation = 1
+					c = 1
+			if c == 0:notify("{} declares no defenders.".format(me))
+			else:
+				setGlobalVariable("bedefend","")
+				notify("**{} declares INT defenders.**".format(me))
 	if getGlobalVariable("automode") == "1":
 		setGlobalVariable("selectmode", "0")
 		defender = me
@@ -2328,6 +2363,8 @@ def onloaddeck(args):
 	setGlobalVariable("tableTargets", "")
 	setGlobalVariable("selectmode", "0")
 	setGlobalVariable("insertre", "")
+	setGlobalVariable("cantchallenge", "")
+	setGlobalVariable("bedefend", "")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -3365,7 +3402,7 @@ def reactionforability(card,repass):
 				if re.search('\d\sgold', afterchallengereacion[d][4]):
 					goldadd = re.search('\d\sgold', afterchallengereacion[d][4]).group()
 					me.counters['Gold'].value += (int(goldadd[0]))
-					notify("{}'s {} reaction get {} gold".format(me,card,int(goldadd[0])))
+					notify("{}'s {} reaction get {} gold".format(me,card,int(goldadd[0])))#imp
 					if not reactioncardlimit.has_key(card._id):
 						reactioncardlimit[card._id] = 1
 					else:reactioncardlimit[card._id] += 1
@@ -3374,7 +3411,28 @@ def reactionforability(card,repass):
 						c = 1
 				if afterchallengereacion[d][4] == "stand":
 					card.orientation = 0
-					notify("{}'s {} reaction stand himself".format(me,card))
+					notify("{}'s {} reaction stand himself".format(me,card))#ned
+					if not reactioncardlimit.has_key(card._id):
+						reactioncardlimit[card._id] = 1
+					else:reactioncardlimit[card._id] += 1
+					if reactioncardlimit[card._id] == afterchallengereacion[d][5]:
+						del reactionattach[card._id]
+						c = 1
+				if afterchallengereacion[d][4] == "stealth":
+					for cardcant in table:
+						if cardcant._id == int(getGlobalVariable("cantchallenge")):cardcant.highlight = cantchallengecolor
+					notify("{}'s {} reaction its target cannot be declared as a defender for any challenges until the end of the phase.".format(me,card))#ghost
+					setGlobalVariable("cantchallenge", "")
+					if not reactioncardlimit.has_key(card._id):
+						reactioncardlimit[card._id] = 1
+					else:reactioncardlimit[card._id] += 1
+					if reactioncardlimit[card._id] == afterchallengereacion[d][5]:
+						del reactionattach[card._id]
+						c = 1
+				if afterchallengereacion[d][4] == "makedefender":
+					for cardbdf in table:
+						if str(cardbdf._id) in getGlobalVariable("bedefend"):cardbdf.highlight = usedplotcolor
+					notify("{}'s {} reaction its target cannot be declared as a defender for any challenges until the end of the phase.".format(me,card))#ghost
 					if not reactioncardlimit.has_key(card._id):
 						reactioncardlimit[card._id] = 1
 					else:reactioncardlimit[card._id] += 1
@@ -3427,8 +3485,14 @@ def checkafterchallengereacioncard(count):
 						if not reactionattach.has_key(card._id):
 							reactionattach[card._id] = 1
 						else:reactionattach[card._id] += 1
-					elif afterchallengereacion[d][4] == "stealth" or afterchallengereacion[d][4] == "makedefender":
-						if checktablecount(1) and card.controller == attacker:
+					if afterchallengereacion[d][4] == "stealth" and int(getGlobalVariable("cantchallenge")) > 1 and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
+						if checktablecount(0) and card.controller == attacker:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
+					if afterchallengereacion[d][4] == "makedefender" and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
+						if checktablecount(0) and card.controller == attacker:
+							setGlobalVariable("bedefend","[]")
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
@@ -3538,6 +3602,7 @@ def next(group, x=0, y=0):
 	global stealthcount
 	global savetarget
 	global abilityattach
+	global nextcardtmp
 	debug(sessionpass)
 	selectedcard = []
 	list = []
@@ -3550,7 +3615,7 @@ def next(group, x=0, y=0):
 			selectedcard.append(card)
 	debug(selectedcard)
 	if sessionpass == "stealthselect":
-		if len(selectedcard) != stealthcount:
+		if len(selectedcard) > stealthcount:
 			whisper("You must select {} character.".format(stealthcount))
 			return
 		else:
@@ -3607,6 +3672,20 @@ def next(group, x=0, y=0):
 			else:
 				whisper("You cannot save the character")
 				return
+	if sessionpass == "reactionaftc" and getGlobalVariable("bedefend") != "":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to reaction.")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == afterchallengereacion['DornishParamour'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Type == "Character" and card.controller != me], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "bedefendselect"
+			notify("**selectmode**")
+			return
 	if sessionpass == "savecardselect":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to save.")
@@ -3669,14 +3748,25 @@ def next(group, x=0, y=0):
 	if sessionpass == "reactionaftc":
 		sessionpass = "reactionaftcok"
 		reaction("afterchallenge",1)
+	if sessionpass == "bedefendselect":
+		tmp = eval(getGlobalVariable("bedefend"))
+		tmp.append(selectedcard[0]._id)
+		setGlobalVariable("bedefend",str(tmp))
+		selectedcard[0] = nextcardtmp
+		nextcardtmp = []
+		sessionpass = "reactionaftcok"
+		debug(getGlobalVariable("bedefend"))
+		reaction("afterchallenge",1)
 
 def stealthcard(group, x=0, y=0):
 	mute()
 	global sessionpass
 	global selectedcard
-	if sessionpass == "stealthselectok":
+	if sessionpass == "stealthselectok" and stealthcard != []:
 		for card in selectedcard:
 			card.highlight = Stealthcolor
+			if getGlobalVariable("cantchallenge") == "1":setGlobalVariable("cantchallenge", card._id)
+			debug(getGlobalVariable("cantchallenge"))
 		sessionpass = ""
 		selectedcard = []
 	setGlobalVariable("selectmode", "0")
