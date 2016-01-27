@@ -87,6 +87,7 @@ intertreaction = 0
 isinsertreaction = 0
 interruptreaction = []
 nextcardtmp = []
+cardtoaction = []
 
 savetargettmp = []
 inserttargettmp = []
@@ -3358,6 +3359,7 @@ def reaction(actioninsert,reactioncount):
 			return
 	if actioninsert == "aftercalculate":
 		if len(reactionattach) > 0:
+			debug(sessionpass)
 			if sessionpass == "":
 				choiceList = ['reaction', 'cancel']
 				colorList = ['#006b34' ,'#ae0603']
@@ -3372,7 +3374,7 @@ def reaction(actioninsert,reactioncount):
 						reactioncount += 1
 						remoteCall(otherplayer, "reaction", ["aftercalculate",reactioncount])
 					return
-			if sessionpass == "reactionaftcok":
+			if sessionpass == "reactionaftuok":
 				reactioncards = selectedcard
 				if reactioncards == []:
 					if reactioncount == 2:
@@ -3442,6 +3444,7 @@ def reactionforability(card,repass):
 	global sessionpass
 	global reactioncardlimit
 	global intertreaction
+	global cardtoaction
 	sessionpass = ""
 	c = 0
 	debug(mainpass)
@@ -3526,14 +3529,19 @@ def reactionforability(card,repass):
 	if repass == "aftercalculate":
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and card.controller == me:
-				if afterchallengereacion[d][5] == "disotherattachment":
-					notify("{}'s {} reaction get {} gold".format(me,card,int(goldadd[0])))#imp
+				if aftercalculate[d][4] == "disotherattachment":
+					remoteCall(otherplayer,"disc",[cardtoaction])
+					cardtoaction = []
+					notify("{}'s {} reaction disc a attachment".format(me,card))#RattleshirtsRaiders
 					if not reactioncardlimit.has_key(card._id):
 						reactioncardlimit[card._id] = 1
 					else:reactioncardlimit[card._id] += 1
-					if reactioncardlimit[card._id] == afterchallengereacion[d][5]:
+					if reactioncardlimit[card._id] == aftercalculate[d][5]:
 						del reactionattach[card._id]
 						c = 1
+		if c == 0:
+			reactionattach[card._id] -= 1
+			if reactionattach[card._id] == 0:del reactionattach[card._id]
 
 
 def checkreactioncard(count):
@@ -3702,6 +3710,7 @@ def next(group, x=0, y=0):
 	global savetarget
 	global abilityattach
 	global nextcardtmp
+	global cardtoaction
 	debug(sessionpass)
 	selectedcard = []
 	list = []
@@ -3771,11 +3780,11 @@ def next(group, x=0, y=0):
 			else:
 				whisper("You cannot save the character")
 				return
-	if sessionpass == "reactionaftc" and getGlobalVariable("bedefend") != "":
+	if sessionpass == "reactionaftc":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to reaction.")
 			return
-		if len(selectedcard) == 1 and selectedcard[0].model == afterchallengereacion['DornishParamour'][1]:
+		if len(selectedcard) == 1 and selectedcard[0].model == afterchallengereacion['DornishParamour'][1] and getGlobalVariable("bedefend") != "":
 			nextcardtmp = selectedcard[0]
 			for card in table:
 				card.target(False)
@@ -3784,6 +3793,28 @@ def next(group, x=0, y=0):
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "bedefendselect"
 			notify("**selectmode**")
+			return
+	if sessionpass == "bedefendselect":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to reaction.")
+			return
+	if sessionpass == "reactionaftu":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to reaction.")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['RattleshirtsRaiders'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Type == "Attachment" and card.controller != me], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "discattchselect"
+			notify("**selectmode**")
+			return
+	if sessionpass == "discattchselect":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to reaction.")
 			return
 	if sessionpass == "savecardselect":
 		if len(selectedcard) > 1:
@@ -3856,6 +3887,16 @@ def next(group, x=0, y=0):
 		sessionpass = "reactionaftcok"
 		debug(getGlobalVariable("bedefend"))
 		reaction("afterchallenge",1)
+	if sessionpass == "discattchselect":
+		if len(selectedcard) == 1:
+			cardtoaction = selectedcard[0]
+			selectedcard[0] = nextcardtmp
+		else:
+			delreactioncard(nextcardtmp)
+			#remoteCall(otherplayer,"disc",[selectedcard[0]])
+		nextcardtmp = []
+		sessionpass = "reactionaftuok"
+		reaction("aftercalculate",1)
 
 def stealthcard(group, x=0, y=0):
 	mute()
@@ -4211,3 +4252,18 @@ def checkaftercalculatereacioncard(count):
 				remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 		else:
 			return
+
+
+def delreactioncard(card):
+	mute()
+	global reactioncardlimit
+	global reactionattach
+	if not reactioncardlimit.has_key(card._id):
+		reactioncardlimit[card._id] = 1
+	else:reactioncardlimit[card._id] += 1
+	if reactioncardlimit[card._id] == afterchallengereacion[d][5]:
+		del reactionattach[card._id]
+		c = 1
+	if c == 0:
+		reactionattach[card._id] -= 1
+		if reactionattach[card._id] == 0:del reactionattach[card._id]
