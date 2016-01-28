@@ -657,21 +657,25 @@ def flipcard(card, x = 0, y = 0):
 		#duplicate
 		if len(me.piles['Plot Deck']) == 7:
 			uniquecards = []
+			uniquecardsinex = []
 			for u in table:
-				if u.name == card.name:
+				if u.name == card.name and u.filter == None and u.index != card.index:
 					if u.name not in uniquecards:
 						if u.controller == me and u.unique == "Yes":
 							uniquecards.append(u.name)
-							for cards in table:
-								if cards.name == u.name and cards.index != u.index and cards.controller == me:
-									x, y = u.position
-									if me.isInverted: 
-										cards.moveToTable(x-8,y-8)
-									else:
-										cards.moveToTable(x+8,y+8)
-									notify("{} plays {}'s duplicate.".format(me,card))
-									cards.sendToBack()
-									cards.filter = WaitColor
+							uniquecardsinex.append(u.index)
+							cx, cy = u.position
+			if uniquecards != []:
+				if card.name == uniquecards[0] and card.index not in uniquecardsinex and card.controller == me:
+					if me.isInverted:x,y = attachat(cx-8,cy-8,table)
+					else:x,y = attachat(cx+8,cy+8,table)
+					if me.isInverted: 
+						card.moveToTable(x,y)
+					else:
+						card.moveToTable(x,y)
+					notify("{} plays {}'s duplicate.".format(me,card))
+					card.sendToBack()
+					card.filter = WaitColor
 
 def addGold(card, x = 0, y = 0):
 	mute()
@@ -1588,7 +1592,15 @@ def challengebalanceover(count):
 	reactionattach = {}
 	reactioncardlimit = {}
 	if count == 1:remoteCall(otherplayer, "challengebalanceover", [2])
-	else:notify("challenge balance over.")
+	else:
+		if getGlobalVariable("aftcuevent") != 0:
+			setGlobalVariable("aftcuevent", 0)
+			notify("balance over.")
+			if int(getGlobalVariable("aftcuevent")) == me._id:
+				remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+			else:reaction("aftercalculate",1)
+		else:
+			notify("challenge balance over.")
 
 
 def challengeAnnounce(group, x=0, y=0):
@@ -2380,6 +2392,7 @@ def onloaddeck(args):
 	setGlobalVariable("bedefend", "")
 	setGlobalVariable("aftcr", "")
 	setGlobalVariable("aftcu", "")
+	setGlobalVariable("aftcuevent", 0)
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -2717,6 +2730,9 @@ def interruptevent(actioninsert,interruptpasscount):
 									else:reaction("afterchallenge",1)
 							elif mainpass == "aftercalculate":
 								if interruptcancelok == 1:
+									if inserttarget.type == "Event":
+										if inserttarget.controller == me:disc(inserttarget)
+										else:remoteCall(otherplayer, "disc", [inserttarget])
 									remoteCall(inserttarget.controller,"reactionforability",[inserttarget,mainpass])
 								else:
 									remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
@@ -2789,6 +2805,9 @@ def interruptevent(actioninsert,interruptpasscount):
 								else:reaction("afterchallenge",1)
 						elif mainpass == "aftercalculate":
 							if interruptcancelok == 1:
+								if inserttarget.type == "Event":
+									if inserttarget.controller == me:disc(inserttarget)
+									else:remoteCall(otherplayer, "disc", [inserttarget])
 								remoteCall(inserttarget.controller,"reactionforability",[inserttarget,mainpass])
 							else:
 								remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
@@ -3283,7 +3302,10 @@ def cardleavetable(count):
 					else:
 						card.moveTo(me.piles['Dead pile'])
 			else:
-				notify("{} killed {}.".format(me,card))
+				if getGlobalVariable("aftcuevent") != 0:
+					notify("{} killed {}.".format(otherplayer,card))
+				else:
+					notify("{} killed {}.".format(me,card))
 				card.moveTo(me.piles['Dead pile'])
 	leavecardtype = []
 	abilityattach = []
@@ -3588,6 +3610,7 @@ def reactionforability(card,repass):
 			if reactionattach[card._id] == 0:del reactionattach[card._id]
 		if f == 1:
 			savetarget.highlight = miljudgecolor
+			setGlobalVariable("aftcuevent", me._id)
 			miljudgementfinish([savetarget],1)
 			remoteCall(otherplayer, "miljudgementfinish", [[savetarget],1])
 			remoteCall(otherplayer, "interruptevent", ["miljudgementfp",2])
