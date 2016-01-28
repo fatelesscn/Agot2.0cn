@@ -41,7 +41,6 @@ mdict = dict(
 	burnicon=("Burn", "c272aa0c-f283-4ff5-b545-a5a3f150e6da"),
 	tkred=("TokenRed","6238a357-41b7-4bca-b394-925fc1b2caf8"))
 debugMode = True
-attachmodify = {}
 countusedplot = 0
 Heartsbaneused = 0
 countmil = 1
@@ -201,16 +200,13 @@ def announceMil(group, x = 0, y = 0):
 			c.highlight = MilitaryColor
 			if c.model != "a8854084-67e5-4955-89db-3d9cb1337789":
 				if c.model == "09903f79-6155-4a63-9b52-e10fb2e69898":
-					f = c.name+str(c.position)
 					for cards in table:
 						if cards.model == "99a12a9c-6e83-43bd-8947-0cc47ffcd02a" and cards.controller == me:
-							for key in attachmodify:
-								if key == cards.name+str(cards.position):
-									targetatt = cards.name+str(cards.position)
-					if targetatt != "":
-						if f == attachmodify[targetatt] and countmil == 1:
-							c.orientation = 0
-					else:c.orientation = 1
+							attach = eval(getGlobalVariable("attachmodify"))
+							if attach.has_key(cards._id):
+								if attach(cards._id) == c._id and countmil == 1:
+									c.orientation = 0
+								else:c.orientation = 1
 				elif c.model != "09903f79-6155-4a63-9b52-e10fb2e69898":c.orientation = 1
 				if re.search(r'stealth',c.keywords,re.I):   #stealth
 					stealth = "0"
@@ -618,32 +614,32 @@ def scoop(group, x = 0, y = 0):
 	
 def kneel(card, x = 0, y = 0):
 	mute()
-	if (card.model == "f97ccf1a-5b0d-490f-9968-78330e92171c" or card.model == "4c8a114e-106c-4460-846b-28f73914fc11") and card.orientation == 0:
-		if not confirm("Do you want to use {}'s ability?".format(card.name)): return
-		attach = card.name+str(card.position)
-		for cards in table:
-			f = cards.name+str(cards.position)
-			if attachmodify != {}:
-				if f == attachmodify[attach]:
-					if card.model == "4c8a114e-106c-4460-846b-28f73914fc11":#just for Heartsbane
-						global Heartsbaneused
-						cards.markers[STR_Up] += 3
-						card.orientation ^= Rot90
-						Heartsbaneused = 1	
-						return
-					if cards.orientation != 0:
-						cards.orientation ^= Rot90
-						card.orientation ^= Rot90
-					else:
-						notify("{} is standing, you cannot stand it.".format(cards))
-						return
-	else:notify("{} s already knelt.".format(card))
-	if card.model not in ("f97ccf1a-5b0d-490f-9968-78330e92171c" ,"4c8a114e-106c-4460-846b-28f73914fc11"):		
-		card.orientation ^= Rot90
-		if card.orientation & Rot90 == Rot90:
-			notify('{} kneels {}.'.format(me, card.name))
-		else:
-			notify('{} stands {}.'.format(me, card.name))
+	# if (card.model == "f97ccf1a-5b0d-490f-9968-78330e92171c" or card.model == "4c8a114e-106c-4460-846b-28f73914fc11") and card.orientation == 0:
+	# 	if not confirm("Do you want to use {}'s ability?".format(card.name)): return
+	# 	attach = card.name+str(card.position)
+	# 	for cards in table:
+	# 		f = cards.name+str(cards.position)
+	# 		if attachmodify != {}:
+	# 			if f == attachmodify[attach]:
+	# 				if card.model == "4c8a114e-106c-4460-846b-28f73914fc11":#just for Heartsbane
+	# 					global Heartsbaneused
+	# 					cards.markers[STR_Up] += 3
+	# 					card.orientation ^= Rot90
+	# 					Heartsbaneused = 1	
+	# 					return
+	# 				if cards.orientation != 0:
+	# 					cards.orientation ^= Rot90
+	# 					card.orientation ^= Rot90
+	# 				else:
+	# 					notify("{} is standing, you cannot stand it.".format(cards))
+	# 					return
+	# else:notify("{} s already knelt.".format(card))
+	# if card.model not in ("f97ccf1a-5b0d-490f-9968-78330e92171c" ,"4c8a114e-106c-4460-846b-28f73914fc11"):		
+	card.orientation ^= Rot90
+	if card.orientation & Rot90 == Rot90:
+		notify('{} kneels {}.'.format(me, card.name))
+	else:
+		notify('{} stands {}.'.format(me, card.name))
 
 def flipcard(card, x = 0, y = 0):
 	mute()
@@ -1113,12 +1109,12 @@ def endturn(group, x = 0, y = 0):
 	global countusedplot
 	oldcountusedplot = countusedplot
 	countusedplot = len(me.piles['Used Plot Pile'])
-	for card in table:
-		if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":#just for Dawn
-			attach = card.name+str(card.position)
-			for cards in table:
-				f = cards.name+str(cards.position)
-				if f == attachmodify[attach]:cards.markers[STR_Up] += countusedplot-oldcountusedplot
+	# for card in table:
+	# 	if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":#just for Dawn
+	# 		attach = card.name+str(card.position)
+	# 		for cards in table:
+	# 			f = cards.name+str(cards.position)
+	# 			if f == attachmodify[attach]:cards.markers[STR_Up] += countusedplot-oldcountusedplot
 	me.counters['Reserve'].value = 0
 	me.counters['Initiative'].value = 0
 	me.counters['Str'].value = 0
@@ -1406,15 +1402,15 @@ def challenge(group, x=0, y=0):
 			balancechallenge(choice,winplayer,1)
 		else:
 			notify("Only supported for Joust format.")
-	global Heartsbaneused
-	for card in table:
-		if card.model == "4c8a114e-106c-4460-846b-28f73914fc11" and Heartsbaneused == 1:#just for Heartsbane
-			attach = card.name+str(card.position)
-			for cards in table:
-				f = cards.name+str(cards.position)
-				if f == attachmodify[attach]:
-					cards.markers[STR_Up] -=3
-					Heartsbaneused = 0
+	# global Heartsbaneused
+	# for card in table:
+	# 	if card.model == "4c8a114e-106c-4460-846b-28f73914fc11" and Heartsbaneused == 1:#just for Heartsbane
+	# 		attach = card.name+str(card.position)
+	# 		for cards in table:
+	# 			f = cards.name+str(cards.position)
+	# 			if f == attachmodify[attach]:
+	# 				cards.markers[STR_Up] -=3
+	# 				Heartsbaneused = 0
 
 def balancechallenge(challenge,winplayer,checkcount):
 	mute()
@@ -1887,6 +1883,7 @@ def cardLookup(card, x = 0, y = 0):
 
 def disc(card, x = 0, y = 0):
 	mute()
+	attach = eval(getGlobalVariable("attachmodify"))
 	if card.type == "Plot":
 		card.moveTo(me.piles['Used Plot Pile'])
 		notify("{} move {} to used plot pile.".format(me, card))
@@ -1895,38 +1892,35 @@ def disc(card, x = 0, y = 0):
 	elif card.type == "Internal":
 		whisper("You can't discard {}.".format(card.name))
 	elif card.type == "Attachment":
-		for targetcard in table:
-			g = targetcard.name+str(targetcard.position)
-			f = card.name+str(card.position)
-			b=attachmodify.copy()
-			for key in b:
-				if key == f and b[key] == g:
-					del attachmodify[key]
+		for cardc in table:
+			if attach.has_key(card._id):
+				if attach[card._id] == cardc._id:
+					del attach[card._id]
+					setGlobalVariable("attachmodify",str(attach))
+					debug(getGlobalVariable("attachmodify"))
 					#rollback
 					if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
-						targetcard.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
-					if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and targetcard.model == "df79718d-b01d-4338-8907-7b6abff58303":targetcard.markers[MilitaryIcon] -= 1#096
+						cardc.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
+					if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and cardc.model == "df79718d-b01d-4338-8907-7b6abff58303":cardc.markers[MilitaryIcon] -= 1#096
 					if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 						stradd = re.search('\+\d\sSTR', card.Text).group()
-						targetcard.markers[STR_Up] -= int(stradd[1])
-					if re.search('\[INT]\sicon', card.Text):targetcard.markers[IntrigueIcon] -= 1
-					if re.search('\[POW]\sicon', card.Text):targetcard.markers[PowerIcon] -= 1
-					if re.search('\[MIL]\sicon', card.Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":targetcard.markers[MilitaryIcon] -= 1
+						cardc.markers[STR_Up] -= int(stradd[1])
+					if re.search('\[INT]\sicon', card.Text):cardc.markers[IntrigueIcon] -= 1
+					if re.search('\[POW]\sicon', card.Text):cardc.markers[PowerIcon] -= 1
+					if re.search('\[MIL]\sicon', card.Text) and cardc.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardc.markers[MilitaryIcon] -= 1
 		card.moveTo(me.piles['Discard pile'])
+		notify("{} discard {}.".format(me, card))
 		card.resetProperties()
 	elif card.type == "Character":
-		for attachcard in table:
-			f = card.name+str(card.position)
-			g = attachcard.name+str(attachcard.position)
-			b=attachmodify.copy()
-			#whisper("g{}".format(g))
-			#whisper("f{}".format(f))
-			#whisper("{}".format(attachmodify))
-			for key in b:
-				if key == g and b[key] == f:
-					if attachcard.Text.find('Terminal.') == -1:attachcard.moveTo(me.hand)
-					else:attachcard.moveTo(me.piles['Discard pile'])
-					del attachmodify[key]
+		for d in attach:
+			if attach[d] == card._id:
+				for cardd in table:
+					if cardd._id == d:
+						if cardd.Text.find('Terminal.') == -1:cardd.moveTo(me.hand)
+						else:cardd.moveTo(me.piles['Discard pile'])
+						del attach[d]
+						setGlobalVariable("attachmodify",str(attach))
+						debug(getGlobalVariable("attachmodify"))
 		card.moveTo(me.piles['Discard pile'])
 		notify("{} discard {}.".format(me, card))
 	elif card.type == "Event":
@@ -2091,6 +2085,8 @@ def play(card):
 					dlg = cardDlg(list)
 					dlg.title = "These cards can be attached:"
 					dlg.text = "Choose a card to attach."
+					dlg.min = 1
+					dlg.max = 1
 					cards = dlg.show()
 				if cards != None:
 					for choose in cards:
@@ -2107,10 +2103,14 @@ def play(card):
 								if incomecard.controller == me and incomecard.markers[Gold] > 0:
 									incomecard.markers[Gold] -= cost
 						cx,cy = choose.position
-						x,y = attachat(cx+15,cy+15,table)
+						if me.isInverted:x,y = attachat(cx-15,cy-15,table)
+						else:x,y = attachat(cx+15,cy+15,table)
 						card.moveToTable(x,y)
-						attach = card.name+str(card.position)
-						attachmodify[attach] = choose.name+str(choose.position)
+						attach = eval(getGlobalVariable("attachmodify"))
+						if not attach.has_key(card._id):
+							attach[card._id] = choose._id
+						else:attach[card._id].append(choose._id)
+						setGlobalVariable("attachmodify",str(attach))
 						if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and choose.model == "df79718d-b01d-4338-8907-7b6abff58303":choose.markers[MilitaryIcon] += 1#096
 						if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":choose.markers[STR_Up] += countusedplot
 						if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
@@ -2196,7 +2196,6 @@ def play(card):
 def checkdeck():
 	mute()
 	notify (" -> Checking deck of {} ...".format(me))
-	attachmodify.clear()
 	ok = True
 	
 	# Faction and agenda (should be in hand)
@@ -2393,6 +2392,7 @@ def onloaddeck(args):
 	setGlobalVariable("aftcr", "")
 	setGlobalVariable("aftcu", "")
 	setGlobalVariable("aftcuevent", 0)
+	setGlobalVariable("attachmodify", "{}")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -2402,25 +2402,32 @@ def onmoved(args):
 	mute()
 	index = 0
 	for card in args.cards:
-		movecard = args.cards[index]
-		d = args.cards[index].name+'('+str(args.xs[index])+'.0, '+str(args.ys[index])+'.0)'#(-255.0, 110.0)
-		for key in attachmodify:
-			if attachmodify[key] == d:
-				attachmodify[key] = args.cards[index].name+str(args.cards[index].position)
-			if key == d and args.cards[index].position != (0.0, 0.0):
-				e = attachmodify[key]
-				del attachmodify[key]
-				attach = args.cards[index].name+str(args.cards[index].position)
-				attachmodify[attach] = e
+		attach = eval(getGlobalVariable("attachmodify"))
+		if args.cards[index].type == "Character" and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.owner == me and card.filter != WaitColor:
+			list = []
+			for d in attach:
+				if attach[d] == args.cards[index]._id:
+					list.append(d)
+			for dcard in table:
+				if dcard.name == args.cards[index].name and dcard.filter == WaitColor:
+					list.append(dcard._id)
+			list.reverse()
+			i = 12
+			for cardindex in list:
+				for carda in table:
+					if carda._id == cardindex:
+						x1,y1 = card.position
+						carda.moveToTable(x1+i,y1+i)
+						carda.sendToBack()
+						i+=12
 		if card.type == "Attachment" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.owner == me:
 			for card in table:
-				f = args.cards[index].name+'('+str(args.xs[index])+'.0, '+str(args.ys[index])+'.0)'
-				g = card.name+str(card.position)
-				b=attachmodify.copy()
-				for key in b:
-					if key == f and b[key] == g:
-						del attachmodify[key]
-						#rollback
+				if attach.has_key(args.cards[index]._id):
+					if attach[args.cards[index]._id] == card._id:
+						del attach[args.cards[index]._id]
+						setGlobalVariable("attachmodify",str(attach))
+						debug(getGlobalVariable("attachmodify"))
+					#rollback
 						if args.cards[index].model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
 							card.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
 						if args.cards[index].model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and card.model == "df79718d-b01d-4338-8907-7b6abff58303":card.markers[MilitaryIcon] -= 1#096
@@ -2432,15 +2439,15 @@ def onmoved(args):
 						if re.search('\[MIL]\sicon', args.cards[index].Text) and args.cards[index].model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":card.markers[MilitaryIcon] -= 1
 			args.cards[index].resetProperties()
 		if args.cards[index].type == "Character" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.owner == me:
-			for card in table:
-				g = args.cards[index].name+'(0.0, 0.0)'
-				f = card.name+str(card.position)
-				b=attachmodify.copy()
-				for key in b:
-					if key == f and b[key] == g:
-						del attachmodify[key]
-						if card.Text.find('Terminal.') == -1:card.moveTo(me.hand)
-						else:card.moveTo(me.piles['Discard pile'])
+			for d in attach:
+				if attach[d] == args.cards[index]._id:
+					for cardd in table:
+						if cardd._id == d:
+							if cardd.Text.find('Terminal.') == -1:cardd.moveTo(me.hand)
+							else:cardd.moveTo(me.piles['Discard pile'])
+							del attach[d]
+							setGlobalVariable("attachmodify",str(attach))
+							debug(getGlobalVariable("attachmodify"))
 		index += 1
 
 def setTimer(player,actioninsert,group,x = 0,y = 0):
@@ -3120,22 +3127,32 @@ def savepassfinish(ok):
 	else:remoteCall(otherplayer, "usecardability", [inserttarget,cardtype,savetarget])
 
 def usecardability(card,cardtype,target):
-	if cardtype == "Attachment":
+	attach = eval(getGlobalVariable("attachmodify"))
+	if cardtype == "Attachment" and card.type != "Attachment":
 		if target.Keywords.find('No attachments.') == -1:
 			cx,cy = target.position
 			if me.isInverted:x,y = attachat(cx-15,cy-15,table)
 			else:x,y = attachat(cx+15,cy+15,table)
 			card.moveToTable(x,y)
-			attach = card.name+str(card.position)
-			attachmodify[attach] = target.name+str(target.position)
+			debug(attach)
+			if not attach.has_key(card._id):
+				attach[card._id] = target._id
+			else:attach[card._id].append(target._id)
+			setGlobalVariable("attachmodify",str(attach))
 			if re.search('\+\d\sSTR', card.Text):
 				stradd = re.search('\+\d\sSTR', card.Text).group()
 				target.markers[STR_Up] += int(stradd[1])
 			card.sendToBack()
 			card.type = "Attachment"
-			debug(attachmodify)
 		else:
 			disc(card)
+	else:
+		if attach.has_key(card._id):
+			if attach[card._id] == target._id:
+				del attach[card._id]
+				setGlobalVariable("attachmodify",str(attach))
+		debug(getGlobalVariable("attachmodify"))
+		disc(card)
 
 def getinterruptpass(interruptpassn):
 	global interruptpass
@@ -4041,6 +4058,7 @@ def test(group, x=0, y=0):
 
 def checksavecard(savecard):
 	list = []
+	attach = eval(getGlobalVariable("attachmodify"))
 	for card in table:
 		for cards in savecard:
 			Faction = cards.Faction
@@ -4056,11 +4074,8 @@ def checksavecard(savecard):
 		for d in saveaction:
 			if saveaction[d][3] == "table" and c.model == saveaction[d][1] and c.controller == me:
 				if saveaction[d][5] == "Attachment":
-					g = savetarget.name+str(savetarget.position)
-					f = c.name+str(c.position)
-					b=attachmodify.copy()
-					for key in b:
-						if key == f and b[key] == g:list.append(c)
+					if attach.has_key(c._id):
+						if attach[c._id] == savetarget._id:list.append(c)
 				else:
 					if saveaction[d][2] != "kneel":
 						if saveaction[d][4] == "all":list.append(c)
