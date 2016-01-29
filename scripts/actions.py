@@ -3618,42 +3618,44 @@ def reactionforability(card,repass):
 				if aftercalculate[d][4] == "disotherattachment":
 					remoteCall(otherplayer,"disc",[cardtoaction])
 					cardtoaction = []
-					notify("{}'s {} reaction disc a attachment".format(me,card))#RattleshirtsRaiders
-					if not reactioncardlimit.has_key(card._id):
-						reactioncardlimit[card._id] = 1
-					else:reactioncardlimit[card._id] += 1
-					if reactioncardlimit[card._id] == aftercalculate[d][5]:
-						del reactionattach[card._id]
-						c = 1
+					notify("{}'s {} reaction disc a attachment".format(me,card))#RattleshirtsRaiders					
 				if aftercalculate[d][4] == "kill":
 					f = 1
-					notify("{}'s {} reaction kill a character".format(me,card))#RattleshirtsRaiders
-					if not reactioncardlimit.has_key(card._id):
-						reactioncardlimit[card._id] = 1
-					else:reactioncardlimit[card._id] += 1
-					if reactioncardlimit[card._id] == aftercalculate[d][5]:
-						del reactionattach[card._id]
-						c = 1
+					notify("{}'s {} reaction kill a character".format(me,card))#PuttotheSword
 				if aftercalculate[d][4] == "disotherloaction":
 					remoteCall(otherplayer,"disc",[cardtoaction])
 					cardtoaction = []
-					notify("{}'s {} reaction disc a loaction".format(me,card))#RattleshirtsRaiders
-					if not reactioncardlimit.has_key(card._id):
-						reactioncardlimit[card._id] = 1
-					else:reactioncardlimit[card._id] += 1
-					if reactioncardlimit[card._id] == aftercalculate[d][5]:
-						del reactionattach[card._id]
-						c = 1
+					notify("{}'s {} reaction disc a loaction".format(me,card))#PuttotheTorch
 				if re.search('\d\spow', aftercalculate[d][4]):
 					powadd = re.search('\d\spower', aftercalculate[d][4]).group()
 					addhousepow(int(powadd[0]))
-					notify("{}'s {} reaction get {} pow".format(me,card,powadd))#RattleshirtsRaiders
-					if not reactioncardlimit.has_key(card._id):
-						reactioncardlimit[card._id] = 1
-					else:reactioncardlimit[card._id] += 1
-					if reactioncardlimit[card._id] == aftercalculate[d][5]:
-						del reactionattach[card._id]
-						c = 1
+					notify("{}'s {} reaction get {} pow".format(me,card,powadd))#SuperiorClaim
+				if aftercalculate[d][4] == "stand":
+					card.orientation = 0
+					notify("{}'s {} reaction stand her".format(me,card))#AshaGreyjoy
+				if aftercalculate[d][4] == "addpowself":
+					card.markers[Power] += 1
+					notify("{}'s {} reaction he gains 1 power".format(me,card))#TheonGreyjoy
+				if aftercalculate[d][4] == "5pwinpow":
+					ppoint = (attacker.counters['Str'].value - defender.counters['Str'].value)//5
+					card.markers[Power] += ppoint
+					notify("{}'s {} reaction he gains {} power".format(me,card,ppoint))#TheRedViper
+				if aftercalculate[d][4] == "drawcardorpower":
+					choiceList = ['draw 1 card', 'gain 1 power']
+					colorList = ['#006b34' ,'#ae0603']
+					choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
+					if choice == 1:
+						draw(me.hand)
+						notify("{}'s {} reaction draw 1 card".format(me,card))#GreatKraken
+					if choice == 2:
+						addhousepow(1)
+						notify("{}'s {} reaction gain 1 power".format(me,card))#GreatKraken
+				if not reactioncardlimit.has_key(card._id):
+					reactioncardlimit[card._id] = 1
+				else:reactioncardlimit[card._id] += 1
+				if reactioncardlimit[card._id] == aftercalculate[d][5]:
+					del reactionattach[card._id]
+					c = 1
 		if c == 0:
 			reactionattach[card._id] -= 1
 			if reactionattach[card._id] == 0:del reactionattach[card._id]
@@ -3680,7 +3682,7 @@ def checkreactioncard(count):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
 					elif leavereacion[d][2] == "Faction":
-						if cards.Faction.find(leavereacion[d][3]) != -1 and cards.controller == me:
+						if cards.Faction.find(leavereacion[d][3]) != -1 and cards.controller == me and orientationintable(card):
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
@@ -4072,6 +4074,9 @@ def next(group, x=0, y=0):
 		else:
 			selectedcard = []
 			reaction("aftercalculate",1)
+	elif sessionpass == "reactionaftu" and selectedcard[0].type in ("Character","Location"):
+		sessionpass = "reactionaftuok"
+		reaction("aftercalculate",1)
 		
 
 def stealthcard(group, x=0, y=0):
@@ -4391,10 +4396,29 @@ def checkaftercalculatereacioncard(count):
 	global reactionattach
 	for card in table:
 		for d in aftercalculate:
-			if card.model == aftercalculate[d][1] and card.controller == me and aftercalculate[d][6] == "table" and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
-				if aftercalculate[d][2] == "all":
+			if card.model == aftercalculate[d][1] and card.controller == me and aftercalculate[d][6] == "table":
+				if aftercalculate[d][2] == "all" and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
 				 	if aftercalculate[d][3] == "attacker" and attacker == me:
 				 		if aftercalculate[d][4] == "disotherattachment" and checkotherattachment(1) > 0:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
+						if aftercalculate[d][4] == "5pwinpow" and attacker.counters['Str'].value - defender.counters['Str'].value >= aftercalculate[d][7]:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
+						if aftercalculate[d][7] == "uo" and unopposed == 1:
+							if aftercalculate[d][4] == "stand" and card.orientation == 1:
+								if not reactionattach.has_key(card._id):
+									reactionattach[card._id] = 1
+								else:reactionattach[card._id] += 1
+							if aftercalculate[d][4] == "addpowself":
+								if not reactionattach.has_key(card._id):
+									reactionattach[card._id] = 1
+								else:reactionattach[card._id] += 1
+				if aftercalculate[d][2] == "all":
+					if aftercalculate[d][3] == "attacker" and attacker == me:
+						if aftercalculate[d][4] == "drawcardorpower":
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
