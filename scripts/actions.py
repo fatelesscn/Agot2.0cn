@@ -1389,11 +1389,11 @@ def challenge(group, x=0, y=0):
 					if players[1].counters['Str'].value == 0:unopposed = 1
 				else:
 					notify("defender {} wins this challenge.".format(players[1]))
-					winplayer = [0]
+					winplayer = players[1]
 			else:
 				if players[0] == attacker:
 					notify("defender {} wins this challenge.".format(players[1]))
-					winplayer = [0]
+					winplayer = players[1]
 				else:
 					notify("attacker {} wins this challenge.".format(players[1]))
 					winplayer = players[1]
@@ -1484,7 +1484,7 @@ def balancechallengefinish(challenge,winplay):
 	mute()
 	claim = challengeclaim(table)
 	#notify("claim is {}.".format(claim))
-	if winplayer != [0]:
+	if winplayer != defender:
 		if unopposed != 0:
 			notify("{} add 1 pow from unopposed.".format(winplay))
 			if winplay == me:
@@ -2506,6 +2506,9 @@ def updateTimer(endTime,notifications,actioninsert):
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(otherplayer,"interruptlibadd",[interruptpass])
 			remoteCall(otherplayer, "interruptevent", ["interruptcancel",2])
+		if actioninsert == "reactionaftuok":
+			selectedcard[0].arrow(cardtoaction)
+			reaction("aftercalculate",1)
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -3621,6 +3624,10 @@ def reactionforability(card,repass):
 					notify("{}'s {} reaction disc a attachment".format(me,card))#RattleshirtsRaiders					
 				if aftercalculate[d][4] == "kill":
 					f = 1
+					notify("{}'s {} reaction kill a character".format(me,card))#ThrowingAxe
+				if aftercalculate[d][4] == "attkilldef":
+					f = 1
+					disc(card)
 					notify("{}'s {} reaction kill a character".format(me,card))#PuttotheSword
 				if aftercalculate[d][4] == "disotherloaction":
 					remoteCall(otherplayer,"disc",[cardtoaction])
@@ -3645,11 +3652,17 @@ def reactionforability(card,repass):
 					colorList = ['#006b34' ,'#ae0603']
 					choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
 					if choice == 1:
-						draw(me.hand)
+						draw(me.deck)
 						notify("{}'s {} reaction draw 1 card".format(me,card))#GreatKraken
 					if choice == 2:
 						addhousepow(1)
 						notify("{}'s {} reaction gain 1 power".format(me,card))#GreatKraken
+				if aftercalculate[d][4] == "drawcard":
+					draw(me.deck)
+					notify("{}'s {} reaction draw 1 card".format(me,card))#Lannisport
+				if aftercalculate[d][4] == "LikeWarmRain":
+					f = 1
+					notify("{}'s {} reaction kill a character".format(me,card))#ThrowingAxe
 				if not reactioncardlimit.has_key(card._id):
 					reactioncardlimit[card._id] = 1
 				else:reactioncardlimit[card._id] += 1
@@ -3928,18 +3941,38 @@ def next(group, x=0, y=0):
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to reaction.")
 			return
+	if sessionpass == "Direwolfselect":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to reaction.")
+			return
+		if len(selectedcard) == 1:
+			kneel(selectedcard[0])
+			for card in me.hand:
+				card.target(False)
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Type == "Character" and card.controller != me and card.highlight == IntrigueColor], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "killselect"
+			notify("**selectmode**")
+			return			
 	if sessionpass == "reactionaftu":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to reaction.")
 			return
-		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['RattleshirtsRaiders'][1]:
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['ThrowingAxe'][1]:
 			nextcardtmp = selectedcard[0]
+			if challengetype == 1:color = MilitaryColor
+			if challengetype == 2:color = IntrigueColor
+			if challengetype == 3:color = PowerColor
+			debug(color)
 			for card in table:
 				card.target(False)
-			targetTuple = ([card._id for card in table if card.Type == "Attachment" and card.controller != me], me._id) 
+			targetTuple = ([card._id for card in table if card.Type == "Character" and card.controller != me and card.highlight == color], me._id) 
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
-			sessionpass = "discattchselect"
+			sessionpass = "attkilldefselect"
 			notify("**selectmode**")
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PuttotheSword'][1]:
@@ -3951,6 +3984,16 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "killselect"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['LikeWarmRain'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.controller == me and card.Traits == "Direwolf." and card.orientation == 0], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "Direwolfselect"
 			notify("**selectmode**")
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PuttotheTorch'][1]:
@@ -3972,7 +4015,7 @@ def next(group, x=0, y=0):
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to save.")
 			return
-	if sessionpass == "killability":
+	if sessionpass == "killability" or sessionpass == "attkilldefselect":
 		if len(selectedcard) > 1:
 			whisper("You must select only one Character.")
 			return
@@ -4039,6 +4082,19 @@ def next(group, x=0, y=0):
 		sessionpass = "reactionaftcok"
 		debug(getGlobalVariable("bedefend"))
 		reaction("afterchallenge",1)
+	if sessionpass == "attkilldefselect":
+		if len(selectedcard) == 1:
+			savetarget = selectedcard[0]
+			cardtoaction = selectedcard[0]
+			selectedcard[0] = nextcardtmp
+			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		else:
+			delreactioncard(nextcardtmp)
+			#remoteCall(otherplayer,"disc",[selectedcard[0]])
+		nextcardtmp = []
+		sessionpass = "reactionaftuok"
+		if cardtoaction != []:setTimer(me,"reactionaftuok",table)
+		else:reaction("aftercalculate",1)
 	if sessionpass == "discattchselect":
 		if len(selectedcard) == 1:
 			cardtoaction = selectedcard[0]
@@ -4061,6 +4117,7 @@ def next(group, x=0, y=0):
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(me, "setTimer", [me,"interruptcancel",table])
 		else:
+			delreactioncard(nextcardtmp)
 			selectedcard = []
 			reaction("aftercalculate",1)
 	if sessionpass == "reactionaftu" and selectedcard[0].type == "Event":
@@ -4072,11 +4129,17 @@ def next(group, x=0, y=0):
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(otherplayer, "interruptevent", ["interruptcancel",2])
 		else:
+			delreactioncard(nextcardtmp)
 			selectedcard = []
 			reaction("aftercalculate",1)
 	elif sessionpass == "reactionaftu" and selectedcard[0].type in ("Character","Location"):
 		sessionpass = "reactionaftuok"
 		reaction("aftercalculate",1)
+	if sessionpass == "Direwolfselect":
+		if len(selectedcard) == 0:
+			delreactioncard(nextcardtmp)
+			selectedcard = []
+			reaction("aftercalculate",1)
 		
 
 def stealthcard(group, x=0, y=0):
@@ -4394,11 +4457,12 @@ def checkothercharacter(count):
 def checkaftercalculatereacioncard(count):
 	mute()
 	global reactionattach
+	attach = eval(getGlobalVariable("attachmodify"))
 	for card in table:
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and card.controller == me and aftercalculate[d][6] == "table":
 				if aftercalculate[d][2] == "all" and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
-				 	if aftercalculate[d][3] == "attacker" and attacker == me:
+				 	if aftercalculate[d][3] == "attacker" and attacker == me and winplayer == me:
 				 		if aftercalculate[d][4] == "disotherattachment" and checkotherattachment(1) > 0:
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
@@ -4416,13 +4480,28 @@ def checkaftercalculatereacioncard(count):
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
-				if aftercalculate[d][2] == "all":
-					if aftercalculate[d][3] == "attacker" and attacker == me:
-						if aftercalculate[d][4] == "drawcardorpower":
+					if aftercalculate[d][3] == "attacker" and attacker == me and winplayer == me:
+						if aftercalculate[d][7] == "uo" and unopposed == 1:
+							if aftercalculate[d][4] == "drawcardorpower":
+								if not reactionattach.has_key(card._id):
+									reactionattach[card._id] = 1
+								else:reactionattach[card._id] += 1
+						if aftercalculate[d][4] == "attkilldef":
+							if attach.has_key(card._id):
+								c = 0
+								for attachcard in table:
+									if attach[card._id] == attachcard._id and checkinchallengeplay(otherplayer) and attachcard.controller == me and attachcard.highlight in(MilitaryColor,IntrigueColor,PowerColor):
+										c = 1
+								if  c == 1:
+									if not reactionattach.has_key(card._id):
+										reactionattach[card._id] = 1
+									else:reactionattach[card._id] += 1
+				if aftercalculate[d][2] != "all":
+					if aftercalculate[d][2] == str(challengetype) and winplayer == me:
+						if aftercalculate[d][4] == "drawcard":
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
-
 	for card in me.hand:
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and aftercalculate[d][6] == "Hand":
@@ -4437,10 +4516,17 @@ def checkaftercalculatereacioncard(count):
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
+					if aftercalculate[d][2] == str(challengetype) and winplayer == me:
+				 		if aftercalculate[d][7] != "" and attacker.counters['Str'].value - defender.counters['Str'].value >= aftercalculate[d][7]:
 							if re.search('\d\spow', aftercalculate[d][4]):
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
+					if aftercalculate[d][2] == str(challengetype) and winplayer != me:
+						if aftercalculate[d][4] == "losekill" and checkinchallengeplay(otherplayer) and checkmytableTraits("Direwolf."):
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
 				
 	debug("reactionattach")
 	debug(reactionattach)
@@ -4469,3 +4555,23 @@ def delreactioncard(card):
 	if c == 0:
 		reactionattach[card._id] -= 1
 		if reactionattach[card._id] == 0:del reactionattach[card._id]
+
+def checkinchallengeplay(person):
+	mute()
+	c = 0
+	for card in table:
+		if card.controller == person:
+			if challengetype == 1 and card.highlight == MilitaryColor:
+				c = 1
+			if challengetype == 2 and card.highlight == IntrigueColor:
+				c = 1
+			if challengetype == 2 and card.highlight == PowerColor:
+				c = 1
+	if c == 1:return True
+
+def checkmytableTraits(cardTraits):
+	mute()
+	for card in table:
+		if card.controller == me and card.Traits == cardTraits and card.orientation == 0:
+			return True
+			break
