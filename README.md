@@ -1,6 +1,6 @@
 # Agot2.0cn
 
-2016.2.5
+2016-2-5
 4.2.2 finishcard：
 
 RattleshirtsRaiders
