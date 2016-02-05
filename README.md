@@ -1,4 +1,39 @@
 # Agot2.0cn
+
+2016.2.5
+4.2.2 finishcard：
+
+RattleshirtsRaiders
+
+PuttotheSword
+
+PuttotheTorch
+
+SuperiorClaim
+
+AshaGreyjoy
+
+TheonGreyjoy
+
+GreatKraken
+
+ThrowingAxe
+
+WeDoNotSow
+
+Lannisport
+
+TheRedViper
+
+GhastonGrey
+
+DoransGame
+
+LikeWarmRain
+
+
+system history
+
 1. System will judge whether an attachment is valid on targeted card or not. Attachments will automatically add STR bonus and icons on attached cards.
 
 ![q1] (http://upload.ouliu.net/i/20160205092757fqyx9.png)
