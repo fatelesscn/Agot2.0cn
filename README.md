@@ -32,7 +32,10 @@ DoransGame
 LikeWarmRain
 
 
-system history
+
+
+
+[system history]
 
 1. System will judge whether an attachment is valid on targeted card or not. Attachments will automatically add STR bonus and icons on attached cards.
 
