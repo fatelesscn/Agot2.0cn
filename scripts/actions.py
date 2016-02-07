@@ -2761,6 +2761,8 @@ def interruptevent(actioninsert,interruptpasscount):
 									if interruptcancelok == 1:
 										remoteCall(inserttarget.controller,"reactionforability",[inserttarget,mainpass])
 									else:
+										for card in table:
+											card.target(False)
 										remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 										if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 										else:reaction("aftercalculate",1)
@@ -2837,6 +2839,8 @@ def interruptevent(actioninsert,interruptpasscount):
 								if interruptcancelok == 1:
 									remoteCall(inserttarget.controller,"reactionforability",[inserttarget,mainpass])
 								else:
+									for card in table:
+											card.target(False)
 									remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 									if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 							else:reaction("aftercalculate",1)
@@ -2957,6 +2961,8 @@ def interruptevent(actioninsert,interruptpasscount):
 							if interruptcancelok == 1:
 								remoteCall(inserttarget.controller,"reactionforability",[inserttarget,mainpass])
 							else:
+								for card in table:
+									card.target(False)
 								remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 								if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 								else:reaction("aftercalculate",1)
@@ -3032,6 +3038,8 @@ def interruptevent(actioninsert,interruptpasscount):
 						if interruptcancelok == 1:
 							remoteCall(inserttarget.controller,"reactionforability",[inserttarget,mainpass])
 						else:
+							for card in table:
+								card.target(False)
 							remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 							if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 							else:reaction("aftercalculate",1)
@@ -3667,7 +3675,34 @@ def reactionforability(card,repass):
 					notify("{}'s {} reaction draw 1 card".format(me,card))#Lannisport
 				if aftercalculate[d][4] == "losekill":
 					f = 1
-					notify("{}'s {} reaction kill a character".format(me,card))#ThrowingAxe
+					notify("{}'s {} reaction kill a character".format(me,card))#LikeWarmRain
+				if aftercalculate[d][4] == "returndefender":
+					remoteCall(otherplayer,"returncard",[cardtoaction])
+					notify("{}'s {} reaction return {} to its owner's hand".format(me,card,cardtoaction))#GhastonGrey
+					cardtoaction = []
+				if aftercalculate[d][4] == "addusedplotpow":
+					powadd = 5#......
+					addhousepow(int(powadd))
+					notify("{}'s {} reaction get {} pow".format(me,card,powadd))#DoransGame
+				if aftercalculate[d][4] == "draw2card":
+					kneel(card)
+					draw(me.deck)
+					draw(me.deck)
+					notify("{}'s {} reaction draw 2 card".format(me,card))#TheMander
+				if aftercalculate[d][4] == "addmarker":
+					cardtoaction.markers[TokenBlue] += 1		
+					notify("{}'s {} reaction place a poison token on {}".format(me,card,cardtoaction))#TearsofLys
+					cardtoaction = []
+				if aftercalculate[d][4] == "subability2":
+					kneel(card)
+					cardtoaction.markers[TokenBlue] += 2
+					notify("{}'s {} reaction {} gets -2 STR".format(me,card,cardtoaction))#PlazaofPunishment
+					for cards in table:
+						cards.target(False)
+					if int(cardtoaction.strength) + cardtoaction.markers[STR_Up] - cardtoaction.markers[Burn] - 2 <= 0:
+						f = 1
+						savetarget = cardtoaction
+					cardtoaction = []
 				if not reactioncardlimit.has_key(card._id):
 					reactioncardlimit[card._id] = 1
 				else:reactioncardlimit[card._id] += 1
@@ -3982,6 +4017,20 @@ def next(group, x=0, y=0):
 			sessionpass = "attkilldefselect"
 			notify("**selectmode**")
 			return
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['GhastonGrey'][1]:
+			nextcardtmp = selectedcard[0]
+			if challengetype == 1:color = MilitaryColor
+			if challengetype == 2:color = IntrigueColor
+			if challengetype == 3:color = PowerColor
+			debug(color)
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Type == "Character" and card.controller != me and card.highlight == color], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "returndefenderselect"
+			notify("**selectmode**")
+			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PuttotheSword'][1]:
 			nextcardtmp = selectedcard[0]
 			debug(nextcardtmp)
@@ -4012,6 +4061,36 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "Locationselect"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['TearsofLys'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Type == "Character" and card.controller != me and card.Intrigue != "Yes" and  card.markers[IntrigueIcon] == 0], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "lysselect"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PlazaofPunishment'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			attach = eval(getGlobalVariable("attachmodify"))
+			listpop = []
+			for card in table:
+				if card.controller != me:
+					c = 0
+					for d in attach:
+						if card._id == d:
+							c = 1
+					if c == 0:
+						listpop.append(card)
+			targetTuple = ([card._id for card in table if card in listpop ], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "popselect"
 			notify("**selectmode**")
 			return
 	if sessionpass == "discattchselect":
@@ -4102,7 +4181,18 @@ def next(group, x=0, y=0):
 		sessionpass = "reactionaftuok"
 		if cardtoaction != []:setTimer(me,"reactionaftuok",table)
 		else:reaction("aftercalculate",1)
-	if sessionpass == "discattchselect":
+	if sessionpass == "discattchselect" or sessionpass == "popselect":
+		if len(selectedcard) == 1:
+			cardtoaction = selectedcard[0]
+			selectedcard[0] = nextcardtmp
+			selectedcard[0].arrow(cardtoaction)
+		else:
+			delreactioncard(nextcardtmp)
+			#remoteCall(otherplayer,"disc",[selectedcard[0]])
+		nextcardtmp = []
+		sessionpass = "reactionaftuok"
+		reaction("aftercalculate",1)
+	if sessionpass == "returndefenderselect":
 		if len(selectedcard) == 1:
 			cardtoaction = selectedcard[0]
 			selectedcard[0] = nextcardtmp
@@ -4112,7 +4202,7 @@ def next(group, x=0, y=0):
 		nextcardtmp = []
 		sessionpass = "reactionaftuok"
 		reaction("aftercalculate",1)
-	if sessionpass in  ("killselect","Locationselect") and nextcardtmp.type == "Event":
+	if sessionpass in  ("killselect","Locationselect","lysselect") and nextcardtmp.type == "Event":
 		if play(nextcardtmp):
 			if dwtmpcard != []:
 				kneel(dwtmpcard)
@@ -4463,6 +4553,14 @@ def checkothercharacter(count):
 			list.append(card)
 	return len(list)
 
+def checktearsofLys(count):
+	mute()
+	list = []
+	for card in table:
+		if card.Type == "Character" and card.controller != me and card.Intrigue != "Yes" and  card.markers[IntrigueIcon] == 0:
+			list.append(card)
+	return len(list)
+
 
 def checkaftercalculatereacioncard(count):
 	mute()
@@ -4471,6 +4569,15 @@ def checkaftercalculatereacioncard(count):
 	for card in table:
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and card.controller == me and aftercalculate[d][6] == "table":
+				if aftercalculate[d][2] == "all":
+					if aftercalculate[d][4] == "returndefender" and card.orientation == 0 and aftercalculate[d][3] == "defender" and winplayer != me:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
+					if aftercalculate[d][4] == "draw2card" and card.orientation == 0 and aftercalculate[d][3] == "all" and winplayer == me:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
 				if aftercalculate[d][2] == "all" and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
 				 	if aftercalculate[d][3] == "attacker" and attacker == me and winplayer == me:
 				 		if aftercalculate[d][4] == "disotherattachment" and checkotherattachment(1) > 0:
@@ -4512,6 +4619,10 @@ def checkaftercalculatereacioncard(count):
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
+						if aftercalculate[d][4] == "subability2" and card.orientation == 0 and checkattachcard(1):
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
 	for card in me.hand:
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and aftercalculate[d][6] == "Hand":
@@ -4526,9 +4637,17 @@ def checkaftercalculatereacioncard(count):
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
+						if checktearsofLys(1) > 0 and aftercalculate[d][4] == "addmarker":
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
 					if aftercalculate[d][2] == str(challengetype) and winplayer == me:
 				 		if aftercalculate[d][7] != "" and attacker.counters['Str'].value - defender.counters['Str'].value >= aftercalculate[d][7]:
 							if re.search('\d\spow', aftercalculate[d][4]):
+								if not reactionattach.has_key(card._id):
+									reactionattach[card._id] = 1
+								else:reactionattach[card._id] += 1
+							if aftercalculate[d][4] == "addusedplotpow":
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
@@ -4552,7 +4671,7 @@ def checkaftercalculatereacioncard(count):
 			return
 
 
-def delreactioncard(card):
+def delreactioncard(count):
 	mute()
 	global reactioncardlimit
 	global reactionattach
@@ -4585,3 +4704,19 @@ def checkmytableTraits(cardTraits):
 		if card.controller == me and card.Traits == cardTraits and card.orientation == 0:
 			return True
 			break
+def returncard(card):
+	mute()
+	card.moveTo(me.hand)
+
+def checkattachcard(card):
+	mute()
+	attach = eval(getGlobalVariable("attachmodify"))
+	for card in table:
+		if card.controller != me:
+			c = 0
+			for d in attach:
+				if card._id == d:
+					c = 1
+			if c == 0:
+				return True
+				break
