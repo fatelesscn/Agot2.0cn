@@ -47,21 +47,22 @@ aftercalculate = dict( # 4.2.2 reaction
              ThrowingAxe =           ("Throwing Axe","c3eeb001-e6a1-48ae-b310-cbd0d2c84653","all","attacker","attkilldef",1,"table",""),
              WeDoNotSow =            ("We Do Not Sow","62570a84-3203-468d-9529-37dbbc6d191c","all","attacker","disotherloactionattachment",1,"Hand","uo"),
              Lannisport =            ("Lannisport","5702d5f9-ae1e-435b-ae86-01c14817431a","2","all","drawcard",1,"table",""),
-             MaesterCaleotte = ("Maester Caleotte","4f58fa4d-7172-4466-86eb-32b2bb91b516","all","both","减少符号",1,"table",""),
+             MaesterCaleotte =       ("Maester Caleotte","4f58fa4d-7172-4466-86eb-32b2bb91b516","all","all","submarker",1,"table",""),
              TheRedViper =           ("The Red Viper","73a43b0f-8337-4e71-96b7-9553d5d57ddf","all","attacker","5pwinpow",1,"table",5),
              GhastonGrey =           ("Ghaston Grey","982acc7e-86c0-4bdd-84da-3b05e53dffa1","all","defender","returndefender",1,"table",""),
-             Sunspear = ("Sunspear","f2772a6e-2ed4-4fb9-8699-5497aee496e3","all","defender","增加效能",1,"table",""),
+             Sunspear =              ("Sunspear","f2772a6e-2ed4-4fb9-8699-5497aee496e3","all","defender","addclaim",1,"table",""),
              DoransGame =            ("Doran's Game","427a5213-1be5-4b36-94be-04a5b3486575","2","all","addusedplotpow",1,"Hand",5),
-             UnbowedUnbentUnbroken = ("Unbowed, Unbent, Unbroken","ad97966b-2d52-4b03-a8f4-f51c8a63a8c9","all","defender","限制争夺",1,"Hand",""),
-             TheSwordintheDarkness = ("The Sword in the Darkness","18715d47-dbe1-4f02-a5b3-e1d7f6943287","all","defender","限制争夺",1,"Hand",5),
+             UnbowedUnbentUnbroken = ("Unbowed, Unbent, Unbroken","ad97966b-2d52-4b03-a8f4-f51c8a63a8c9","all","defender","cant1challenge",1,"Hand",""),
+             TheSwordintheDarkness = ("The Sword in the Darkness","18715d47-dbe1-4f02-a5b3-e1d7f6943287","all","defender","cantchallenge",1,"Hand",5),
              LikeWarmRain =          ("Like Warm Rain","ef7d8bdf-1c56-4895-be9a-7a3ed059dcd3","2","defender","losekill",1,"Hand",""),
-             Rhaegal = ("Rhaegal","ac263d0d-d7db-49e7-bdc4-2e131d95aad4","all","both","重置角色",1,"table",""),
+             Rhaegal =               ("Rhaegal","ac263d0d-d7db-49e7-bdc4-2e131d95aad4","all","all","standstm",1,"table",""),
              PlazaofPunishment =     ("Plaza of Punishment","06803230-d3a4-46f7-935a-1a7314839b9e","3","all","subability2",1,"table",""),
-             DothrakiSea = ("Dothraki Sea","1916c9ad-78da-42c7-9d22-8f059438dadc","3","both","放置进场、返回手牌",1,"table",""),
-             MaesterLomys = ("Maester Lomys","54111e34-4bec-4415-a562-fbd3f1ebbb77","2","defender","弃除手牌",1,"table",""),
-             TheQueenofThorns = ("0b5ca49f-5270-4b9f-84d4-391b59a2d4bc","The Queen of Thorns","2","both","放置进场",1,"table",""),
+             DothrakiSea =           ("Dothraki Sea","1916c9ad-78da-42c7-9d22-8f059438dadc","3","all","addplayer",1,"table",""),
+             MaesterLomys =          ("Maester Lomys","54111e34-4bec-4415-a562-fbd3f1ebbb77","2","defender","discard",1,"table",""),
+             TheQueenofThorns =      ("The Queen of Thorns","0b5ca49f-5270-4b9f-84d4-391b59a2d4bc","2","all","addplayer6",1,"table",""),
              TheMander =             ("The Mander","bf44916f-cc99-4f0a-87f0-b529a426df7b","all","all","draw2card",1,"table","5"),
-             OlennasCunning = ("Olenna's Cunning","3fd0054d-0a3c-4ab9-9ea5-96b0a1ac4628","2,3","both","补充手牌",1,"Hand",""))
+             OlennasCunning =        ("Olenna's Cunning","3fd0054d-0a3c-4ab9-9ea5-96b0a1ac4628","23","all","addhand",1,"Hand",""),
+             Ice =                   ("Ice","e6059d34-2c23-41a1-a1c2-f299dee662e7","1","all","kill",1,"table",""))
 
 def debug(str):
 	mute()
