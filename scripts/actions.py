@@ -2409,32 +2409,46 @@ def onmoved(args):
 	index = 0
 	for card in args.cards:
 		attach = eval(getGlobalVariable("attachmodify"))
-		if args.cards[index].type == "Character" and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.owner == me and card.filter != WaitColor:
+		if args.cards[index].unique == "Yes" and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.owner == me and card.filter != WaitColor:
 			list = []
 			list2 = []
+			list3 = []
 			for d in attach:
 				if attach[d] == args.cards[index]._id:
 					list.append(d)
 			for dcard in table:
-				if dcard.name == args.cards[index].name and dcard.filter == WaitColor:
+				if dcard.name == args.cards[index].name and dcard.filter == WaitColor and dcard.controller == me:
 					list2.append(dcard._id)
 			list.reverse()
+			for cardatt in table:
+				for listcard in table:
+					if cardatt.controller == me and cardatt.name == listcard.name and  listcard._id in (list) and cardatt.filter == WaitColor:
+						list3.append(cardatt)
 			i = 12
-			for cardindex in list:
-				for carda in table:
-					if carda._id == cardindex:
-						x1,y1 = card.position
-						carda.moveToTable(x1+i,y1+i)
-						carda.sendToBack()
-						i+=12
-					i = 12
-			for cardindex in list2:
-				for carda in table:
-					if carda._id == cardindex:
-						x1,y1 = card.position
-						carda.moveToTable(x1-i,y1-i)
-						carda.sendToBack()
-						i+=12
+			if len(list) > 0:
+				for cardindex in list:
+					for carda in table:
+						if carda._id == cardindex:
+							x1,y1 = card.position
+							carda.moveToTable(x1+i,y1+i)
+							carda.sendToBack()
+							x2,y2 = carda.position
+							i+=12
+							k = 12
+							for cardattd in list3:
+								if cardattd.name == carda.name:
+									cardattd.moveToTable(x2+k,y2-k)
+									cardattd.sendToBack()
+									k+=12
+			i = 12
+			if len(list2) > 0:
+				for cardindex in list2:
+					for carda in table:
+						if carda._id == cardindex:
+							x1,y1 = card.position
+							carda.moveToTable(x1-i,y1-i)
+							carda.sendToBack()
+							i+=12
 		if card.type == "Attachment" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.owner == me:
 			for card in table:
 				if attach.has_key(args.cards[index]._id):

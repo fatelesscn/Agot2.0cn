@@ -24,39 +24,6 @@
 	<card id="656f69c4-c506-4014-932b-9dff4422f09e" name="Done Token">
       <property name="Type" value="Internal" />
 	</card>
-	<card id="342dd044-b0f7-4eef-a021-5b755397f9d4" name="quickrevealplot" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="6a34f431-c468-4d31-8d8c-51aac6a66f89" name="quickgetInit" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="338370f8-3952-46a7-a3b9-a462a326e7bb" name="quickfp" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="9936a519-785c-4058-b060-4ca0a01258ea" name="quickcountincome" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="91e2e6b3-9929-4365-93b2-3d143a20e6ff" name="quickchallengeAnnounce" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="c237b30d-6511-4646-a93a-49b63ff4aa22" name="quickannounceOpp" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="d6ac416d-0956-403f-a1bc-ed6e8c5ba4a9" name="quickchallenge" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="dac3d665-1af7-427e-9f50-36d77b93513c" name="quickdominance" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="08e6fe74-098f-4429-9076-71235a67c9b0" name="quickendturn" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="be7113f0-d44a-4923-bbc2-a2b3ad4cd948" name="quickgetreserve" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="7e3783d4-150a-46dd-8bd7-ef3680744d8c" name="quickrecalcPower" size="TokenSize">
-      <property name="Type" value="Internal" />
-	</card>
 	<card id="584a37d7-5a30-4018-ae21-0ad325203fa0" name="nextbutton" size="button">
       <property name="Type" value="Internal" />
 	</card>
