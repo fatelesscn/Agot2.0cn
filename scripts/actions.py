@@ -1098,7 +1098,10 @@ def endturn(group, x = 0, y = 0):
 				if plotintable == 1:
 					c.highlight = usedplotcolor
 					x, y = c.position
-					c.moveToTable(x+10, y+30)
+					if me.isInverted: 
+						c.moveToTable(x-10,y-15)
+					else:
+						c.moveToTable(x+10,y+15)
 				else:c.moveTo(me.piles['Used Plot Pile'])
 			else:
 				if plotintable == 1:
@@ -1515,7 +1518,7 @@ def balancechallengefinish(challenge,winplay):
 				challengebalanceover(1)
 			if challenge == 3:
 				if winplay == me:
-					if otherplayer.counters['Power'].value >= claim:
+					if checkhousepow(otherplayer) >= claim:
 						remoteCall(otherplayer, "subhousepow", claim)
 						addhousepow(claim)
 					else:
@@ -1928,8 +1931,13 @@ def disc(card, x = 0, y = 0):
 						del attach[d]
 						setGlobalVariable("attachmodify",str(attach))
 						debug(getGlobalVariable("attachmodify"))
-		card.moveTo(me.piles['Discard pile'])
-		notify("{} discard {}.".format(me, card))
+		if card.highlight == sacrificecolor:
+			card.highlight = None
+			notify("{} sacrifice {}.".format(me, card))
+			card.moveTo(me.piles['Dead pile'])
+		else:
+			notify("{} discard {}.".format(me, card))
+			card.moveTo(me.piles['Discard pile'])
 	elif card.type == "Event":
 		card.moveTo(me.piles['Discard pile'])
 		notify("{} discard {}.".format(me, card))
@@ -2395,7 +2403,7 @@ def onmoved(args):
 	index = 0
 	for card in args.cards:
 		attach = eval(getGlobalVariable("attachmodify"))
-		if args.cards[index].unique == "Yes" and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.owner == me and card.filter != WaitColor:
+		if args.cards[index].type == "Character" and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.owner == me and card.filter != WaitColor:
 			list = []
 			list2 = []
 			list3 = []
@@ -2411,21 +2419,22 @@ def onmoved(args):
 					if cardatt.controller == me and cardatt.name == listcard.name and  listcard._id in (list) and cardatt.filter == WaitColor:
 						list3.append(cardatt)
 			i = 12
-			if len(list) > 0:
-				for cardindex in list:
-					for carda in table:
-						if carda._id == cardindex:
-							x1,y1 = card.position
-							carda.moveToTable(x1+i,y1+i)
-							carda.sendToBack()
-							x2,y2 = carda.position
-							i+=12
-							k = 12
-							for cardattd in list3:
-								if cardattd.name == carda.name:
-									cardattd.moveToTable(x2+k,y2-k)
-									cardattd.sendToBack()
-									k+=12
+			if args.cards[index].unique == "Yes":
+				if len(list) > 0:
+					for cardindex in list:
+						for carda in table:
+							if carda._id == cardindex:
+								x1,y1 = card.position
+								carda.moveToTable(x1+i,y1+i)
+								carda.sendToBack()
+								x2,y2 = carda.position
+								i+=12
+								k = 12
+								for cardattd in list3:
+									if cardattd.name == carda.name:
+										cardattd.moveToTable(x2+k,y2-k)
+										cardattd.sendToBack()
+										k+=12
 			i = 12
 			if len(list2) > 0:
 				for cardindex in list2:
@@ -3503,6 +3512,22 @@ def reaction(actioninsert,reactioncount):
 				reactioncount += 1
 				remoteCall(otherplayer, "reaction", ["aftercalculate",reactioncount])
 			return
+	if actioninsert == "aftercalculatef":
+		if len(reactionattach) > 0:
+			for card in table:
+				for d in reactionattach:
+					if card._id == d:
+						reactionforability(card,"aftercalculate")
+						return
+		else:
+			if reactioncount == 2:
+				notify("reaction over")
+				clearreaction(1)
+			else:
+				reactioncount += 1
+				remoteCall(otherplayer, "reaction", ["aftercalculatef",reactioncount])
+			return
+
 
 def checkreaction(reactioncard,repass):
 	mute()
@@ -3790,7 +3815,18 @@ def reactionforability(card,repass):
 						notify("{}'s {} reaction {} loses {} challenge icon".format(me,card,cardtoaction,c1c))#MaesterCaleotte
 					for cards in table:
 						cards.target(False)
-					cardtoaction = []	
+					cardtoaction = []
+				if aftercalculate[d][4] == "movepow":
+					remoteCall(otherplayer, "subhousepow", 1)
+					addhousepow(1)
+					notify("{}'s {} reaction move 1 power icon from {}".format(me,card,otherplayer))#AClashofKings
+				if aftercalculate[d][4] == "addred":
+					card.markers[TokenRed] += 1
+					notify("{}'s {} reaction add 1 betrayal token".format(me,card))#SerJorahMormont
+					if card.markers[TokenRed] == 3:
+						card.highlight = sacrificecolor
+						notify("{}'s {} reaction already have 3 betrayal token,sacrifice him".format(me,card))#SerJorahMormont
+						disc(card)
 				if not reactioncardlimit.has_key(card._id):
 					reactioncardlimit[card._id] = 1
 				else:reactioncardlimit[card._id] += 1
@@ -3806,7 +3842,9 @@ def reactionforability(card,repass):
 			miljudgementfinish([savetarget],1)
 			remoteCall(otherplayer, "miljudgementfinish", [[savetarget],1])
 			remoteCall(otherplayer, "interruptevent", ["miljudgementfp",2])
-		else:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+		else:
+			if "Forced Reaction" in card.Text:remoteCall(otherplayer, "reaction", ["aftercalculatef",1])
+			else:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 	if repass in "1234":
 		if repass == "1":choosedtype = "Character"
 		if repass == "2":choosedtype = "Location"
@@ -3826,6 +3864,7 @@ def reactionforability(card,repass):
 			c = 0
 			if cards != None:
 				cards[0].moveTo(me.hand)
+				me.deck.shuffle()
 				notify("{}'s {} reaction put {} into {}'s hand".format(me,card,cards[0],me))
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and card.controller == me:
@@ -4407,6 +4446,8 @@ def next(group, x=0, y=0):
 		elif sessionpass == "reactionaftu" and selectedcard[0].type in ("Character","Location"):
 			sessionpass = "reactionaftuok"
 			reaction("aftercalculate",1)
+		elif sessionpass == "reactionaftu" and selectedcard[0].type == "Plot":
+			reactionforability(selectedcard[0],"aftercalculate")
 	else:
 		sessionpass = "reactionaftuok"
 		remoteCall(otherplayer, "reaction", ["aftercalculate",2])
@@ -4452,7 +4493,7 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
-	checkaftercalculatereacioncard(1)
+	checkaftercalculatereacioncardforce(1)
 
 def checksavecard(savecard):
 	list = []
@@ -4828,6 +4869,11 @@ def checkaftercalculatereacioncard(count):
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
+						debug(checkhousepow(otherplayer))
+						if card.type == "Plot" and card.highlight == None and aftercalculate[d][4] == "movepow" and checkhousepow(otherplayer) > 0:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
 	for card in me.hand:
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and aftercalculate[d][6] == "Hand":
@@ -4895,6 +4941,30 @@ def checkaftercalculatereacioncard(count):
 		else:
 			return
 
+def checkaftercalculatereacioncardforce(count):
+	mute()
+	global reactionattach
+	for card in table:
+		for d in aftercalculate:
+			if card.model == aftercalculate[d][1] and card.controller == me and aftercalculate[d][6] == "table" and "Forced Reaction" in card.Text:
+				if aftercalculate[d][2] == "all":
+					if winplayer == me:
+						if aftercalculate[d][4] == "addred" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor):
+								if not reactionattach.has_key(card._id):
+									reactionattach[card._id] = 1
+								else:reactionattach[card._id] += 1
+	debug("reactionattach")
+	debug(reactionattach)
+	if len(reactionattach) > 0:setGlobalVariable("aftcu", "1")
+	if count == 1:remoteCall(otherplayer, "checkaftercalculatereacioncardforce", [2])
+	else:
+		if getGlobalVariable("aftcu") == "1":
+			setGlobalVariable("aftcu", "")
+			if fplay(1) == me:reaction("aftercalculatef",1)
+			else: 
+				remoteCall(otherplayer, "reaction", ["aftercalculatef",1])
+		else:
+			return
 
 def delreactioncard(count):
 	mute()
@@ -4998,3 +5068,8 @@ def checkice(cardid):
 			return True
 			break
 
+def checkhousepow(player):
+	mute()
+	for card in table:
+		if card.type == "Faction" and card.controller == player:
+			return card.markers[Power]

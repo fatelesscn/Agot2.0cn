@@ -62,7 +62,9 @@ aftercalculate = dict( # 4.2.2 reaction
              TheQueenofThorns =      ("The Queen of Thorns","0b5ca49f-5270-4b9f-84d4-391b59a2d4bc","2","all","addplayer6",1,"table",""),
              TheMander =             ("The Mander","bf44916f-cc99-4f0a-87f0-b529a426df7b","all","all","draw2card",1,"table","5"),
              OlennasCunning =        ("Olenna's Cunning","3fd0054d-0a3c-4ab9-9ea5-96b0a1ac4628","23","all","addhand",1,"Hand",""),
-             Ice =                   ("Ice","e6059d34-2c23-41a1-a1c2-f299dee662e7","1","all","kill",1,"table",""))
+             Ice =                   ("Ice","e6059d34-2c23-41a1-a1c2-f299dee662e7","1","all","kill",1,"table",""),
+             AClashofKings =         ("A Clash of Kings","de88edda-f5a4-4985-8ac1-2b8205c13416","3","all","movepow",1,"table",""),
+             SerJorahMormont =       ("Ser Jorah Mormont","1de2665b-53be-4e48-8c5c-42f93fdf40a3","all","all","addred",1,"table",""))
 
 def debug(str):
 	mute()
