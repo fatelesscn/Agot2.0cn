@@ -81,7 +81,10 @@ abilityattach = {}
 leavecardtype = []
 leavetablecard = []
 reactionattach = {}
+actionattach = {}
 reactioncardlimit = {}
+actioncardlimit = {}
+keywordattach = []
 intertreaction = 0
 isinsertreaction = 0
 interruptreaction = []
@@ -234,7 +237,9 @@ def announceMil(group, x = 0, y = 0):
 				else:
 					notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
-		if getGlobalVariable("automode") == "1":checkafterchallengereacioncard(1)
+		if getGlobalVariable("automode") == "1":
+			if getGlobalVariable("mainstep") == "0":setGlobalVariable("mainstep", "1")
+			checkafterchallengereacioncard(1)
 		countmil += 1
 	else:
 		whisper("You must declare at least 1 character to attack.")
@@ -293,7 +298,9 @@ def announceInt(group, x = 0, y = 0):
 				else:
 					notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
-		if getGlobalVariable("automode") == "1":checkafterchallengereacioncard(1)
+		if getGlobalVariable("automode") == "1":
+			if getGlobalVariable("mainstep") == "0":setGlobalVariable("mainstep", "1")
+			checkafterchallengereacioncard(1)
 	else:
 		whisper("You must declare at least 1 character to attack.")
 
@@ -351,7 +358,9 @@ def announcePow(group, x = 0, y = 0):
 				else:
 					notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
-		if getGlobalVariable("automode") == "1":checkafterchallengereacioncard(1)
+		if getGlobalVariable("automode") == "1":
+			if getGlobalVariable("mainstep") == "0":setGlobalVariable("mainstep", "1")
+			checkafterchallengereacioncard(1)
 	else:
 		whisper("You must declare at least 1 character to attack.")
 
@@ -366,6 +375,7 @@ def announceOpp(group, x = 0, y = 0):
 	global defender
 	global sessionpass
 	if getGlobalVariable("automode") == "1":
+		if getGlobalVariable("mainstep") == "1":setGlobalVariable("mainstep", "3")
 		if attacker == me:
 			notify("You already are a attacker.")
 			return
@@ -1405,7 +1415,9 @@ def challenge(group, x=0, y=0):
 					winplayer = players[1]
 					if players[0].counters['Str'].value == 0:unopposed = 1
 			remoteCall(otherplayer, "getwinner", [winplayer,unopposed,challengetype])
-			balancechallenge(choice,winplayer,1)
+			if getGlobalVariable("mainstep") == "3":setGlobalVariable("mainstep", "5")
+			if fplay(1) == me:checkaftercalculatereacioncardforce(1)
+			else:remoteCall(otherplayer, "checkaftercalculatereacioncardforce", [1])
 		else:
 			notify("Only supported for Joust format.")
 	# global Heartsbaneused
@@ -1489,15 +1501,17 @@ def challengeclaim(group):
 def balancechallengefinish(challenge,winplay):
 	mute()
 	claim = challengeclaim(table)
-	#notify("claim is {}.".format(claim))
+	notify("claim is {}.".format(claim))
 	if winplayer != defender:
+		if getGlobalVariable("mainstep") == "5":setGlobalVariable("mainstep", "6")
 		if unopposed != 0:
 			notify("{} add 1 pow from unopposed.".format(winplay))
 			if winplay == me:
 				addhousepow(1)
 			else:
 				remoteCall(otherplayer, "addhousepow", 1)
-		if claim != 0:				
+		if claim != 0:
+			if getGlobalVariable("mainstep") == "6":setGlobalVariable("mainstep", "7")
 			if challenge == 1:
 				if winplay != me:
 					if getGlobalVariable("automode") != "1":
@@ -1515,7 +1529,7 @@ def balancechallengefinish(challenge,winplay):
 						randomDiscard(me.hand)
 					else:
 						remoteCall(otherplayer, "randomDiscard", [otherplayer.hand])
-				challengebalanceover(1)
+				remoteCall(winplayer, "keyword", [1])
 			if challenge == 3:
 				if winplay == me:
 					if checkhousepow(otherplayer) >= claim:
@@ -1531,9 +1545,10 @@ def balancechallengefinish(challenge,winplay):
 					else:
 						subhousepow(me.counters['Power'].value)
 						remoteCall(otherplayer, "addhousepow", me.counters['Power'].value)
-				challengebalanceover(1)
+				remoteCall(winplayer, "keyword", [1])
+		else:remoteCall(winplayer, "keyword", [1])
 	else:
-		challengebalanceover(1)
+		remoteCall(winplayer, "keyword", [1])
 
 def intomil(group):
 	mute()
@@ -1568,14 +1583,7 @@ def challengebalanceover(count):
 	global leavetablecard
 	global reactionattach
 	global reactioncardlimit
-	for card in table:
-		card.highlight = None
-		card.target(False)
-	winplayer = []
-	attacker = []
-	defender = []
-	unopposed = 0
-	challengetype = 0
+	global keywordattach
 
 	savetarget = []
 	inserttarget = []
@@ -1591,18 +1599,31 @@ def challengebalanceover(count):
 	abilityattach = {}
 	leavecardtype = []
 	leavetablecard = []
-	reactionattach = {}
-	reactioncardlimit = {}
-	if count == 1:remoteCall(otherplayer, "challengebalanceover", [2])
-	else:
-		if getGlobalVariable("aftcuevent") != 0:
-			setGlobalVariable("aftcuevent", 0)
-			notify("balance over.")
-			if int(getGlobalVariable("aftcuevent")) == me._id:
-				remoteCall(otherplayer, "reaction", ["aftercalculate",1])
-			else:reaction("aftercalculate",1)
-		else:
-			notify("challenge balance over.")
+	if getGlobalVariable("mainstep") == "78":
+		for card in table:
+			card.highlight = None
+			card.target(False)
+		winplayer = []
+		attacker = []
+		defender = []
+		unopposed = 0
+		challengetype = 0
+		reactionattach = {}
+		reactioncardlimit = {}
+		keywordattach = []
+	if count == 1:
+		remoteCall(otherplayer, "challengebalanceover", [2])
+		return
+	if getGlobalVariable("aftcuevent") != "-1":
+		debug(getGlobalVariable("aftcuevent"))
+		setGlobalVariable("aftcuevent", "-1")
+		notify("balance over")
+		if int(getGlobalVariable("aftcuevent")) == str(me._id):
+			remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+		else:reaction("aftercalculate",1)
+		return
+	setGlobalVariable("mainstep", "0")
+	notify("challenge balance over")
 
 
 def challengeAnnounce(group, x=0, y=0):
@@ -1679,7 +1700,7 @@ def Militarychallenge(claim = 0):
 		if cards == []:return
 	else:
 		if claim == 0:
-			challengebalanceover(1)
+			remoteCall(winplayer, "keyword", [1])
 			sessionpass = ""
 			selectedcard = []
 			return
@@ -1714,7 +1735,7 @@ def Militarychallenge(claim = 0):
 	if discard != claim and c == 0:
 		Militarychallenge(claim-discard)
 	if discard == claim:
-		challengebalanceover(1)
+		remoteCall(winplayer, "keyword", [1])
 	#cardlist.reverse()
 
 def intointerruptevent(count):
@@ -1757,7 +1778,7 @@ def miljudgementfinished(mfcard,claim,count):
 		if len(cardkilllist) > 0:
 			remoteCall(otherplayer, "characterkilled", [cardkilllist,1])
 		else:
-			challengebalanceover(1)
+			remoteCall(winplayer, "keyword", [1])
 
 def getcardkilllist(listkill):
 	global cardkilllist
@@ -2391,8 +2412,9 @@ def onloaddeck(args):
 	setGlobalVariable("bedefend", "")
 	setGlobalVariable("aftcr", "")
 	setGlobalVariable("aftcu", "")
-	setGlobalVariable("aftcuevent", 0)
+	setGlobalVariable("aftcuevent", "-1")
 	setGlobalVariable("attachmodify", "{}")
+	setGlobalVariable("mainstep", "0")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -2418,32 +2440,34 @@ def onmoved(args):
 				for listcard in table:
 					if cardatt.controller == me and cardatt.name == listcard.name and  listcard._id in (list) and cardatt.filter == WaitColor:
 						list3.append(cardatt)
-			i = 12
-			if args.cards[index].unique == "Yes":
-				if len(list) > 0:
-					for cardindex in list:
-						for carda in table:
-							if carda._id == cardindex:
-								x1,y1 = card.position
-								carda.moveToTable(x1+i,y1+i)
-								carda.sendToBack()
-								x2,y2 = carda.position
-								i+=12
-								k = 12
-								for cardattd in list3:
-									if cardattd.name == carda.name:
-										cardattd.moveToTable(x2+k,y2-k)
-										cardattd.sendToBack()
-										k+=12
-			i = 12
-			if len(list2) > 0:
-				for cardindex in list2:
+			i = 12			
+			if len(list) > 0:
+				for cardindex in list:
 					for carda in table:
 						if carda._id == cardindex:
 							x1,y1 = card.position
-							carda.moveToTable(x1-i,y1-i)
+							if me.isInverted:carda.moveToTable(x1-i,y1-i)
+							else:carda.moveToTable(x1+i,y1+i)
 							carda.sendToBack()
+							x2,y2 = carda.position
 							i+=12
+							k = 12
+							for cardattd in list3:
+								if cardattd.name == carda.name:
+									if me.isInverted:cardattd.moveToTable(x2-k,y2+k)
+									else:cardattd.moveToTable(x2+k,y2-k)
+									cardattd.sendToBack()
+									k+=12
+			i = 12
+			if args.cards[index].unique == "Yes":
+				if len(list2) > 0:
+					for cardindex in list2:
+						for carda in table:
+							if carda._id == cardindex:
+								x1,y1 = card.position
+								carda.moveToTable(x1-i,y1-i)
+								carda.sendToBack()
+								i+=12
 		if card.type == "Attachment" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.owner == me:
 			for card in table:
 				if attach.has_key(args.cards[index]._id):
@@ -2521,6 +2545,8 @@ def updateTimer(endTime,notifications,actioninsert):
 		if actioninsert == "reactionaftuok":
 			selectedcard[0].arrow(cardtoaction)
 			reaction("aftercalculate",1)
+		if actioninsert == "keywords":
+			keywordforability(2)
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -3134,7 +3160,7 @@ def checkinterruptkill(killcard):
 		mainpass = "leave"
 		interruptcancelok = 1
 		remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
-		remoteCall(me, "interruptevent", ["interruptcancel",2])
+		interruptevent("interruptcancel",2)
 	else:
 		remoteCall(otherplayer,"leaveforability",[killcard])
 		#interruptevent("characterkill",1)
@@ -3356,7 +3382,7 @@ def cardleavetable(count):
 					else:
 						card.moveTo(me.piles['Dead pile'])
 			else:
-				if getGlobalVariable("aftcuevent") != 0:
+				if getGlobalVariable("aftcuevent") != "-1":
 					notify("{} killed {}.".format(otherplayer,card))
 				else:
 					notify("{} killed {}.".format(me,card))
@@ -3386,6 +3412,7 @@ def reaction(actioninsert,reactioncount):
 	global sessionpass
 	global intertreaction
 	if actioninsert == "leavetable":
+		if getGlobalVariable("mainstep") == "7":setGlobalVariable("mainstep", "77")
 		if len(reactionattach) > 0:
 			if sessionpass == "":
 				choiceList = ['reaction', 'cancel']
@@ -3399,7 +3426,7 @@ def reaction(actioninsert,reactioncount):
 						if getGlobalVariable("insertre") != "":
 							restoreinterruptlib(1)
 							return
-						challengebalanceover(1)
+						remoteCall(winplayer, "keyword", [1])
 					else:
 						reactioncount += 1
 						remoteCall(otherplayer, "reaction", ["leavetable",reactioncount])
@@ -3408,7 +3435,7 @@ def reaction(actioninsert,reactioncount):
 				reactioncards = selectedcard
 				if reactioncards == []:
 					if reactioncount == 2:
-						challengebalanceover(1)
+						remoteCall(winplayer, "keyword", [1])
 					else:
 						reactioncount += 1
 						sessionpass = ""
@@ -3424,7 +3451,7 @@ def reaction(actioninsert,reactioncount):
 				if getGlobalVariable("insertre") != "":
 					restoreinterruptlib(1)
 					return
-				challengebalanceover(1)
+				remoteCall(winplayer, "keyword", [1])
 			else:
 				reactioncount += 1
 				remoteCall(otherplayer, "reaction", ["leavetable",reactioncount])
@@ -3483,7 +3510,7 @@ def reaction(actioninsert,reactioncount):
 				if choice == 2:
 					if reactioncount == 2:
 						notify("reaction over")
-						clearreaction(1)
+						clearreaction(5)
 					else:
 						reactioncount += 1
 						remoteCall(otherplayer, "reaction", ["aftercalculate",reactioncount])
@@ -3493,7 +3520,7 @@ def reaction(actioninsert,reactioncount):
 				if reactioncards == []:
 					if reactioncount == 2:
 						notify("reaction over")
-						clearreaction(1)
+						clearreaction(5)
 					else:
 						reactioncount += 1
 						sessionpass = ""
@@ -3507,7 +3534,7 @@ def reaction(actioninsert,reactioncount):
 		else:
 			if reactioncount == 2:
 				notify("reaction over")
-				clearreaction(1)
+				clearreaction(5)
 			else:
 				reactioncount += 1
 				remoteCall(otherplayer, "reaction", ["aftercalculate",reactioncount])
@@ -3522,12 +3549,20 @@ def reaction(actioninsert,reactioncount):
 		else:
 			if reactioncount == 2:
 				notify("reaction over")
-				clearreaction(1)
+				clearreaction(3)
 			else:
 				reactioncount += 1
 				remoteCall(otherplayer, "reaction", ["aftercalculatef",reactioncount])
 			return
-
+	if actioninsert == "keywords":
+		choiceList = ['reaction', 'cancel']
+		colorList = ['#006b34' ,'#ae0603']
+		choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
+		if choice == 1:
+			remoteCall(otherplayer, "checkreaction", [cardtoaction,"keywords"])
+			return
+		if choice == 2:
+			keywordforability(1)
 
 def checkreaction(reactioncard,repass):
 	mute()
@@ -3822,11 +3857,14 @@ def reactionforability(card,repass):
 					notify("{}'s {} reaction move 1 power icon from {}".format(me,card,otherplayer))#AClashofKings
 				if aftercalculate[d][4] == "addred":
 					card.markers[TokenRed] += 1
-					notify("{}'s {} reaction add 1 betrayal token".format(me,card))#SerJorahMormont
+					notify("{}'s {} forced reaction add 1 betrayal token".format(me,card))#SerJorahMormont
 					if card.markers[TokenRed] == 3:
 						card.highlight = sacrificecolor
 						notify("{}'s {} reaction already have 3 betrayal token,sacrifice him".format(me,card))#SerJorahMormont
 						disc(card)
+				if aftercalculate[d][4] == "kneel":
+					kneel(card)
+					notify("{}'s {} forced reaction kneel it".format(me,card))#CastleBlack
 				if not reactioncardlimit.has_key(card._id):
 					reactioncardlimit[card._id] = 1
 				else:reactioncardlimit[card._id] += 1
@@ -3838,7 +3876,7 @@ def reactionforability(card,repass):
 			if reactionattach[card._id] == 0:del reactionattach[card._id]
 		if f == 1:
 			savetarget.highlight = miljudgecolor
-			setGlobalVariable("aftcuevent", me._id)
+			setGlobalVariable("aftcuevent", str(me._id))
 			miljudgementfinish([savetarget],1)
 			remoteCall(otherplayer, "miljudgementfinish", [[savetarget],1])
 			remoteCall(otherplayer, "interruptevent", ["miljudgementfp",2])
@@ -3866,6 +3904,7 @@ def reactionforability(card,repass):
 				cards[0].moveTo(me.hand)
 				me.deck.shuffle()
 				notify("{}'s {} reaction put {} into {}'s hand".format(me,card,cards[0],me))
+		else:whisper("{} search failed".format(card))
 		for d in aftercalculate:
 			if card.model == aftercalculate[d][1] and card.controller == me:
 				if not reactioncardlimit.has_key(card._id):
@@ -3878,6 +3917,25 @@ def reactionforability(card,repass):
 			reactionattach[card._id] -= 1
 			if reactionattach[card._id] == 0:del reactionattach[card._id]
 		remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+	if repass == "keywords":
+		list = []
+		for card in otherplayer.piles['Discard Pile']:
+			if card.type == "Location":
+				list.append(card)
+				debug(card)
+		dlg = cardDlg(list)
+		dlg.title = "These cards are in your table:"
+		dlg.text = "Declares at least 1 character to attack."
+		dlg.min = 1
+		dlg.max = len(list)
+		cards = dlg.show()
+		if cards != None:
+			remoteCall(otherplayer, "movecard", [cards[0]])
+			cards[0].controller = me
+			notify("{}'s {} reaction put {} into play under {} control.".format(me,cardtoaction,cards[0],me))
+		keywordattach.remove(cardtoaction)
+		cardtoaction = []
+		keywordforability(1)
 
 def checkreactioncard(count):
 	mute()
@@ -3897,7 +3955,7 @@ def checkreactioncard(count):
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
-	debug("reactionattach")
+	debug("reactionattach2")
 	debug(reactionattach)
 	if count == 1:remoteCall(otherplayer, "checkreactioncard", [2])
 	else:remoteCall(otherplayer, "reaction", ["leavetable",1])
@@ -3930,7 +3988,7 @@ def checkafterchallengereacioncard(count):
 							if not reactionattach.has_key(card._id):
 								reactionattach[card._id] = 1
 							else:reactionattach[card._id] += 1
-	debug("reactionattach")
+	debug("reactionattach1")
 	debug(reactionattach)
 	if len(reactionattach) > 0:setGlobalVariable("aftcr", "1")
 	if count == 1:remoteCall(otherplayer, "checkafterchallengereacioncard", [2])
@@ -4092,7 +4150,7 @@ def next(group, x=0, y=0):
 			for card in table:
 				card.target(False)
 			remoteCall(selectedcard[0].controller, "disc", [selectedcard[0]])
-	if sessionpass == "kneel":
+	if sessionpass == "kneel" or sessionpass == "initimidateselect":
 		if len(selectedcard) > 1:
 			whisper("You must select only one character to kneel.")
 			return
@@ -4301,6 +4359,36 @@ def next(group, x=0, y=0):
 			sessionpass = "iceselect"
 			notify("**selectmode**")
 			return
+	if sessionpass == "challenge":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to action.")
+			return
+		if len(selectedcard) == 0:
+			remoteCall(otherplayer, "action", ["challenge",1])	
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['WildlingHorde'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if "Wildling" in card.Traits and card.highlight in (MilitaryColor,IntrigueColor,PowerColor) and card.controller == me], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "kneelhouseok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['SelyseBaratheon'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Faction == "Baratheon."], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "addintelectok"
+			notify("**selectmode**")
+			return
+	if sessionpass == "actionok":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to action.")
+			return
 	if sessionpass == "discattchselect":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to reaction.")
@@ -4332,21 +4420,27 @@ def next(group, x=0, y=0):
 	if sessionpass == "milselect":
 		sessionpass = "milselectok"
 		announceMil(table)
+		return
 	if sessionpass == "intselect":
 		sessionpass = "intselectok"
 		announceInt(table)
+		return
 	if sessionpass == "powselect":
 		sessionpass = "powselectok"
 		announcePow(table)
+		return
 	if sessionpass == "mildefselect":
 		sessionpass = "mildefselectok"
 		defMil(table)
+		return
 	if sessionpass == "intdefselect":
 		sessionpass = "intdefselectok"
 		defInt(table)
+		return
 	if sessionpass == "powdefselect":
 		sessionpass = "powdefselectok"
 		defPow(table)
+		return
 	if sessionpass == "miljudgementselect":
 		sessionpass = "miljudgementselectok"
 		interruptevent("miljudgementfp",smcount)
@@ -4396,9 +4490,12 @@ def next(group, x=0, y=0):
 			selectedcard[0] = nextcardtmp
 			if sessionpass != "dothrakiselect" and sessionpass != "tyrellselect":
 				selectedcard[0].arrow(cardtoaction)
-		else:
+		elif len(selectedcard) == 0:
 			delreactioncard(nextcardtmp)
-			#remoteCall(otherplayer,"disc",[selectedcard[0]])
+			nextcardtmp = []
+			sessionpass = ""
+			remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+			return
 		nextcardtmp = []
 		sessionpass = "reactionaftuok"
 		reaction("aftercalculate",1)
@@ -4406,9 +4503,15 @@ def next(group, x=0, y=0):
 		if len(selectedcard) == 1:
 			cardtoaction = selectedcard[0]
 			selectedcard[0] = nextcardtmp
-		else:
+		elif len(selectedcard) == 0:
 			delreactioncard(nextcardtmp)
-			#remoteCall(otherplayer,"disc",[selectedcard[0]])
+			nextcardtmp = []
+			sessionpass = ""
+			remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+			return
+		elif len(selectedcard) > 1:
+			whisper("You must select only one card.")
+			return
 		nextcardtmp = []
 		sessionpass = "reactionaftuok"
 		reaction("aftercalculate",1)
@@ -4448,15 +4551,41 @@ def next(group, x=0, y=0):
 			reaction("aftercalculate",1)
 		elif sessionpass == "reactionaftu" and selectedcard[0].type == "Plot":
 			reactionforability(selectedcard[0],"aftercalculate")
-	else:
+	elif sessionpass == "reactionaftu":
 		sessionpass = "reactionaftuok"
-		remoteCall(otherplayer, "reaction", ["aftercalculate",2])
+		remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 	if sessionpass == "Direwolfselect":
 		if len(selectedcard) == 0:
 			delreactioncard(nextcardtmp)
 			selectedcard = []
-			remoteCall(otherplayer, "reaction", ["aftercalculate",2])
-		
+			remoteCall(otherplayer, "reaction", ["aftercalculate",1])
+	if sessionpass == "initimidateselect":
+		if len(selectedcard) != 0:
+			notify("{}'s {} kneel {} by Initimidate".format(me,cardtoaction,selectedcard[0]))
+			cardtoaction = []
+		keywordforability(1)
+	if sessionpass == "kneelhouseok" or sessionpass == "addintelectok":
+		if len(selectedcard) == 1:
+			cardtoaction = selectedcard[0]
+			selectedcard[0] = nextcardtmp
+			if sessionpass == "kneelhouseok":
+				for cardhouse in table:
+					if cardhouse.type == "Faction" and cardhouse.controller == me:
+						kneel(cardhouse)
+			if sessionpass == "addintelectok":
+				me.counters['Gold'].value -= 1
+				for incomecard in table:
+					if incomecard.controller == me and incomecard.markers[Gold] > 0:
+						incomecard.markers[Gold] -= 1
+		else:
+			delactioncard(nextcardtmp)
+			nextcardtmp = []
+			sessionpass = ""
+			remoteCall(otherplayer, "action", ["challenge",1])
+			return
+		nextcardtmp = []
+		sessionpass = "actionok"
+		action("challenge",1)
 
 def stealthcard(group, x=0, y=0):
 	mute()
@@ -4493,7 +4622,7 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
-	checkaftercalculatereacioncardforce(1)
+	challengeaction(1)
 
 def checksavecard(savecard):
 	list = []
@@ -4928,7 +5057,7 @@ def checkaftercalculatereacioncard(count):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
 				
-	debug("reactionattach")
+	debug("reactionattach4")
 	debug(reactionattach)
 	if len(reactionattach) > 0:setGlobalVariable("aftcu", "1")
 	if count == 1:remoteCall(otherplayer, "checkaftercalculatereacioncard", [2])
@@ -4939,6 +5068,8 @@ def checkaftercalculatereacioncard(count):
 			else: 
 				remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 		else:
+			if fplay(1) == me:balancechallengefinish(challengetype,winplayer)
+			else:remoteCall(otherplayer, "balancechallengefinish", [challengetype,winplayer])
 			return
 
 def checkaftercalculatereacioncardforce(count):
@@ -4953,7 +5084,12 @@ def checkaftercalculatereacioncardforce(count):
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
-	debug("reactionattach")
+					if winplayer != me:
+						if aftercalculate[d][4] == "kneel" and aftercalculate[d][7] == "uo" and unopposed == 1 and card.orientation == 0:
+							if not reactionattach.has_key(card._id):
+								reactionattach[card._id] = 1
+							else:reactionattach[card._id] += 1
+	debug("reactionattach3")
 	debug(reactionattach)
 	if len(reactionattach) > 0:setGlobalVariable("aftcu", "1")
 	if count == 1:remoteCall(otherplayer, "checkaftercalculatereacioncardforce", [2])
@@ -4964,6 +5100,8 @@ def checkaftercalculatereacioncardforce(count):
 			else: 
 				remoteCall(otherplayer, "reaction", ["aftercalculatef",1])
 		else:
+			if fplay(1) == me:checkaftercalculatereacioncard(1)
+			else:remoteCall(otherplayer, "checkaftercalculatereacioncard", [1])
 			return
 
 def delreactioncard(count):
@@ -4973,9 +5111,21 @@ def delreactioncard(count):
 	if not reactioncardlimit.has_key(card._id):
 		reactioncardlimit[card._id] = 1
 	else:reactioncardlimit[card._id] += 1
-	if reactioncardlimit[card._id] == afterchallengereacion[d][5]:
-		del reactionattach[card._id]
-		c = 1
+	for d in afterchallengereacion:
+		if card.model == aftercalculate[d][1]:
+			if reactioncardlimit[card._id] == afterchallengereacion[d][5]:
+				del reactionattach[card._id]
+				c = 1
+	for d in aftercalculate:
+		if card.model == aftercalculate[d][1]:
+			if reactioncardlimit[card._id] == aftercalculate[d][5]:
+				del reactionattach[card._id]
+				c = 1
+	for d in leavereacion:
+		if card.model == leavereacion[d][1]:
+			if reactioncardlimit[card._id] == leavereacion[d][5]:
+				del reactionattach[card._id]
+				c = 1
 	if c == 0:
 		reactionattach[card._id] -= 1
 		if reactionattach[card._id] == 0:del reactionattach[card._id]
@@ -5049,6 +5199,14 @@ def clearreaction(count):
 	reactionattach = {}
 	sessionpass = ""
 	if count == 1:remoteCall(otherplayer, "clearreaction", [2])
+	if count == 3:remoteCall(otherplayer, "clearreaction", [4])
+	if count == 4:
+		if fplay(1) == me:checkaftercalculatereacioncard(1)
+		else:remoteCall(otherplayer, "checkaftercalculatereacioncard", [1])
+	if count == 5:remoteCall(otherplayer, "clearreaction", [6])
+	if count == 6:
+		if fplay(1) == me:balancechallengefinish(challengetype,winplayer)
+		else:remoteCall(otherplayer, "balancechallengefinish", [challengetype,winplayer])
 
 def choosetype(card):
 	mute()
@@ -5073,3 +5231,245 @@ def checkhousepow(player):
 	for card in table:
 		if card.type == "Faction" and card.controller == player:
 			return card.markers[Power]
+
+
+def keyword(count):
+	mute()
+	global keywordattach
+	for card in table:
+		for d in keywordslib:
+			if card.model == keywordslib[d][1] and card.controller == me and card.highlight in(MilitaryColor,IntrigueColor,PowerColor):
+				if winplayer == me:
+					keywordattach.append(card)
+	debug(keywordattach)
+	keywordforability(1)
+
+
+def keywordforability(count):
+	mute()
+	global keywordattach
+	global sessionpass
+	global cardtoaction
+	c = 0
+	
+	if len(keywordattach) > 0:
+		for card in keywordattach:
+			for d in keywordslib:
+				if card.model == keywordslib[d][1] and card.controller == me:
+					if count == 1:
+						if "Renown" in keywordslib[d][2]:
+							card.markers[Power] += 1
+							notify("{}'s {} add 1 pow by Renown".format(me,card))
+						if "Insight" in keywordslib[d][2] and len(me.deck) > 0:
+							draw(me.deck)
+							notify("{}'s {} draw 1 card by Insight".format(me,card))
+						if "Pillage" in keywordslib[d][2] and len(otherplayer.deck) > 0:
+							remoteCall(otherplayer, "disctop", [1])
+							notify("{}'s {} discards 1 cards from the top of {} Deck by Pillage".format(me,card,otherplayer))
+							setTimer(me,"keywords",table)
+							return
+					for f in keywordsreaction:
+						if card.model == keywordsreaction[f][1] and len(otherplayer.piles['Discard Pile']) > 0:
+							for cards in otherplayer.piles['Discard Pile']:
+								if cards.type == "Location":
+									cardtoaction = card
+									reaction("keywords",1)
+									return
+					count = 1
+					debug(card)
+					debug(keywordslib[d][2])
+					if "Initimidate" in keywordslib[d][2] and checkothercharacter(1) > 0:
+
+						cardtoaction = card
+						keywordattach.remove(card)
+						sessionpass = ""
+						targetTuple = ([cards._id for cards in table if cards.controller != me and cards.type == "Character" and int(cards.Cost) <= me.counters['Str'].value - otherplayer.counters['Str'].value and cards.orientation == 0], me._id) 
+						setGlobalVariable("tableTargets", str(targetTuple))
+						setGlobalVariable("selectmode", "1")
+						table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+						notify("**selectmode**")
+						sessionpass = "initimidateselect"				
+						return
+					keywordattach.remove(card)
+		keywordforability(1)
+	else:
+		if getGlobalVariable("mainstep") == "77":setGlobalVariable("mainstep", "78")
+		notify("kw over")
+		challengebalanceover(1)
+
+def movecard(card):
+	card.moveToTable(-200,200)
+
+def disctop(player):
+	mute()
+	card = me.deck.top()
+	card.moveTo(me.piles['Discard pile'])
+
+def checktraits(traits,condition,player):
+	mute()
+	for card in table:
+		if card.controller == player and traits in card.Traits:
+			if condition == "challenge":
+				if card.highlight in (MilitaryColor,IntrigueColor,PowerColor):
+					return True
+			else:return True
+
+def checkfaction(faction):
+	mute()
+	for card in table:
+		if card.Faction == faction:
+			return True
+
+def challengeaction(count):
+	mute()
+	global actionattach
+	for card in table:
+		for d in actionchallenge:
+			if card.model == actionchallenge[d][1] and card.controller == me and actionchallenge[d][3] == "table":
+				if actionchallenge[d][2] == "kneelhouse+2str" and checktraits("Wildling","challenge",me):
+					for housecard in table:
+						if housecard.type == "Faction" and housecard.controller == me and housecard.orientation == 0:
+							if not actionattach.has_key(card._id):
+								actionattach[card._id] = 1
+							else:actionattach[card._id] += 1
+				if actionchallenge[d][2] == "addinticon" and checkfaction("Baratheon."):
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
+	debug(actionattach)
+	if fplay(1) == me:action("challenge",1)
+	else:remoteCall(otherplayer, "action", ["challenge",1])
+
+def action(actioninsert,actioncount):
+	mute()
+	global sessionpass
+	global intertreaction
+	if actioninsert == "challenge":
+		#if getGlobalVariable("mainstep") == "7":setGlobalVariable("mainstep", "77")
+		if len(actionattach) > 0:
+			if sessionpass == "":
+				choiceList = ['action', 'cancel']
+				colorList = ['#006b34' ,'#ae0603']
+				choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
+				if choice == 1:
+					intoaction(actionattach,actioncount,"challenge")
+					return
+				if choice == 2:
+					if actioncount == 2:
+						notify("action over")
+					else:
+						actioncount += 1
+						remoteCall(otherplayer, "action", ["challenge",actioncount])
+					return
+			if sessionpass == "actionok":
+				actioncards = selectedcard
+				if actioncards == []:
+					if actioncount == 2:
+						notify("action over")
+					else:
+						actioncount += 1
+						sessionpass = ""
+						remoteCall(otherplayer, "action", ["challenge",actioncount])
+					return
+				else:
+					actioncard = actioncards[0]
+					sessionpass = ""
+					remoteCall(otherplayer, "checkaction", [actioncard,"challenge"])
+		else:
+			if actioncount == 2:
+				notify("action over")
+			else:
+				actioncount += 1
+				remoteCall(otherplayer, "action", ["challenge",actioncount])
+			return
+
+def checkaction(actioncard,repass):
+	mute()
+	global interruptcancelcard
+	global interruptcancelplayer
+	global inserttarget
+	global interruptcancelok
+	global interruptcanceledcard
+	global mainpass
+	global leavecardtype
+	global sessionpass
+
+	sessionpass = ""
+	
+	if checkcountercharater(actioncard):
+		interruptcancelcard = reactioncard
+		interruptcancelplayer = otherplayer
+		inserttarget = interruptcancelcard
+		mainpass = repass
+		interruptcancelok = 1
+		remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+		remoteCall(me, "interruptevent", ["interruptcancel",2])
+	else:
+		remoteCall(otherplayer,"actionforability",[actioncard,repass])
+
+def intoaction(cards,count,sepass):
+	mute()
+	global sessionpass
+	global recount
+	sessionpass = ""
+	targetTuple = ([d for d in actionattach], me._id)
+	#targetTuple = ([card._id for card in table if card.controller == me and cards.has_key(card._id)], me._id) 
+	setGlobalVariable("tableTargets", str(targetTuple))
+	setGlobalVariable("selectmode", "1")
+	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**selectmode**")
+	sessionpass = sepass
+	recount = count
+
+def delactioncard(count):
+	mute()
+	global actioncardlimit
+	global actionattach
+	if not actioncardlimit.has_key(card._id):
+		actioncardlimit[card._id] = 1
+	else:actioncardlimit[card._id] += 1
+	
+	for d in actionchallenge:
+		if card.model == actionchallenge[d][1]:
+			if actioncardlimit[card._id] == actionchallenge[d][5]:
+				del actionattach[card._id]
+				c = 1
+	if c == 0:
+		actionattach[card._id] -= 1
+		if actionattach[card._id] == 0:del actionattach[card._id]
+
+
+
+def actionforability(card,repass):
+	mute()
+	debug(card)
+	global actionattach
+	global actioncardlimit
+	global sessionpass
+	global intertreaction
+	global cardtoaction
+	global savetarget
+	sessionpass = ""
+	c = 0
+	debug(mainpass)
+	if repass == "challenge":
+		for d in actionchallenge:
+			if card.model == actionchallenge[d][1] and card.controller == me:
+				if actionchallenge[d][2] == "kneelhouse+2str":
+					cardtoaction.markers[STR_Up] += 2
+					notify("{}'s {} action {} gets +2 STR".format(me,card,cardtoaction))
+				if actionchallenge[d][2] == "addinticon":
+					cardtoaction.markers[IntrigueIcon] += 1
+					notify("{}'s {} action {} gets Intrigue Icon".format(me,card,cardtoaction))
+
+				cardtoaction == []	
+				if not actioncardlimit.has_key(card._id):
+					actioncardlimit[card._id] = 1
+				else:actioncardlimit[card._id] += 1
+				if actioncardlimit[card._id] == actionchallenge[d][4]:
+					del actionattach[card._id]
+					c = 1
+		if c == 0:
+			actionattach[card._id] -= 1
+			if actionattach[card._id] == 0:del actionattach[card._id]
+		remoteCall(otherplayer, "action", ["challenge",1])

@@ -41,7 +41,6 @@ aftercalculate = dict( # 4.2.2 reaction
              SuperiorClaim =         ("Superior Claim", "8e9b06da-991e-4608-a16b-caf96209641a", "3", "all", "2 power", 1, "Hand", 5),
              TearsofLys =            ("Tears of Lys","b29c7bb5-7b84-4e94-a30b-8332fad51c2a","2","attacker","addmarker",1,"Hand",""),
              AshaGreyjoy =           ("Asha Greyjoy","41367a9d-b751-4632-9973-97d2e4df7087","all","attacker","stand",1,"table","uo"),
-             EuronCrowsEye = ("Euron Crow's Eye","912e5447-89b3-4896-903c-6f5ed78113e1","all","both","放置进场",1,"table",""),
              TheonGreyjoy =          ("Theon Greyjoy","9a29f7bb-baa9-4475-8e35-55b845618822","all","attacker","addpowself",1,"table","uo"),
              GreatKraken =           ("Great Kraken","014da37c-9903-418d-a043-ee2191b9d169","all","attacker","drawcardorpower",1,"table","uo"),
              ThrowingAxe =           ("Throwing Axe","c3eeb001-e6a1-48ae-b310-cbd0d2c84653","all","attacker","attkilldef",1,"table",""),
@@ -64,7 +63,35 @@ aftercalculate = dict( # 4.2.2 reaction
              OlennasCunning =        ("Olenna's Cunning","3fd0054d-0a3c-4ab9-9ea5-96b0a1ac4628","23","all","addhand",1,"Hand",""),
              Ice =                   ("Ice","e6059d34-2c23-41a1-a1c2-f299dee662e7","1","all","kill",1,"table",""),
              AClashofKings =         ("A Clash of Kings","de88edda-f5a4-4985-8ac1-2b8205c13416","3","all","movepow",1,"table",""),
-             SerJorahMormont =       ("Ser Jorah Mormont","1de2665b-53be-4e48-8c5c-42f93fdf40a3","all","all","addred",1,"table",""))
+             SerJorahMormont =       ("Ser Jorah Mormont","1de2665b-53be-4e48-8c5c-42f93fdf40a3","all","all","addred",1,"table",""),
+             TheWall =               ("The Wall","5d20e021-5d12-4338-8bdd-42d008bff919","all","all","kneel",1,"table","uo"))
+
+keywordslib = dict( # 4.2.5 keywords
+            WildlingHorde =          ("Wildling Horde","21dda206-536e-4944-8158-b3d174e2b872","Pillage."),
+            RobertBaratheon =        ("Robert Baratheon","78ca6089-6d16-4e41-8df7-40042e3dc077","Initimidate.Renown."),
+            BalonGreyjoy =           ("Balon Greyjoy","9bc99c98-4cbd-467b-b31c-1bec686370ea","Renown."),
+            EuronCrowsEye =          ("Euron Crow's Eye","912e5447-89b3-4896-903c-6f5ed78113e1","Pillage. Renown."),
+            BlackWindsCrew =         ("Black Wind's Crew","4675c354-8fc6-4fbe-bbab-fb9318cce036","Pillage."),
+            GrandMaesterPycelle =    ("Grand Maester Pycelle","66e4dd85-8a1d-4ea1-b3c6-3d3c7069a783","Insight."),
+            TywinLannister =         ("Tywin Lannister","390a8cf7-8bc4-45c1-bea5-e6a694e9f2d5","Renown."),
+            DoranMartell =           ("Doran Martell","295184b5-9b32-45d7-a870-c2a5580e1f75","Insight."),
+            SamwellTarly =           ("Samwell Tarly","aab739f7-aae2-4228-a446-89c4e7f91ea2","Insight."),
+            EddardStark =            ("Eddard Stark","aee0eeeb-97a7-4b48-82e7-03141663e346","Renown."),
+            GreyWind =               ("Grey Wind","c8777aab-2cd5-45c0-a59f-7d291aea9435","Initimidate."),
+            RobbStark =              ("Robb Stark","d892faa0-09c4-41ec-8705-abe2c1c87c83","Renown."),
+            DaenerysTargaryen =      ("Daenerys Targaryen","a2f21413-0272-47dc-a197-e364aa942d4c","Insight."),
+            KhalDrogo =              ("Khal Drogo","09903f79-6155-4a63-9b52-e10fb2e69898","Renown."),
+            SerJorahMormont =        ("Ser Jorah Mormont","1de2665b-53be-4e48-8c5c-42f93fdf40a3","Renown."),
+            RandyllTarly =           ("Randyll Tarly","dd950122-b92e-4d6b-b1f4-d8a3f623a99a","Renown."),
+            TheKnightofFlowers =     ("The Knight of Flowers","dfb7512e-0d80-4dff-8fdf-4807d93ba159","Renown."))
+
+actionchallenge =  dict( # 4.2.5 keywords
+            WildlingHorde =          ("Wildling Horde","21dda206-536e-4944-8158-b3d174e2b872","kneelhouse+2str","table",1),
+            SelyseBaratheon =        ("Selyse Baratheon","88de8a8f-4d15-415c-96c8-38edc8f8fe99","addinticon","table",1))
+
+
+keywordsreaction = dict(
+             EuronCrowsEye =         ("Euron Crow's Eye","912e5447-89b3-4896-903c-6f5ed78113e1","all","both","controlllocation",1,"table",""))
 
 def debug(str):
 	mute()
