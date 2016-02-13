@@ -1,35 +1,11 @@
 # Agot2.0cn
 
-2016-2-5
-4.2.2 finishcard：
+2016-2-12
+4.2.5 finished
 
-RattleshirtsRaiders
+2016-2-10
+4.2.2 finished
 
-PuttotheSword
-
-PuttotheTorch
-
-SuperiorClaim
-
-AshaGreyjoy
-
-TheonGreyjoy
-
-GreatKraken
-
-ThrowingAxe
-
-WeDoNotSow
-
-Lannisport
-
-TheRedViper
-
-GhastonGrey
-
-DoransGame
-
-LikeWarmRain
 
 
 
