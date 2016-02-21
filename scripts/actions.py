@@ -4487,6 +4487,9 @@ def next(group, x=0, y=0):
 				sessionpass = ""
 				remoteCall(otherplayer, "action", ["challenge",1])
 				return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['GatesofWinterfell'][1]:
+			nextcardtmp = selectedcard[0]
+			sessionpass = "drawstarkselectok"
 	if sessionpass == "actionok":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to action.")
@@ -4666,7 +4669,7 @@ def next(group, x=0, y=0):
 			notify("{}'s {} kneel {} by Initimidate".format(me,cardtoaction,selectedcard[0]))
 			cardtoaction = []
 		keywordforability(1)
-	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok"):
+	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok","drawstarkselectok"):
 		if len(selectedcard) == 1:
 			cardtoaction = selectedcard[0]
 			if sessionpass == "kneelhouseok" or sessionpass == "returnhandselectok":
@@ -4680,6 +4683,7 @@ def next(group, x=0, y=0):
 				for incomecard in table:
 					if incomecard.controller == me and incomecard.markers[Gold] > 0:
 						incomecard.markers[Gold] -= 1
+
 			if sessionpass in ("adddefselectok","dischandselectok","ignorestrselectok","returnhandselectok"):
 				if play(nextcardtmp):
 					cardtoaction = selectedcard[0]
@@ -4696,6 +4700,9 @@ def next(group, x=0, y=0):
 					return
 			if sessionpass == "adddstrselectok":
 				selectedcard[0] = nextcardtmp
+				kneel(nextcardtmp)
+			if sessionpass == "drawstarkselectok":
+				cardtoaction = me.deck.top()
 				kneel(nextcardtmp)
 		else:
 			delactioncard(nextcardtmp)
@@ -5492,6 +5499,10 @@ def challengeaction(count):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
+				if actionchallenge[d][2] == "drawstark" and card.orientation == 0 and len(me.hand) > 0:
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
 	for card in me.hand:
 		for d in actionchallenge:
 			if card.model == actionchallenge[d][1] and actionchallenge[d][3] == "Hand":
@@ -5677,7 +5688,18 @@ def actionforability(card,repass):
 				if actionchallenge[d][2] == "kneelhousereturnhand":
 					remoteCall(otherplayer,"returncard",[cardtoaction])
 					notify("{}'s {} action return {} into {}'s hand.".format(me,card,cardtoaction,otherplayer))#TheThingsIDoForLove
-				
+				if actionchallenge[d][2] == "drawstark":
+					if me.isInverted: cardtoaction.moveToTable(150,-230)
+					else: cardtoaction.moveToTable(-130,130)
+					notify("{} reveal {}.".format(me,cardtoaction))
+					if cardtoaction.Faction == "Stark.":
+						cardtoaction.moveTo(me.hand)
+						notify("{}'s {} action put {} into {}'s hand.".format(me,card,cardtoaction,me))#GatesofWinterfell
+					else:
+						cardtoaction.moveTo(me.deck)
+						cardtoaction.index = 0
+
+
 				cardtoaction == []	
 				if not actioncardlimit.has_key(card._id):
 					actioncardlimit[card._id] = 1

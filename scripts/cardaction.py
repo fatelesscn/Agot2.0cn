@@ -92,7 +92,8 @@ actionchallenge =  dict( # 4.2.5 keywords
             SeenInFlames =           ("Seen In Flames","50402306-cc27-4e3e-9924-aa13f430cb60","dischand","Hand",1,""),
             IronFleetScout =         ("Iron Fleet Scout","6357f740-5434-4d09-957a-87af33f9b57b","addstr","table",1,""),
             TheKrakensGrasp =        ("The Kraken's Grasp","80300190-96a8-4fa7-be7f-1a2bea691978","ignorestr","Hand",1,"fplay"),
-            TheThingsIDoForLove =    ("The Things I Do For Love","6d93075c-8517-44ef-8580-f4fdfe1967da","kneelhousereturnhand","Hand",1,"Lord./Lady."))
+            TheThingsIDoForLove =    ("The Things I Do For Love","6d93075c-8517-44ef-8580-f4fdfe1967da","kneelhousereturnhand","Hand",1,"Lord./Lady."),
+            GatesofWinterfell =      ("Gates of Winterfell","14fb9ce4-6d48-4c9f-a8d0-5ded218714dc","drawstark","table",1,""))
 
 
 keywordsreaction = dict(
