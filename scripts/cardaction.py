@@ -86,8 +86,13 @@ keywordslib = dict( # 4.2.5 keywords
             TheKnightofFlowers =     ("The Knight of Flowers","dfb7512e-0d80-4dff-8fdf-4807d93ba159","Renown."))
 
 actionchallenge =  dict( # 4.2.5 keywords
-            WildlingHorde =          ("Wildling Horde","21dda206-536e-4944-8158-b3d174e2b872","kneelhouse+2str","table",1),
-            SelyseBaratheon =        ("Selyse Baratheon","88de8a8f-4d15-415c-96c8-38edc8f8fe99","addinticon","table",1))
+            WildlingHorde =          ("Wildling Horde","21dda206-536e-4944-8158-b3d174e2b872","kneelhouse+2str","table",1,""),
+            SelyseBaratheon =        ("Selyse Baratheon","88de8a8f-4d15-415c-96c8-38edc8f8fe99","addinticon","table",1,""),
+            OursistheFury =          ("Ours is the Fury","9d1702a8-32c9-41c2-bbd4-2ce00885e20a","adddef","Hand",1,"defender"),
+            SeenInFlames =           ("Seen In Flames","50402306-cc27-4e3e-9924-aa13f430cb60","dischand","Hand",1,""),
+            IronFleetScout =         ("Iron Fleet Scout","6357f740-5434-4d09-957a-87af33f9b57b","addstr","table",1,""),
+            TheKrakensGrasp =        ("The Kraken's Grasp","80300190-96a8-4fa7-be7f-1a2bea691978","ignorestr","Hand",1,"fplay"),
+            TheThingsIDoForLove =    ("The Things I Do For Love","6d93075c-8517-44ef-8580-f4fdfe1967da","kneelhousereturnhand","Hand",1,"Lord./Lady."))
 
 
 keywordsreaction = dict(

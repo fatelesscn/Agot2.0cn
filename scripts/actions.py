@@ -1345,8 +1345,9 @@ def challenge(group, x=0, y=0):
 		choice = askChoice("To which challenge do you want to calculate? ", choiceList)
 	for person in players:
 		person.counters['Str'].value = 0
+		ignorestr = eval(getGlobalVariable("ignorestr"))
 		personCards = (card for card in table
-						if card.controller == person)
+						if card.controller == person and card._id not in ignorestr)
 		uniquecards = []
 		for card in personCards:
 			if card.isFaceUp:
@@ -2415,6 +2416,8 @@ def onloaddeck(args):
 	setGlobalVariable("aftcuevent", "-1")
 	setGlobalVariable("attachmodify", "{}")
 	setGlobalVariable("mainstep", "0")
+	setGlobalVariable("adddeftmp", "0")
+	setGlobalVariable("ignorestr", "[]")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -2801,6 +2804,18 @@ def interruptevent(actioninsert,interruptpasscount):
 										remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 										if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 										else:reaction("aftercalculate",1)
+							elif mainpass == "challengeaction":
+								if inserttarget.type == "Event":
+									if inserttarget.controller == me:disc(inserttarget)
+									else:remoteCall(otherplayer, "disc", [inserttarget])
+								if interruptcancelok == 1:
+									remoteCall(inserttarget.controller,"actionforability",[inserttarget,mainpass])
+								else:
+									for card in table:
+										card.target(False)
+									remoteCall(inserttarget.controller,"actionattachsub",[inserttarget])
+									if inserttarget.controller == me:remoteCall(otherplayer, "action", ["challenge",1])
+									else:action("challenge",1)
 							else:
 								if interruptcancelok == 1:
 									savetarget.highlight = milsavecolor
@@ -2879,6 +2894,18 @@ def interruptevent(actioninsert,interruptpasscount):
 									remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 									if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 							else:reaction("aftercalculate",1)
+						elif mainpass == "challengeaction":
+							if inserttarget.type == "Event":
+								if inserttarget.controller == me:disc(inserttarget)
+								else:remoteCall(otherplayer, "disc", [inserttarget])
+							if interruptcancelok == 1:
+								remoteCall(inserttarget.controller,"actionforability",[inserttarget,mainpass])
+							else:
+								for card in table:
+									card.target(False)
+								remoteCall(inserttarget.controller,"actionattachsub",[inserttarget])
+								if inserttarget.controller == me:remoteCall(otherplayer, "action", ["challenge",1])
+								else:action("challenge",1)
 						else:		
 							if interruptcancelok == 1:
 								savetarget.highlight = milsavecolor
@@ -3001,6 +3028,18 @@ def interruptevent(actioninsert,interruptpasscount):
 								remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 								if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 								else:reaction("aftercalculate",1)
+						elif mainpass == "challengeaction":
+							if inserttarget.type == "Event":
+								if inserttarget.controller == me:disc(inserttarget)
+								else:remoteCall(otherplayer, "disc", [inserttarget])
+							if interruptcancelok == 1:
+								remoteCall(inserttarget.controller,"actionforability",[inserttarget,mainpass])
+							else:
+								for card in table:
+									card.target(False)
+								remoteCall(inserttarget.controller,"actionattachsub",[inserttarget])
+								if inserttarget.controller == me:remoteCall(otherplayer, "action", ["challenge",1])
+								else:action("challenge",1)
 						else:
 							if interruptcancelok == 1:
 								savetarget.highlight = milsavecolor
@@ -3078,6 +3117,18 @@ def interruptevent(actioninsert,interruptpasscount):
 							remoteCall(inserttarget.controller,"reactionattachsub",[inserttarget])
 							if inserttarget.controller == me:remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 							else:reaction("aftercalculate",1)
+					elif mainpass == "challengeaction":
+						if inserttarget.type == "Event":
+							if inserttarget.controller == me:disc(inserttarget)
+							else:remoteCall(otherplayer, "disc", [inserttarget])
+						if interruptcancelok == 1:
+							remoteCall(inserttarget.controller,"actionforability",[inserttarget,mainpass])
+						else:
+							for card in table:
+								card.target(False)
+							remoteCall(inserttarget.controller,"actionattachsub",[inserttarget])
+							if inserttarget.controller == me:remoteCall(otherplayer, "action", ["challenge",1])
+							else:action("challenge",1)
 					else:		
 						if interruptcancelok == 1:
 							savetarget.highlight = milsavecolor
@@ -3925,9 +3976,9 @@ def reactionforability(card,repass):
 				debug(card)
 		dlg = cardDlg(list)
 		dlg.title = "These cards are in your table:"
-		dlg.text = "Declares at least 1 character to attack."
+		dlg.text = "Declares at least 1 Location to move."
 		dlg.min = 1
-		dlg.max = len(list)
+		dlg.max = 1
 		cards = dlg.show()
 		if cards != None:
 			remoteCall(otherplayer, "movecard", [cards[0]])
@@ -4121,7 +4172,7 @@ def next(group, x=0, y=0):
 	for card in me.hand:
 		if card.targetedBy == me:
 			selectedcard.append(card)
-	debug(selectedcard)
+	debug(selectedcard[0])
 	if sessionpass == "stealthselect":
 		if len(selectedcard) > stealthcount:
 			whisper("You must select {} character.".format(stealthcount))
@@ -4382,9 +4433,60 @@ def next(group, x=0, y=0):
 			targetTuple = ([card._id for card in table if card.Faction == "Baratheon."], me._id)
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
-			sessionpass = "addintelectok"
+			sessionpass = "addintselectok"
 			notify("**selectmode**")
 			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['OursistheFury'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Faction == "Baratheon." and card.type == "Character" and card.orientation == 1], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "adddefselectok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['SeenInFlames'][1]:
+			nextcardtmp = selectedcard[0]
+			sessionpass = "dischandselectok"
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['IronFleetScout'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.Faction == "Greyjoy." and card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor)], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "adddstrselectok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['TheKrakensGrasp'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.controller != me and card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor) and int(card.cost) <= 5], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "ignorestrselectok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['TheThingsIDoForLove'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			cost=askInteger("How much do you want to pay to play {} ? ".format(selectedcard[0].name),0)
+			if cost > 0:
+				targetTuple = ([card._id for card in table if card.controller != me and card.type == "Character" and int(card.cost) <= cost], me._id)
+				setGlobalVariable("tableTargets", str(targetTuple))
+				setGlobalVariable("selectmode", "1")
+				sessionpass = "returnhandselectok"
+				notify("**selectmode**")
+				return
+			else:
+				delactioncard(nextcardtmp)
+				nextcardtmp = []
+				sessionpass = ""
+				remoteCall(otherplayer, "action", ["challenge",1])
+				return
 	if sessionpass == "actionok":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to action.")
@@ -4564,19 +4666,37 @@ def next(group, x=0, y=0):
 			notify("{}'s {} kneel {} by Initimidate".format(me,cardtoaction,selectedcard[0]))
 			cardtoaction = []
 		keywordforability(1)
-	if sessionpass == "kneelhouseok" or sessionpass == "addintelectok":
+	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok"):
 		if len(selectedcard) == 1:
 			cardtoaction = selectedcard[0]
-			selectedcard[0] = nextcardtmp
-			if sessionpass == "kneelhouseok":
+			if sessionpass == "kneelhouseok" or sessionpass == "returnhandselectok":
+				if sessionpass == "kneelhouseok":selectedcard[0] = nextcardtmp
 				for cardhouse in table:
 					if cardhouse.type == "Faction" and cardhouse.controller == me:
 						kneel(cardhouse)
-			if sessionpass == "addintelectok":
+			if sessionpass == "addintselectok":
+				selectedcard[0] = nextcardtmp
 				me.counters['Gold'].value -= 1
 				for incomecard in table:
 					if incomecard.controller == me and incomecard.markers[Gold] > 0:
 						incomecard.markers[Gold] -= 1
+			if sessionpass in ("adddefselectok","dischandselectok","ignorestrselectok","returnhandselectok"):
+				if play(nextcardtmp):
+					cardtoaction = selectedcard[0]
+					savetarget = selectedcard[0]
+					debug(savetarget)
+					interruptcancelcard = nextcardtmp
+					interruptcancelplayer = me
+					saveactionplayer = me
+					inserttarget = interruptcancelcard
+					mainpass = "challengeaction"
+					remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+					remoteCall(me, "setTimer", [me,"interruptcancel",table])
+					nextcardtmp = []
+					return
+			if sessionpass == "adddstrselectok":
+				selectedcard[0] = nextcardtmp
+				kneel(nextcardtmp)
 		else:
 			delactioncard(nextcardtmp)
 			nextcardtmp = []
@@ -4659,6 +4779,11 @@ def reactionattachsub(card):
 	reactionattach[card._id] -= 1
 	if reactionattach[card._id] == 0:del reactionattach[card._id]
 
+def actionattachsub(card):
+	mute()
+	global actionattach
+	actionattach[card._id] -= 1
+	if actionattach[card._id] == 0:del actionattach[card._id]
 
 def abilityattachsub(card):
 	mute()
@@ -4966,7 +5091,7 @@ def checkaftercalculatereacioncard(count):
 							if attach.has_key(card._id):
 								c = 0
 								for attachcard in table:
-									if attach[card._id] == attachcard._id and checkinchallengeplay(otherplayer) and attachcard.controller == me and attachcard.highlight in(MilitaryColor,IntrigueColor,PowerColor):
+									if attach[card._id] == attachcard._id and checkinchallengeplay(otherplayer,0) and attachcard.controller == me and attachcard.highlight in(MilitaryColor,IntrigueColor,PowerColor):
 										c = 1
 								if  c == 1:
 									if not reactionattach.has_key(card._id):
@@ -5038,7 +5163,7 @@ def checkaftercalculatereacioncard(count):
 								else:reactionattach[card._id] += 1
 					if winplayer != me:
 						if aftercalculate[d][2] == str(challengetype):
-							if aftercalculate[d][4] == "losekill" and checkinchallengeplay(otherplayer) and checkmytableTraits("Direwolf."):
+							if aftercalculate[d][4] == "losekill" and checkinchallengeplay(otherplayer,0) and checkmytableTraits("Direwolf."):
 								if not reactionattach.has_key(card._id):
 									reactionattach[card._id] = 1
 								else:reactionattach[card._id] += 1
@@ -5130,17 +5255,26 @@ def delreactioncard(count):
 		reactionattach[card._id] -= 1
 		if reactionattach[card._id] == 0:del reactionattach[card._id]
 
-def checkinchallengeplay(person):
+def checkinchallengeplay(person,cost):
 	mute()
 	c = 0
 	for card in table:
 		if card.controller == person:
 			if challengetype == 1 and card.highlight == MilitaryColor:
-				c = 1
+				if cost != 0:
+					if int(card.cost) <= cost:
+						c = 1
+				else:c = 1
 			if challengetype == 2 and card.highlight == IntrigueColor:
-				c = 1
+				if cost != 0:
+					if int(card.cost) <= cost:
+						c = 1
+				else:c = 1
 			if challengetype == 2 and card.highlight == PowerColor:
-				c = 1
+				if cost != 0:
+					if int(card.cost) <= cost:
+						c = 1
+				else:c = 1
 	if c == 1:return True
 
 def checkmytableTraits(cardTraits):
@@ -5320,6 +5454,24 @@ def checkfaction(faction):
 		if card.Faction == faction:
 			return True
 
+def checkchallengefaction(faction):
+	mute()
+	for card in table:
+		if card.Faction == faction and card.highlight in (MilitaryColor,IntrigueColor,PowerColor):
+			return True
+
+def checkkneelfaction(faction):
+	mute()
+	for card in table:
+		if card.Faction == faction and card.orientation == 1 and card.controller == me:
+			return True
+
+def checkmefaction(faction):
+	mute()
+	for card in table:
+		if card.Faction == faction and card.controller == me and card.type == "Character":
+			return True
+
 def challengeaction(count):
 	mute()
 	global actionattach
@@ -5336,6 +5488,36 @@ def challengeaction(count):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
+				if actionchallenge[d][2] == "addstr" and checkchallengefaction("Greyjoy.") and card.orientation == 0:
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
+	for card in me.hand:
+		for d in actionchallenge:
+			if card.model == actionchallenge[d][1] and actionchallenge[d][3] == "Hand":
+				if actionchallenge[d][5] == "":
+					if actionchallenge[d][2] == "dischand" and checktraits("R'hllor.","",me) and len(otherplayer.hand) > 0:
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+				if actionchallenge[d][5] == "fplay" and fplay(1) == me:
+					if actionchallenge[d][2] == "ignorestr":
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+				if actionchallenge[d][5] == "defender" and defender == me:
+					if actionchallenge[d][2] == "adddef" and  checkkneelfaction("Baratheon."):
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+				if actionchallenge[d][5] == "Lord./Lady." and checktraits("Lord.","",me) or checktraits("Lady.","",me):
+					if actionchallenge[d][2] == "kneelhousereturnhand" and checkothercharacter(1) > 0:
+						for housecard in table:
+							if housecard.type == "Faction" and housecard.controller == me and housecard.orientation == 0:
+								if not actionattach.has_key(card._id):
+									actionattach[card._id] = 1
+								else:actionattach[card._id] += 1
+
 	debug(actionattach)
 	if fplay(1) == me:action("challenge",1)
 	else:remoteCall(otherplayer, "action", ["challenge",1])
@@ -5374,7 +5556,7 @@ def action(actioninsert,actioncount):
 				else:
 					actioncard = actioncards[0]
 					sessionpass = ""
-					remoteCall(otherplayer, "checkaction", [actioncard,"challenge"])
+					remoteCall(otherplayer, "checkaction", [actioncard,"challengeaction"])
 		else:
 			if actioncount == 2:
 				notify("action over")
@@ -5452,16 +5634,50 @@ def actionforability(card,repass):
 	sessionpass = ""
 	c = 0
 	debug(mainpass)
-	if repass == "challenge":
+	if repass == "challengeaction":
 		for d in actionchallenge:
 			if card.model == actionchallenge[d][1] and card.controller == me:
 				if actionchallenge[d][2] == "kneelhouse+2str":
 					cardtoaction.markers[STR_Up] += 2
-					notify("{}'s {} action {} gets +2 STR".format(me,card,cardtoaction))
+					notify("{}'s {} action {} gets +2 STR".format(me,card,cardtoaction))#WildlingHorde
 				if actionchallenge[d][2] == "addinticon":
 					cardtoaction.markers[IntrigueIcon] += 1
-					notify("{}'s {} action {} gets Intrigue Icon".format(me,card,cardtoaction))
-
+					notify("{}'s {} action {} gets Intrigue Icon".format(me,card,cardtoaction))#SelyseBaratheon
+				if actionchallenge[d][2] == "adddef":
+					if challengetype == 1:cardtoaction.highlight = MilitaryColor
+					if challengetype == 2:cardtoaction.highlight = IntrigueColor
+					if challengetype == 3:cardtoaction.highlight = PowerColor
+					setGlobalVariable("adddeftmp", str(cardtoaction._id))
+					notify("{}'s {} action {} participating as a defender".format(me,card,cardtoaction))#OursistheFury
+				if actionchallenge[d][2] == "dischand":
+					remoteCall(otherplayer, "handview", ['all'])
+					list = []
+					for cardhand in otherplayer.hand:
+						list.append(cardhand)
+					dlg = cardDlg(list)
+					dlg.title = "These cards are in your table:"
+					dlg.text = "Declares at least 1 card to disc."
+					dlg.min = 1
+					dlg.max = 1
+					cards = dlg.show()
+					if cards != None:
+						remoteCall(otherplayer, "disc", [cards[0]])
+						notify("{}'s {} action discard {} from {} hand".format(me,card,cards[0],otherplayer))#SeenInFlames
+					remoteCall(otherplayer, "handview", ['me'])
+				if actionchallenge[d][2] == "addstr":
+					strup = 1
+					if fplay(1) == me:strup = 2
+					cardtoaction.markers[STR_Up] += strup
+					notify("{}'s {} action {} gets +{} STR".format(me,card,cardtoaction,strup))#IronFleetScout
+				if actionchallenge[d][2] == "ignorestr":
+					ignorestr = eval(getGlobalVariable("ignorestr"))
+					ignorestr.append(cardtoaction._id)
+					setGlobalVariable("ignorestr", str(ignorestr))
+					notify("{}'s {} action {} does not contribute its STR to the challenge".format(me,card,cardtoaction))#TheKrakensGrasp
+				if actionchallenge[d][2] == "kneelhousereturnhand":
+					remoteCall(otherplayer,"returncard",[cardtoaction])
+					notify("{}'s {} action return {} into {}'s hand.".format(me,card,cardtoaction,otherplayer))#TheThingsIDoForLove
+				
 				cardtoaction == []	
 				if not actioncardlimit.has_key(card._id):
 					actioncardlimit[card._id] = 1
@@ -5473,3 +5689,7 @@ def actionforability(card,repass):
 			actionattach[card._id] -= 1
 			if actionattach[card._id] == 0:del actionattach[card._id]
 		remoteCall(otherplayer, "action", ["challenge",1])
+
+def handview(vs):
+	mute()
+	me.hand.visibility = vs
