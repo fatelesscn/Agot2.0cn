@@ -93,7 +93,15 @@ actionchallenge =  dict( # 4.2.5 keywords
             IronFleetScout =         ("Iron Fleet Scout","6357f740-5434-4d09-957a-87af33f9b57b","addstr","table",1,""),
             TheKrakensGrasp =        ("The Kraken's Grasp","80300190-96a8-4fa7-be7f-1a2bea691978","ignorestr","Hand",1,"fplay"),
             TheThingsIDoForLove =    ("The Things I Do For Love","6d93075c-8517-44ef-8580-f4fdfe1967da","kneelhousereturnhand","Hand",1,"Lord./Lady."),
-            GatesofWinterfell =      ("Gates of Winterfell","14fb9ce4-6d48-4c9f-a8d0-5ded218714dc","drawstark","table",1,""))
+            GatesofWinterfell =      ("Gates of Winterfell","14fb9ce4-6d48-4c9f-a8d0-5ded218714dc","drawstark","table",1,""),
+            FortheNorth =            ("For the North","764fd244-f0f0-4b61-a435-9cf73ef074ce","addstrdraw","Hand",1,""),
+            WinterIsComing =         ("Winter Is Coming","18f549b8-eda2-4a40-8196-d952f5a4874f","addclaim","Hand",1,""),
+            Dracarys =               ("Dracarys","aae782b7-cd97-4818-b56a-d1dafe6f80de","burn","Hand",1,""),
+            FireandBlood =           ("Fire and Blood","06a715e0-f26c-4894-8610-63353d73e0fd","returndead","Hand",1,""),
+            MargaeryTyrell =         ("Margaery Tyrell","9e0df853-1c6d-4be2-b799-fe69524a6057","addstr3","table",1,""),
+            Heartsbane =             ("Heartsbane","4c8a114e-106c-4460-846b-28f73914fc11","attaddstr3","table",1,""),
+            Highgarden =             ("Highgarden","15ae647f-bc30-4cca-aeed-bb675c8096c7","standremovechallenge","table",1,""),
+            GrowingStrong =          ("Growing Strong","92d9670d-d842-4c6c-990c-e1e5cb05759d","3playeraddstr2","Hand",1,""))
 
 
 keywordsreaction = dict(
