@@ -1,5 +1,8 @@
 # Agot2.0cn
 
+2016-2-24
+4.2 action finished
+
 2016-2-12
 4.2.5 finished
 
