@@ -2794,12 +2794,16 @@ def onloaddeck(args):
 	setGlobalVariable("chaevent", "-1")
 	setGlobalVariable("attachmodify", "{}")
 	setGlobalVariable("mainstep", "0")
+<<<<<<< HEAD
 	setGlobalVariable("ambush", "1")
+=======
+>>>>>>> origin/master
 	setGlobalVariable("aftercalculatestand", "[]")
 	setGlobalVariable("aftercalculatedraw", "[]")
 	setGlobalVariable("ignorestr", "[]")
 	setGlobalVariable("addclaim","0")
 	setGlobalVariable("addclaimall","0")
+<<<<<<< HEAD
 	setGlobalVariable("reavelplot","0")
 	setGlobalVariable("drawphase","0")
 	setGlobalVariable("marshalphase","0")
@@ -2816,6 +2820,8 @@ def onloaddeck(args):
 	setGlobalVariable("action","0")
 	setGlobalVariable("activeplayer","")
 	me.setGlobalVariable("active","0")
+=======
+>>>>>>> origin/master
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -5181,7 +5187,11 @@ def next(group, x=0, y=0):
 			notify("{}'s {} kneel {} by Initimidate".format(me,cardtoaction,selectedcard[0]))
 			cardtoaction = []
 		keywordforability(1)
+<<<<<<< HEAD
 	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok","drawstarkselectok","burnselectok","returndeadselectok","addstrdrawselectok","addclaimselectok","addstr3selectok","attaddstr3selectok","standremovechallengeselectok","3playeraddstr2selectok","removechallengeok"):
+=======
+	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok","drawstarkselectok","burnselectok","returndeadselectok","addstrdrawselectok","addclaimselectok","addstr3selectok","attaddstr3selectok","standremovechallengeselectok","3playeraddstr2selectok"):
+>>>>>>> origin/master
 		if len(selectedcard) > 1 and sessionpass != "3playeraddstr2selectok":
 			whisper("You must select only one card to action.")
 			return
@@ -5201,7 +5211,11 @@ def next(group, x=0, y=0):
 				for incomecard in table:
 					if incomecard.controller == me and incomecard.markers[Gold] > 0:
 						incomecard.markers[Gold] -= 1
+<<<<<<< HEAD
 			if sessionpass in ("adddefselectok","dischandselectok","ignorestrselectok","returnhandselectok","burnselectok","returndeadselectok","addstrdrawselectok","addclaimselectok","removechallengeok"):
+=======
+			if sessionpass in ("adddefselectok","dischandselectok","ignorestrselectok","returnhandselectok","burnselectok","returndeadselectok","addstrdrawselectok","addclaimselectok"):
+>>>>>>> origin/master
 				if sessionpass == "returndeadselectok":
 					debug(cardtoaction)
 					if cardtoaction == None:
@@ -5210,6 +5224,7 @@ def next(group, x=0, y=0):
 						sessionpass = ""
 						remoteCall(otherplayer, "action", ["challenge",1])
 						return
+<<<<<<< HEAD
 				if sessionpass == "removechallengeok":
 					savetarget = selectedcard[0]
 					debug(savetarget)
@@ -5222,6 +5237,8 @@ def next(group, x=0, y=0):
 					remoteCall(me, "setTimer", [me,"interruptcancel",table])
 					nextcardtmp = []
 					return
+=======
+>>>>>>> origin/master
 				if play(nextcardtmp):
 					if dwtmpcard != []:
 						kneel(dwtmpcard)
@@ -6159,12 +6176,15 @@ def checkdeadtargaryen(ok):
 		if card.Faction == "Targaryen." and card.Unique =="Yes" and card.Type == "Character":
 			return True
 
+<<<<<<< HEAD
 def checkpr(player):
 	mute()
 	for card in table:
 		if card.model == "12bc6cd7-39f0-44b7-9492-101d8083c468" and card.controller == player:
 			return True
 
+=======
+>>>>>>> origin/master
 def challengeaction(count):
 	mute()
 	global actionattach
@@ -6489,6 +6509,7 @@ def actionforability(card,repass):
 					for addcard in cardtoaction:
 						addcard.markers[STR_Up] += 2
 						notify("{}'s {} action {} gets +2 STR.".format(me,card,addcard))#GrowingStrong
+<<<<<<< HEAD
 				if actionchallenge[d][2] == "choosechallenge":
 					choiceList = ['Military', 'Intrigue', 'Power']
 					colorList = ['#ae0603' ,'#006b34','#1a4d8f']
@@ -6503,6 +6524,8 @@ def actionforability(card,repass):
 					card.target(False)
 					cardtoaction.highlight = None
 					notify("{}'s {} action remove {} from the challenge.".format(me,card,cardtoaction))#AreoHotah
+=======
+>>>>>>> origin/master
 
 				cardtoaction == []
 				if not actioncardlimit.has_key(card._id):
