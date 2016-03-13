@@ -54,7 +54,6 @@ mjfinish = 0
 savepoint = 0
 claimtmp = 0
 timerIsRunning = False
-plotintable = 0
 savetarget = []
 inserttarget = []
 interruptpass = 0
@@ -103,6 +102,8 @@ interruptcanceloktmp = 1
 saveactionplayertmp = []
 mainpasstmp = ""
 insertreactioncard = []
+
+listattach = []
 import re
 import time
 
@@ -240,6 +241,8 @@ def announceMil(group, x = 0, y = 0):
 		if getGlobalVariable("automode") == "1":
 			if getGlobalVariable("mainstep") == "0":setGlobalVariable("mainstep", "1")
 			checkafterchallengereacioncard(1)
+			b = str(int(me.getGlobalVariable("milcount"))+1)
+			me.setGlobalVariable("milcount",b)
 		countmil += 1
 	else:
 		whisper("You must declare at least 1 character to attack.")
@@ -299,8 +302,10 @@ def announceInt(group, x = 0, y = 0):
 					notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
 		if getGlobalVariable("automode") == "1":
-			if getGlobalVariable("mainstep") == "0":setGlobalVariable("mainstep", "1")
+			setGlobalVariable("mainstep", "1")
 			checkafterchallengereacioncard(1)
+			b = str(int(me.getGlobalVariable("intcount"))+1)
+			me.setGlobalVariable("intcount",b)
 	else:
 		whisper("You must declare at least 1 character to attack.")
 
@@ -359,8 +364,10 @@ def announcePow(group, x = 0, y = 0):
 					notify("{} renounces the use of the stealth keyword.".format(me))
 			stealth = "1"
 		if getGlobalVariable("automode") == "1":
-			if getGlobalVariable("mainstep") == "0":setGlobalVariable("mainstep", "1")
+			setGlobalVariable("mainstep", "1")
 			checkafterchallengereacioncard(1)
+			b = str(int(me.getGlobalVariable("powcount"))+1)
+			me.setGlobalVariable("powcount",b)
 	else:
 		whisper("You must declare at least 1 character to attack.")
 
@@ -375,7 +382,7 @@ def announceOpp(group, x = 0, y = 0):
 	global defender
 	global sessionpass
 	if getGlobalVariable("automode") == "1":
-		if getGlobalVariable("mainstep") == "1":setGlobalVariable("mainstep", "3")
+		setGlobalVariable("mainstep", "3")
 		if attacker == me:
 			notify("You already are a attacker.")
 			return
@@ -399,6 +406,7 @@ def announceOpp(group, x = 0, y = 0):
 					notify("{} declares no defenders.".format(me))
 					defender = me
 					remoteCall(otherplayer, "getdefender", [me])
+					challengeaction(1)
 			if challengetype == 2:
 				choiceList = ['Intrigue', 'No defenders']
 				colorList = ['#006b34' ,'#D8D8D8']
@@ -429,6 +437,7 @@ def announceOpp(group, x = 0, y = 0):
 						notify("{} declares no defenders.".format(me))
 					defender = me
 					remoteCall(otherplayer, "getdefender", [me])
+					challengeaction(1)
 			if challengetype == 3:
 				choiceList = ['Power', 'No defenders']
 				colorList = ['#1a4d8f','#D8D8D8']
@@ -447,6 +456,7 @@ def announceOpp(group, x = 0, y = 0):
 					notify("{} declares no defenders.".format(me))
 					defender = me
 					remoteCall(otherplayer, "getdefender", [me])
+					challengeaction(1)
 			else:return
 		else:notify("No challenge happened.")
 	else:
@@ -497,6 +507,7 @@ def defMil(group, x = 0, y = 0):
 		remoteCall(otherplayer, "getdefender", [defender])
 		sessionpass = ""
 		selectedcard = []
+		challengeaction(1)
 
 def defInt(group, x = 0, y = 0):
 	mute()
@@ -547,6 +558,7 @@ def defInt(group, x = 0, y = 0):
 		remoteCall(otherplayer, "getdefender", [defender])
 		sessionpass = ""
 		selectedcard = []
+		challengeaction(1)
 
 def defPow(group, x = 0, y = 0):
 	mute()
@@ -581,6 +593,7 @@ def defPow(group, x = 0, y = 0):
 		remoteCall(otherplayer, "getdefender", [defender])
 		sessionpass = ""
 		selectedcard = []
+		challengeaction(1)
 		
 def scoop(group, x = 0, y = 0):
 	mute()
@@ -772,11 +785,6 @@ def subhousepow(ok = 1):
 			if housecard.type == "Faction" and housecard.controller == me:
 				subPower(housecard)
 
-def plotstyle(ok = 1):
-	mute()
-	global plotintable
-	#if confirm("Do you want to put the plotcard in table?"):
-	plotintable = 1
 
 	
 #---------------------------
@@ -931,7 +939,6 @@ def setup(group, x = 0, y = 0):
 	var="1"
 	me.setGlobalVariable("setupOk", var)
 	notify("**{} has started setup, please wait**".format(me))
-	plotstyle(1)
 	for c in me.hand: 
 		if c.Type == "Faction":
 			if me.isInverted: 
@@ -1056,6 +1063,12 @@ def placesetupcards():
 			for drawcard in me.deck.top(7-len(me.hand)):
 				drawcard.moveTo(me.hand)
 			notify("{} is ready to begin.".format(me))
+			me.setGlobalVariable("setupOk","3")
+			if len(players) == 1:
+				remoteCall(me, "proccessetupcard", [table])
+			else:
+				if me.getGlobalVariable("setupOk") == players[1].getGlobalVariable("setupOk") == "3":
+					remoteCall(me, "proccessetupcard", [1])
 	else:
 		if me.getGlobalVariable("setupOk") == "2":
 			placesetupcards()
@@ -1065,10 +1078,97 @@ def placesetupcards():
 				me.setGlobalVariable("setupOk","2")
 			placesetupcards()
 
+def proccessetupcard(count):
+	mute()
+	global listattach
+	for card in table:
+		if not card.isFaceUp and card.controller == me:
+			flipcard(card)
+			if card.type == "Attachment" and card.filter == None:
+				listattach.append(card)
+	if len(listattach) > 0:
+		me.setGlobalVariable("setupOk","4")
+		attatchcard(listattach)
+	else:
+		reordertable(table)
+	if count == 1:remoteCall(players[1], "proccessetupcard", [2])
+
+def attatchcard(listattach):
+	mute()
+	global sessionpass
+	for card in table:
+		card.target(False)
+	targetTuple = ([card._id for card in table if card.Type in "Character" and card.controller == me], me._id)
+	me.setGlobalVariable("tableTargets", str(targetTuple))
+	setGlobalVariable("selectmode", "1")
+	sessionpass = "attatchcardselect"
+	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**selectmode**")
+
+def reordertable(group, x = 0, y = 0):
+	mute()
+	countcards=20
+	attach = eval(getGlobalVariable("attachmodify"))
+	for card in table:
+		if card.type == "Character" and card.controller == me:
+			if me.isInverted:
+				card.moveToTable(countcards,-100,True)
+				countcards=countcards-80
+			else:
+				card.moveToTable(countcards,0,True)
+				countcards=countcards+80
+			list = []
+			list2 = []
+			list3 = []
+			for d in attach:
+				if attach[d] == card._id:
+					list.append(d)
+			for dcard in table:
+				if dcard.name == card.name and dcard.filter == WaitColor and dcard.controller == me:
+					list2.append(dcard._id)
+			list.reverse()
+			for cardatt in table:
+				for listcard in table:
+					if cardatt.controller == me and cardatt.name == listcard.name and  listcard._id in (list) and cardatt.filter == WaitColor:
+						list3.append(cardatt)
+			i = 12			
+			if len(list) > 0:
+				for cardindex in list:
+					for carda in table:
+						if carda._id == cardindex:
+							x1,y1 = card.position
+							if me.isInverted:carda.moveToTable(x1-i,y1-i)
+							else:carda.moveToTable(x1+i,y1+i)
+							carda.sendToBack()
+							x2,y2 = carda.position
+							i+=12
+							k = 12
+							for cardattd in list3:
+								if cardattd.name == carda.name:
+									if me.isInverted:cardattd.moveToTable(x2-k,y2+k)
+									else:cardattd.moveToTable(x2+k,y2-k)
+									cardattd.sendToBack()
+									k+=12
+			i = 12
+			if card.unique == "Yes":
+				if len(list2) > 0:
+					for cardindex in list2:
+						for carda in table:
+							if carda._id == cardindex:
+								x1,y1 = card.position
+								carda.moveToTable(x1-i,y1-i)
+								carda.sendToBack()
+								i+=12
+	notify("{} finished setup phase".format(me))
+	me.setGlobalVariable("setupOk","5")
+	if me.getGlobalVariable("setupOk") == players[1].getGlobalVariable("setupOk") == "5":
+		notify("Plot phase start")
+		remoteCall(me, "revealplot", [table])
+		remoteCall(players[1], "revealplot", [table])
+
 def endturn(group, x = 0, y = 0): 
 	count = 0
 	discAmount = None
-	global plotintable
 	mute()
 	if not confirm("Are you sure to end this turn?"): return
 	myCards = (card for card in table  #restore all cards
@@ -1105,23 +1205,15 @@ def endturn(group, x = 0, y = 0):
 	for c in table: 
 		if c.Type == "Plot" and c.controller == me:
 			if len(me.piles['Plot Deck']) > 0:
-				if plotintable == 1:
-					c.highlight = usedplotcolor
-					x, y = c.position
-					if me.isInverted: 
-						c.moveToTable(x-10,y-15)
-					else:
-						c.moveToTable(x+10,y+15)
-				else:c.moveTo(me.piles['Used Plot Pile'])
+				c.filter = "#0099ffff"
+				x, y = c.position
+				if me.isInverted:c.moveToTable(x, y-20)
+				else:c.moveToTable(x, y+20)
 			else:
-				if plotintable == 1:
-					if c.highlight == usedplotcolor:
-						c.moveTo(me.piles['Plot Deck'])
-					else:
-						c.highlight = usedplotcolor
+				if c.filter == usedplotcolor:
+					c.moveTo(me.piles['Plot Deck'])
 				else:
-					shuffleToPlot(me.piles['Used Plot Pile'])
-					c.moveTo(me.piles['Used Plot Pile'])
+					c.filter = "#0099ffff"
 	global countusedplot
 	oldcountusedplot = countusedplot
 	countusedplot = len(me.piles['Used Plot Pile'])
@@ -1251,7 +1343,6 @@ def fp(group, x = 0, y = 0):
 	setGlobalVariable("firstplay","{}".format(winner._id))
 	# if there are more than 2 players, move the FP token manually
 	if numPlayers == 2:
-		if not confirm("Continue to decide who is the first player?"): return
 		decidefirstplayer(table)
 	return
 
@@ -1299,7 +1390,7 @@ def dominance(group, x=0, y=0):
 					if card.markers[STR_Up] > 0:
 						str += card.markers[STR_Up]
 					if card.markers[Burn] > 0:
-						str -= card.markers[Burn]
+						str -= card.markers[Burn] * 4
 					if str > 0:
 						person.counters['Str'].value += str
 				if card.dominance and int(card.dominance) > 0:
@@ -1316,7 +1407,6 @@ def dominance(group, x=0, y=0):
 		elif person.counters['Str'].value == maxSTR:
 			winner = -1
 		notify("{}'s total for dominance is {}.".format(person,person.counters['Str'].value))
-	if not confirm("Confirm to proceed?"): return
 	if winner == -1:
 		notify("No one wins dominance.")
 	else:
@@ -1324,7 +1414,114 @@ def dominance(group, x=0, y=0):
 		for housecard in table:
 			if housecard.type == "Faction" and housecard.controller == players[winner]:
 				addPower(housecard)
+	notify("Dominance phase over.")
+	notify("Standing phase start")
+	setGlobalVariable("standingphase","1")
+	standingphase(table)
 	return
+
+def standingphase(group, x=0, y=0):
+	mute()
+	myCards = (card for card in table  #restore all cards
+		if card.controller == me)
+	for card in myCards:
+		if card.isFaceUp:
+			card.orientation &= ~Rot90
+			card.highlight = None
+			card.target(False)
+	if getGlobalVariable("standingphase") == "1":
+		setGlobalVariable("standingphase","2")
+		remoteCall(players[1], "standingphase", table)
+		return
+	if getGlobalVariable("standingphase") == "2":
+		notify("Standing phase over")
+		setGlobalVariable("standingphase","0")
+		setGlobalVariable("taxationphase","1")
+		notify("Taxation phase start")
+		taxationphase(table)
+
+def taxationphase(group, x = 0, y = 0): 
+	count = 0
+	discAmount = None
+	mute()
+	if getGlobalVariable("taxationphase") == "1" or getGlobalVariable("taxationphase") == "2":
+		me.counters['Gold'].value = 0  #reset gold counters
+		goldcard = (card for card in table
+				if card.controller == me)
+		for card in goldcard: 
+			card.markers[Gold] = 0
+		getreserve(group)
+		if getGlobalVariable("taxationphase") == "1":setGlobalVariable("taxationphase","1.5")
+		if getGlobalVariable("taxationphase") == "2":setGlobalVariable("taxationphase","2.5")
+	if len(me.hand) > me.counters['Reserve'].value:  #check reserve
+		if discAmount == None: 
+			whisper("The number of cards in {}'s hand is more than your reserve.You should discard {} cards.".format(me, len(me.hand)-me.counters['Reserve'].value))
+			discAmount = len(me.hand)-me.counters['Reserve'].value
+		dlg = cardDlg([c for c in me.hand])
+		dlg.title = "These cards are in your hand:"
+		dlg.text = "Choose {} cards to discard.".format(discAmount)
+		dlg.min = discAmount
+		dlg.max = discAmount
+		cards = dlg.show()
+		if cards != None:
+			for card in cards:
+				card.moveTo(me.piles['Discard pile'])
+				notify("{} discard {}.".format(me, card))
+		else:
+			taxationphase(table)
+			return
+	else:
+		notify("Hand size is ok.")
+	for c in table: 
+		if c.Type == "Plot" and c.controller == me:
+			if len(me.piles['Plot Deck']) > 0:
+				c.filter = "#0099ffff"
+				x, y = c.position
+				if me.isInverted:c.moveToTable(x, y-20)
+				else:c.moveToTable(x, y+20)
+			else:
+				if c.filter == usedplotcolor:
+					c.moveTo(me.piles['Plot Deck'])
+				else:
+					c.filter = "#0099ffff"
+	
+	me.counters['Reserve'].value = 0
+	me.counters['Initiative'].value = 0
+	me.counters['Str'].value = 0
+	me.setGlobalVariable("turn", "0")
+	me.setGlobalVariable("firstevent", "0")	
+	me.setGlobalVariable("milcount","1")
+	me.setGlobalVariable("milcountmax","1")	
+	me.setGlobalVariable("intcount","1")
+	me.setGlobalVariable("intcountmax","1")
+	me.setGlobalVariable("powcount","1")
+	me.setGlobalVariable("powcountmax","1")
+	me.setGlobalVariable("active","0")
+
+	if getGlobalVariable("taxationphase") == "1.5":
+		setGlobalVariable("taxationphase","2")
+		notify("{} is ready for a new turn.".format(me))
+		remoteCall(players[1], "taxationphase", table)
+		return
+	if getGlobalVariable("taxationphase") == "2.5":
+		setGlobalVariable("ignorestr", "[]")
+		setGlobalVariable("addclaim","0")
+		setGlobalVariable("addclaimall","0")
+		setGlobalVariable("reavelplot","0")
+		setGlobalVariable("drawphase","0")
+		setGlobalVariable("marshalphase","0")
+		setGlobalVariable("challengephase","1")
+		setGlobalVariable("standingphase","0")
+		setGlobalVariable("taxationphase","0")
+		setGlobalVariable("action","0")
+		setGlobalVariable("activeplayer","")
+		notify("{} is ready for a new turn.".format(me))
+		notify("Taxation phase over")
+		notify("A new turn start")
+		notify("Plot phase start")
+		remoteCall(me, "revealplot", [table])
+		remoteCall(players[1], "revealplot", [table])
+
 
 def challenge(group, x=0, y=0):
 	mute()
@@ -1416,7 +1613,17 @@ def challenge(group, x=0, y=0):
 					winplayer = players[1]
 					if players[0].counters['Str'].value == 0:unopposed = 1
 			remoteCall(otherplayer, "getwinner", [winplayer,unopposed,challengetype])
-			if getGlobalVariable("mainstep") == "3":setGlobalVariable("mainstep", "5")
+			setGlobalVariable("mainstep", "5")
+			aftercalculatestand = eval(getGlobalVariable("aftercalculatestand"))
+			aftercalculatedraw = eval(getGlobalVariable("aftercalculatedraw"))
+			debug(aftercalculatedraw)
+			for kcard in table:
+				if kcard.controller == winplayer and kcard._id in aftercalculatestand and kcard.orientation == 0:
+					remoteCall(winplayer, "kneel", [kcard])
+					notify("{} stand {} by [Ours is the Fury].".format(winplayer,kcard))
+				if kcard.controller == winplayer and kcard._id in aftercalculatedraw and len(winplayer.deck) > 0:
+					remoteCall(winplayer, "draw", [winplayer.deck])
+					notify("{} draw 1 card by [For the North].".format(winplayer))
 			if fplay(1) == me:checkaftercalculatereacioncardforce(1)
 			else:remoteCall(otherplayer, "checkaftercalculatereacioncardforce", [1])
 		else:
@@ -1504,7 +1711,7 @@ def balancechallengefinish(challenge,winplay):
 	claim = challengeclaim(table)
 	notify("claim is {}.".format(claim))
 	if winplayer != defender:
-		if getGlobalVariable("mainstep") == "5":setGlobalVariable("mainstep", "6")
+		setGlobalVariable("mainstep", "6")
 		if unopposed != 0:
 			notify("{} add 1 pow from unopposed.".format(winplay))
 			if winplay == me:
@@ -1512,7 +1719,7 @@ def balancechallengefinish(challenge,winplay):
 			else:
 				remoteCall(otherplayer, "addhousepow", 1)
 		if claim != 0:
-			if getGlobalVariable("mainstep") == "6":setGlobalVariable("mainstep", "7")
+			setGlobalVariable("mainstep", "7")
 			if challenge == 1:
 				if winplay != me:
 					if getGlobalVariable("automode") != "1":
@@ -1554,11 +1761,22 @@ def balancechallengefinish(challenge,winplay):
 def intomil(group):
 	mute()
 	global sessionpass
+	list = []
+	claim = challengeclaim(table)
+	for card in table:
+		if card.type == "Character" and card.controller == me and card.filter != WaitColor:
+			list.append(card)
+		c = len(list)
+		if c < claim:
+			b = c
+		else:
+			b = claim
 	targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.filter != WaitColor], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
 	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 	sessionpass = "milkillplayerselect"
+	whisper("Please select {} players to be killed".format(b))
 	whisper("**selectmode**")
 
 def challengebalanceover(count):
@@ -1616,57 +1834,131 @@ def challengebalanceover(count):
 		remoteCall(otherplayer, "challengebalanceover", [2])
 		return
 	if getGlobalVariable("aftcuevent") != "-1":
+		aftcuevent = getGlobalVariable("aftcuevent")
 		debug(getGlobalVariable("aftcuevent"))
 		setGlobalVariable("aftcuevent", "-1")
 		notify("balance over")
-		if int(getGlobalVariable("aftcuevent")) == str(me._id):
+		if int(aftcuevent) == me._id:
 			remoteCall(otherplayer, "reaction", ["aftercalculate",1])
 		else:reaction("aftercalculate",1)
 		return
+	if getGlobalVariable("chaevent") != "-1":
+		chaevent = getGlobalVariable("chaevent")
+		debug(getGlobalVariable("chaevent"))
+		setGlobalVariable("chaevent", "-1")
+		notify("balance over")
+		if int(chaevent) == me._id:
+			remoteCall(otherplayer, "action", ["challenge",1])
+		else:action("challenge",1)
+		return
 	setGlobalVariable("mainstep", "0")
 	notify("challenge balance over")
+	challengeaction(1)
 
 
 def challengeAnnounce(group, x=0, y=0):
 	mute()
+	cc = 0
 	global sessionpass
 	if attacker ==[]:
-		choiceList = ['Military', 'Intrigue', 'Power', 'No challenge and Pass']
-		colorList = ['#ae0603' ,'#006b34','#1a4d8f','#D8D8D8']
-		choice = askChoice("Which challenge do you want to initiate?", choiceList,colorList)
-		if choice == 1:
-			if getGlobalVariable("automode") != "1":
-				announceMil(table)
+		if getGlobalVariable("automode") != "1":
+			choiceList = ['Military', 'Intrigue', 'Power', 'No challenge and Pass']
+			colorList = ['#ae0603' ,'#006b34','#1a4d8f','#D8D8D8']
+		else:
+			choiceList = []
+			colorList = []
+			if int(me.getGlobalVariable("milcount")) <= int(me.getGlobalVariable("milcountmax")):
+				for card in table: 
+					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+						choiceList.append('Military')
+						colorList.append('#ae0603')
+						cc = 1
+						break
+			if int(me.getGlobalVariable("intcount")) <= int(me.getGlobalVariable("intcountmax")):
+				for card in table: 
+					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+						choiceList.append('Intrigue')
+						colorList.append('#006b34')
+						cc = 1
+						break
+			if int(me.getGlobalVariable("powcount")) <= int(me.getGlobalVariable("powcountmax")):
+				for card in table: 
+					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+						choiceList.append('Power')
+						colorList.append('#1a4d8f')
+						cc = 1
+						break
+			if cc == 1:
+				choiceList.append('No challenge and Pass')
+				colorList.append('#D8D8D8')
+				choice = askChoice("Which challenge do you want to initiate?", choiceList,colorList)
 			else:
+				if getGlobalVariable("challengephase") == "1":
+					setGlobalVariable("challengephase","2")
+					notify("{} has been active player".format(players[1]))
+					remoteCall(players[1], "challengeAnnounce", table)
+					return
+				if getGlobalVariable("challengephase") == "2":
+					setGlobalVariable("challengephase","0")
+					remoteCall(players[1], "dominance", table)
+					return
+		if getGlobalVariable("automode") != "1":
+			if choice == 1:announceMil(table)
+			if choice == 2:announceInt(table)
+			if choice == 3:announcePow(table)
+			if choice == 4:notify("{} has no challenge to initiate.".format(me))
+			if choice == 0:return
+		else:
+			if choiceList[choice-1] == 'Military':
 				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
-				table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+				else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 				sessionpass = "milselect"
 				notify("**selectmode**")
-		elif choice == 2:
-			if getGlobalVariable("automode") != "1":
-				announceInt(table)
-			else:
+			elif choiceList[choice-1] == 'Intrigue':
 				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
-				table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+				else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 				sessionpass = "intselect"
 				notify("**selectmode**")
-		elif choice == 3:
-			if getGlobalVariable("automode") != "1":
-				announcePow(table)
-			else:
+			elif choiceList[choice-1] == 'Power':
 				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
-				table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+				else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 				sessionpass = "powselect"
 				notify("**selectmode**")
-		elif choice == 4:
-			notify("{} has no challenge to initiate.".format(me))
-		else:return
+			elif choiceList[choice-1] == 'No challenge and Pass':
+				notify("{} has no challenge to initiate.".format(me))
+				if getGlobalVariable("challengephase") == "1":
+					setGlobalVariable("challengephase","2")
+					setGlobalVariable("activeplayer",str(players[1]._id))
+					players[1].setGlobalVariable("active","1")
+					notify("{} has been active player".format(players[1]))
+					remoteCall(players[1], "challengeAnnounce", table)
+					return
+				if getGlobalVariable("challengephase") == "2":
+					setGlobalVariable("challengephase","0")
+					remoteCall(players[1], "dominance", table)
+					return
+			else:
+				notify("{} has no challenge to initiate.".format(me))
+				if getGlobalVariable("challengephase") == "1":
+					setGlobalVariable("challengephase","2")
+					setGlobalVariable("activeplayer",str(players[1]._id))
+					players[1].setGlobalVariable("active","1")
+					notify("{} has been active player".format(players[1]))
+					remoteCall(players[1], "challengeAnnounce", table)
+					return
+				if me.getGlobalVariable("active") == players[1].getGlobalVariable("active") == "1":
+					setGlobalVariable("challengephase","0")
+					remoteCall(players[1], "dominance", table)
+					return
 	else:
 		notify("challenge already happened.")
 
@@ -1796,26 +2088,14 @@ def revealplot(group, x = 0, y = 0):
 	if cards != None:
 		for card in cards:
 			if me.isInverted: 
-				card.moveToTable(120,-80,True)
+				card.moveToTable(110,-80,True)
 			else:
-				card.moveToTable(-120,0,True)
+				card.moveToTable(-110,0,True)
 			me.setGlobalVariable("turn","1")
-			list = [card for card in table
-						if card.Type == "Plot" and card.controller == me]
-			count = len(list)
-			for p in list:
-				if count > 1:
-					if plotintable == 0:
-						p.moveTo(me.piles['Used Plot Pile'])
-					count -= 1
-				if count == 1:
-					break
 			if len(me.piles['Plot Deck']) == 0:
-				if plotintable == 1:
-					for card in table:
-						if card.Type == "Plot" and card.controller == me and card.highlight == usedplotcolor:
+				for card in table:
+						if card.Type == "Plot" and card.controller == me and card.filter == usedplotcolor:
 							card.moveTo(me.piles['Plot Deck'])
-				else:shuffleToPlot(me.piles['Used Plot Pile'])
 			if len(players) > 1:
 				if me.getGlobalVariable("turn") == players[1].getGlobalVariable("turn") == "1":
 					flipplotcard(card)
@@ -1823,15 +2103,13 @@ def revealplot(group, x = 0, y = 0):
 							if card.type == "Plot" and card.controller != me)
 					for c in d:
 						remoteCall(players[1], "flipplotcard", c)
-					if not confirm("Continue to calculate initiative?"): return
-					fp(table)
+					remoteCall(me, "fp", table)
 			if len(players) == 1:
 				flipplotcard(card)
 			else:
 				card.peek()
 	else:
 		return
-
 		
 def decidefirstplayer(group, x = 0, y = 0):
 	mute()
@@ -1867,7 +2145,92 @@ def askfirstplayer(group, x = 0, y = 0):
 				remoteCall(players[1], "moveFP", card)
 	else:
 		return
+	askfirstreveal(table)
 
+def askfirstreveal(group, x = 0, y = 0):
+	mute()
+	if fplay(1) == me:
+		choiceList = ['{}'.format(me),'{}'.format(players[1])]
+		choice = askChoice("Decide who will First reveal.", choiceList)
+
+		if choice == 1:
+			notify("{} First reveal.".format(me))
+			setGlobalVariable("reavelplot","1")
+			reavelplot(table)
+		if choice == 2:
+			notify("{} First reveal.".format(players[1]))
+			setGlobalVariable("reavelplot","1")
+			remoteCall(players[1], "reavelplot", table)
+	else:remoteCall(players[1], "askfirstreveal", table)
+
+def reavelplot(group, x = 0, y = 0):
+	mute()
+	for card in table:
+		if card.type == "Plot" and card.controller == me and card.filter == None:
+			notify("use {}'s ability".format(card))
+	if getGlobalVariable("reavelplot") == "1":
+		setGlobalVariable("reavelplot","2")
+		remoteCall(players[1], "reavelplot", table)
+		return
+	if getGlobalVariable("reavelplot") == "2":
+		notify("plot phase over")
+		setGlobalVariable("reavelplot","0")
+		setGlobalVariable("drawphase","1")
+		notify("draw phase start")
+		drawphase(table)
+
+def drawphase(group, x = 0, y = 0):
+	mute()
+	if len(me.deck) > 0:
+		draw(me.deck)
+	if len(me.deck) > 0:
+		draw(me.deck)
+	if getGlobalVariable("drawphase") == "1":
+		setGlobalVariable("drawphase","2")
+		remoteCall(players[1], "drawphase", table)
+		return
+	if getGlobalVariable("drawphase") == "2":
+		notify("draw phase over")
+		setGlobalVariable("drawphase","0")
+		notify("marshal phase start")
+		setGlobalVariable("marshalphase","1")
+		if fplay(1) == me:marshalphase(table)
+		else:remoteCall(players[1], "marshalphase", table)
+
+def marshalphase(group, x = 0, y = 0):
+	mute()
+	if me.getGlobalVariable("turn") == "0":countincome(table)
+	choiceList = ['Marshal', 'Action', 'No action and Pass']
+	colorList = ['#ae0603' ,'#006b34','#D8D8D8']
+	choice = askChoice("Which pass do you want to action?", choiceList,colorList)
+	if choice == 1:marshalcard(table)
+	if choice == 2:marshalphase(table)
+	if choice == 3:
+		if getGlobalVariable("marshalphase") =="1":
+			setGlobalVariable("marshalphase","2")
+			remoteCall(players[1], "marshalphase", table)
+			return
+		elif getGlobalVariable("marshalphase") =="2":
+			setGlobalVariable("marshalphase","0")
+			notify("marshal phase over")
+			notify("challenge phase start")
+			if fplay(1) == me:
+				setGlobalVariable("activeplayer",str(me._id))
+				me.setGlobalVariable("active","1")
+			else:
+				setGlobalVariable("activeplayer",str(players[1]._id))
+				players[1].setGlobalVariable("active","1")
+			challengeaction(1)
+
+def marshalcard(group, x = 0, y = 0):
+	mute()
+	global sessionpass
+	targetTuple = ([card._id for card in me.hand if card.type in ("Character","Location","Attachment")], me._id) 
+	setGlobalVariable("tableTargets", str(targetTuple))
+	setGlobalVariable("selectmode", "1")
+	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	sessionpass = "marshalcardselect"
+	whisper("**selectmode**")			
 #---------------------------------------------------------------------------
 # New Table card actions
 #---------------------------------------------------------------------------
@@ -1948,7 +2311,7 @@ def disc(card, x = 0, y = 0):
 			if attach[d] == card._id:
 				for cardd in table:
 					if cardd._id == d:
-						if cardd.Text.find('Terminal.') == -1:cardd.moveTo(me.hand)
+						if cardd.Text.find('Terminal.') == -1 and cardd.Keywords.find('Terminal.') == -1:cardd.moveTo(me.hand)
 						else:cardd.moveTo(me.piles['Discard pile'])
 						del attach[d]
 						setGlobalVariable("attachmodify",str(attach))
@@ -1974,7 +2337,7 @@ def disc(card, x = 0, y = 0):
 def defaultAction(card, x = 0, y = 0):
 	mute()
 	# Default for Done button is playerDone
-	if getGlobalVariable("selectmode") == "0":
+	if getGlobalVariable("selectmode") == "0" and me.getGlobalVariable("setupOk") != "4":
 		if card.Type == "Internal": 
 			if card.name == "Done Token":
 				DoneButton(card)
@@ -2053,13 +2416,24 @@ def attachat(ax,ay,table):
 
 def play(card):
 	mute()
+	ambush = 0
 	if getGlobalVariable("selectmode") == "1":return#and sessionpass == "savecardselect":return
 	c = 0
 	if card.cost == "" : 
 		whisper("You can't play this card")
 		return
 	if card.Cost == "X": cost=askInteger("How much do you want to pay to play {} ? ".format(card.name),0)
-	else : cost=int(card.Cost)
+	else :
+		if getGlobalVariable("ambush") == "1" and "Ambush" in card.keywords:
+			cost=int(re.search('Ambush\s\(\d\).', card.keywords).group()[8])
+			ambush = 1
+		else:cost=int(card.Cost)
+		if me.getGlobalVariable("firstevent") == "0":
+			if checkpr(me) and card.type == "Event":
+				cost=int(card.Cost)-1
+				notify("You control Paxter Redwyne the first event you play Reduce the gold cost by 1.")
+
+
 	uniquecards = []
 	if len(me.piles['Plot Deck']) != 7:
 		for u in table:
@@ -2142,11 +2516,12 @@ def play(card):
 						if re.search('\[POW]\sicon', card.Text):choose.markers[PowerIcon] += 1
 						if re.search('\[MIL]\sicon', card.Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":choose.markers[MilitaryIcon] += 1
 						card.sendToBack()
-						card.highlight = PlayColor
 						if len(me.piles['Plot Deck']) == 7:
 							notify("{} plays {} and attachs to {}.".format(me,card,choose))
 						else:
+							card.highlight = PlayColor
 							notify("{} plays {} and attachs to {} for {} Gold (Cost reduced by {}).".format(me,card,choose,cost,reduc))
+						return True
 				else:
 					whisper("Attachment cards must be attached to another card or game element.")
 					return
@@ -2189,6 +2564,7 @@ def play(card):
 			elif card.type == "Event":
 				if me.isInverted: card.moveToTable(150,-230)
 				else: card.moveToTable(-130,130)
+				if me.getGlobalVariable("firstevent") == "0":me.setGlobalVariable("firstevent", "1")
 				#whisper("Select a target.")
 				#checksaveevent(card)
 			else:
@@ -2196,7 +2572,8 @@ def play(card):
 				else: card.moveToTable(-130,130)
 			if card.type != "Event":
 				card.highlight = PlayColor
-			notify("{} plays {} for {} Gold (Cost reduced by {}).".format(me,card,cost,reduc))
+			if ambush != 1:notify("{} plays {} for {} Gold (Cost reduced by {}).".format(me,card,cost,reduc))
+			else:notify("{} ambush {} for {} Gold).".format(me,card,cost))
 			me.counters['Gold'].value -= cost
 			for incomecard in table:
 				if incomecard.controller == me and incomecard.markers[Gold] > 0:
@@ -2414,10 +2791,31 @@ def onloaddeck(args):
 	setGlobalVariable("aftcr", "")
 	setGlobalVariable("aftcu", "")
 	setGlobalVariable("aftcuevent", "-1")
+	setGlobalVariable("chaevent", "-1")
 	setGlobalVariable("attachmodify", "{}")
 	setGlobalVariable("mainstep", "0")
-	setGlobalVariable("adddeftmp", "0")
+	setGlobalVariable("ambush", "1")
+	setGlobalVariable("aftercalculatestand", "[]")
+	setGlobalVariable("aftercalculatedraw", "[]")
 	setGlobalVariable("ignorestr", "[]")
+	setGlobalVariable("addclaim","0")
+	setGlobalVariable("addclaimall","0")
+	setGlobalVariable("reavelplot","0")
+	setGlobalVariable("drawphase","0")
+	setGlobalVariable("marshalphase","0")
+	me.setGlobalVariable("firstevent", "0")
+	setGlobalVariable("challengephase","1")
+	setGlobalVariable("standingphase","0")
+	setGlobalVariable("taxationphase","0")
+	me.setGlobalVariable("milcount","1")
+	me.setGlobalVariable("milcountmax","1")
+	me.setGlobalVariable("intcount","1")
+	me.setGlobalVariable("intcountmax","1")
+	me.setGlobalVariable("powcount","1")
+	me.setGlobalVariable("powcountmax","1")
+	setGlobalVariable("action","0")
+	setGlobalVariable("activeplayer","")
+	me.setGlobalVariable("active","0")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -2494,7 +2892,7 @@ def onmoved(args):
 				if attach[d] == args.cards[index]._id:
 					for cardd in table:
 						if cardd._id == d:
-							if cardd.Text.find('Terminal.') == -1:cardd.moveTo(me.hand)
+							if cardd.Text.find('Terminal.') == -1 and cardd.Keywords.find('Terminal.') == -1:cardd.moveTo(me.hand)
 							else:cardd.moveTo(me.piles['Discard pile'])
 							del attach[d]
 							setGlobalVariable("attachmodify",str(attach))
@@ -2535,7 +2933,10 @@ def updateTimer(endTime,notifications,actioninsert):
 		if actioninsert == "interruptcancel":
 			debug(inserttarget)
 			debug(savetarget)
-			inserttarget.arrow(savetarget)
+			if sessionpass == "3playeraddstr2selectok":
+				for arrowcard in cardtoaction:
+					inserttarget.arrow(arrowcard)
+			else:inserttarget.arrow(savetarget)
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(otherplayer, "interruptevent", ["interruptcancel",2])
 		if actioninsert == "interruptcanceled":
@@ -2766,7 +3167,7 @@ def interruptevent(actioninsert,interruptpasscount):
 								remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 								return
 						if interruptpass == 0:
-							notify("结算,弃掉插入的牌")
+							notify("over,disc card")
 							debug(inserttarget)
 							debug(interruptcancelok)
 							if mainpass == "leave":
@@ -2823,7 +3224,7 @@ def interruptevent(actioninsert,interruptpasscount):
 								else:
 									if inserttarget.controller == me:disc(inserttarget)
 									else:remoteCall(otherplayer, "disc", [inserttarget])
-								notify("结算over")
+								notify("ballanceover")
 								if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
 								else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
 						else:
@@ -2856,7 +3257,7 @@ def interruptevent(actioninsert,interruptpasscount):
 								remoteCall(otherplayer, "backupinterruptlib", [1])
 								remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 								return
-						notify("结算,弃掉插入的牌")
+						notify("over,disc card")
 						debug(interruptcancelok)
 						debug(inserttarget)
 						if mainpass == "leave":
@@ -2914,7 +3315,7 @@ def interruptevent(actioninsert,interruptpasscount):
 								if inserttarget.type != "Character":
 									if inserttarget.controller == me:disc(inserttarget)
 									else:remoteCall(otherplayer, "disc", [inserttarget])
-							notify("结算over")
+							notify("ballanceover")
 							if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
 							else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
 				else:
@@ -2991,7 +3392,7 @@ def interruptevent(actioninsert,interruptpasscount):
 							remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 							return
 					if interruptpass == 0:
-						notify("结算,弃掉插入的牌")
+						notify("over,disc card")
 						debug(inserttarget)
 						debug(interruptcancelok)
 						if mainpass == "leave":
@@ -3047,7 +3448,7 @@ def interruptevent(actioninsert,interruptpasscount):
 							else:
 								if inserttarget.controller == me:disc(inserttarget)
 								else:remoteCall(otherplayer, "disc", [inserttarget])
-							notify("结算over")
+							notify("ballanceover")
 							if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
 							else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
 					else:
@@ -3080,7 +3481,7 @@ def interruptevent(actioninsert,interruptpasscount):
 							remoteCall(otherplayer, "backupinterruptlib", [1])
 							remoteCall(playertmp, "interruptreaction", [cardtmp,1])
 							return
-					notify("结算,弃掉插入的牌")
+					notify("over,disc card")
 					debug(interruptcancelok)
 					debug(inserttarget)
 					if mainpass == "leave":
@@ -3137,7 +3538,7 @@ def interruptevent(actioninsert,interruptpasscount):
 							if inserttarget.type != "Character":
 								if inserttarget.controller == me:disc(inserttarget)
 								else:remoteCall(otherplayer, "disc", [inserttarget])
-						notify("结算over")
+						notify("ballanceover")
 						if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
 						else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
 	if actioninsert == "characterkill":
@@ -3433,7 +3834,7 @@ def cardleavetable(count):
 					else:
 						card.moveTo(me.piles['Dead pile'])
 			else:
-				if getGlobalVariable("aftcuevent") != "-1":
+				if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":
 					notify("{} killed {}.".format(otherplayer,card))
 				else:
 					notify("{} killed {}.".format(me,card))
@@ -3463,7 +3864,7 @@ def reaction(actioninsert,reactioncount):
 	global sessionpass
 	global intertreaction
 	if actioninsert == "leavetable":
-		if getGlobalVariable("mainstep") == "7":setGlobalVariable("mainstep", "77")
+		setGlobalVariable("mainstep", "77")
 		if len(reactionattach) > 0:
 			if sessionpass == "":
 				choiceList = ['reaction', 'cancel']
@@ -3477,7 +3878,8 @@ def reaction(actioninsert,reactioncount):
 						if getGlobalVariable("insertre") != "":
 							restoreinterruptlib(1)
 							return
-						remoteCall(winplayer, "keyword", [1])
+						if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
+						else:remoteCall(winplayer, "keyword", [1])
 					else:
 						reactioncount += 1
 						remoteCall(otherplayer, "reaction", ["leavetable",reactioncount])
@@ -3486,7 +3888,8 @@ def reaction(actioninsert,reactioncount):
 				reactioncards = selectedcard
 				if reactioncards == []:
 					if reactioncount == 2:
-						remoteCall(winplayer, "keyword", [1])
+						if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
+						else:remoteCall(winplayer, "keyword", [1])
 					else:
 						reactioncount += 1
 						sessionpass = ""
@@ -3502,7 +3905,8 @@ def reaction(actioninsert,reactioncount):
 				if getGlobalVariable("insertre") != "":
 					restoreinterruptlib(1)
 					return
-				remoteCall(winplayer, "keyword", [1])
+				if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
+				else:remoteCall(winplayer, "keyword", [1])
 			else:
 				reactioncount += 1
 				remoteCall(otherplayer, "reaction", ["leavetable",reactioncount])
@@ -3808,7 +4212,6 @@ def reactionforability(card,repass):
 					addhousepow(int(powadd))
 					notify("{}'s {} reaction get {} pow".format(me,card,powadd))#DoransGame
 				if aftercalculate[d][4] == "draw2card":
-					kneel(card)
 					draw(me.deck)
 					draw(me.deck)
 					notify("{}'s {} reaction draw 2 card".format(me,card))#TheMander
@@ -3817,7 +4220,6 @@ def reactionforability(card,repass):
 					notify("{}'s {} reaction place a poison token on {}".format(me,card,cardtoaction))#TearsofLys
 					cardtoaction = []
 				if aftercalculate[d][4] == "subability2":
-					kneel(card)
 					cardtoaction.markers[TokenBlue] += 2
 					notify("{}'s {} reaction {} gets -2 STR".format(me,card,cardtoaction))#PlazaofPunishment
 					for cards in table:
@@ -4050,7 +4452,7 @@ def checkafterchallengereacioncard(count):
 			else: 
 				remoteCall(otherplayer, "reaction", ["afterchallenge",1])
 		else:
-			return
+			challengeaction(1)
 
 def selectstealth(group, x=0, y=0):
 	mute()
@@ -4162,6 +4564,7 @@ def next(group, x=0, y=0):
 	global savetarget
 	global mainpass
 	global dwtmpcard
+	global listattach
 	debug(sessionpass)
 	selectedcard = []
 	list = []
@@ -4172,7 +4575,6 @@ def next(group, x=0, y=0):
 	for card in me.hand:
 		if card.targetedBy == me:
 			selectedcard.append(card)
-	debug(selectedcard[0])
 	if sessionpass == "stealthselect":
 		if len(selectedcard) > stealthcount:
 			whisper("You must select {} character.".format(stealthcount))
@@ -4192,6 +4594,13 @@ def next(group, x=0, y=0):
 			b = claim
 		if len(selectedcard) != b:
 			whisper("You must select {} character.".format(b))
+			return
+	if sessionpass == "attatchcardselect":
+		if len(selectedcard) > 1:
+			whisper("You must select only one character to attach.")
+			return
+		if len(selectedcard) == 0:
+			whisper("You must select only one character to attach.")
 			return
 	if sessionpass == "discattch":
 		if len(selectedcard) > 1:
@@ -4360,6 +4769,8 @@ def next(group, x=0, y=0):
 			sessionpass = "popselect"
 			notify("**selectmode**")
 			return
+		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['TheMander'][1]:
+			kneel(selectedcard[0])
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['Rhaegal'][1]:
 			nextcardtmp = selectedcard[0]
 			for card in table:
@@ -4415,7 +4826,10 @@ def next(group, x=0, y=0):
 			whisper("You must select only one card to action.")
 			return
 		if len(selectedcard) == 0:
-			remoteCall(otherplayer, "action", ["challenge",1])	
+			remoteCall(otherplayer, "action", ["challenge",1])
+		if len(selectedcard) == 1 and "Ambush" in selectedcard[0].keywords:
+			sessionpass = "ambush"
+			
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['WildlingHorde'][1]:
 			nextcardtmp = selectedcard[0]
 			for card in table:
@@ -4478,7 +4892,7 @@ def next(group, x=0, y=0):
 				targetTuple = ([card._id for card in table if card.controller != me and card.type == "Character" and int(card.cost) <= cost], me._id)
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
-				sessionpass = "returnhandselectok"
+				sessionpass = "addstrdrawselectok"
 				notify("**selectmode**")
 				return
 			else:
@@ -4487,12 +4901,109 @@ def next(group, x=0, y=0):
 				sessionpass = ""
 				remoteCall(otherplayer, "action", ["challenge",1])
 				return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['FortheNorth'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor) and card.faction == "Stark."], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "addclaimselectok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['WinterIsComing'][1]:
+			nextcardtmp = selectedcard[0]
+			sessionpass = "drawstarkselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['GatesofWinterfell'][1]:
 			nextcardtmp = selectedcard[0]
 			sessionpass = "drawstarkselectok"
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['Dracarys'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if "Dragon." in card.traits or card.model == "a2f21413-0272-47dc-a197-e364aa942d4c" and card.controller == me and card.orientation == 0], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "burnselect"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['FireandBlood'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			list2 = []
+			for carddead in me.piles['Dead Pile']:
+				if carddead.Faction == "Targaryen." and carddead.Unique =="Yes" and carddead.Type == "Character":
+					list.append(carddead)
+			dlg = cardDlg(list)
+			dlg.title = "These cards are in your Dead Pile:"
+			dlg.text = "Declares at least 1 card to action."
+			dlg.min = 1
+			dlg.max = 1
+			cards = dlg.show()
+			cardtoaction = cards[0]
+			sessionpass = "returndeadselectok"
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['MargaeryTyrell'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.type == "Character"], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "addstr3selectok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['Heartsbane'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			attach = eval(getGlobalVariable("attachmodify"))
+			for cardatt in table:
+				if cardatt._id == attach[nextcardtmp._id]:
+					cardtoaction = cardatt
+			sessionpass = "attaddstr3selectok"
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['Highgarden'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in table:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor) and card.controller == attacker], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "standremovechallengeselectok"
+			notify("**selectmode**")
+			return
+		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['GrowingStrong'][1]:
+			nextcardtmp = selectedcard[0]
+			for card in me.hand:
+				card.target(False)
+			targetTuple = ([card._id for card in table if card.type == "Character" and card.Faction == "Tyrell."], me._id)
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "3playeraddstr2selectok"
+			notify("**selectmode**")
+			return
+	if sessionpass == "burnselect":
+		dwtmpcard = selectedcard[0]
+		for card in me.hand:
+			card.target(False)
+		for card in table:
+			card.target(False)
+		targetTuple = ([card._id for card in table if card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor) and int(card.cost)], me._id)
+		setGlobalVariable("tableTargets", str(targetTuple))
+		setGlobalVariable("selectmode", "1")
+		sessionpass = "burnselectok"
+		notify("**selectmode**")
+		return
 	if sessionpass == "actionok":
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to action.")
+			return
+	if sessionpass == "marshalcardselect":
+		if len(selectedcard) > 1:
+			whisper("You must select only one card to marshal.")
+			return
+		if len(selectedcard) == 0:
+			marshalphase(table)
 			return
 	if sessionpass == "discattchselect":
 		if len(selectedcard) > 1:
@@ -4519,7 +5030,7 @@ def next(group, x=0, y=0):
 			cardn.delete()
 			stealthcount = 0
 	setGlobalVariable("selectmode", "0")
-	if intertreaction == 0:
+	if intertreaction == 0 and sessionpass != "attatchcardselect":
 		for card in table:
 			card.target(False)
 	if sessionpass == "milselect":
@@ -4593,6 +5104,7 @@ def next(group, x=0, y=0):
 		if len(selectedcard) == 1:
 			cardtoaction = selectedcard[0]
 			selectedcard[0] = nextcardtmp
+			if sessionpass == "popselect":kneel(selectedcard[0])
 			if sessionpass != "dothrakiselect" and sessionpass != "tyrellselect":
 				selectedcard[0].arrow(cardtoaction)
 		elif len(selectedcard) == 0:
@@ -4669,24 +5181,36 @@ def next(group, x=0, y=0):
 			notify("{}'s {} kneel {} by Initimidate".format(me,cardtoaction,selectedcard[0]))
 			cardtoaction = []
 		keywordforability(1)
-	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok","drawstarkselectok"):
-		if len(selectedcard) == 1:
-			cardtoaction = selectedcard[0]
+	if sessionpass in("kneelhouseok","addintselectok","adddefselectok","dischandselectok","adddstrselectok","ignorestrselectok","returnhandselectok","drawstarkselectok","burnselectok","returndeadselectok","addstrdrawselectok","addclaimselectok","addstr3selectok","attaddstr3selectok","standremovechallengeselectok","3playeraddstr2selectok","removechallengeok"):
+		if len(selectedcard) > 1 and sessionpass != "3playeraddstr2selectok":
+			whisper("You must select only one card to action.")
+			return
+		if len(selectedcard) > 3 and sessionpass == "3playeraddstr2selectok":
+			whisper("You must select at most 3 character to action.")
+			return
+		if len(selectedcard) == 1 and sessionpass != "3playeraddstr2selectok":
+			if sessionpass != "returndeadselectok" and sessionpass != "attaddstr3selectok":cardtoaction = selectedcard[0]
 			if sessionpass == "kneelhouseok" or sessionpass == "returnhandselectok":
 				if sessionpass == "kneelhouseok":selectedcard[0] = nextcardtmp
 				for cardhouse in table:
 					if cardhouse.type == "Faction" and cardhouse.controller == me:
 						kneel(cardhouse)
-			if sessionpass == "addintselectok":
+			if sessionpass == "addintselectok" or sessionpass == "standremovechallengeselectok":
 				selectedcard[0] = nextcardtmp
 				me.counters['Gold'].value -= 1
 				for incomecard in table:
 					if incomecard.controller == me and incomecard.markers[Gold] > 0:
 						incomecard.markers[Gold] -= 1
-
-			if sessionpass in ("adddefselectok","dischandselectok","ignorestrselectok","returnhandselectok"):
-				if play(nextcardtmp):
-					cardtoaction = selectedcard[0]
+			if sessionpass in ("adddefselectok","dischandselectok","ignorestrselectok","returnhandselectok","burnselectok","returndeadselectok","addstrdrawselectok","addclaimselectok","removechallengeok"):
+				if sessionpass == "returndeadselectok":
+					debug(cardtoaction)
+					if cardtoaction == None:
+						delactioncard(nextcardtmp)
+						nextcardtmp = []
+						sessionpass = ""
+						remoteCall(otherplayer, "action", ["challenge",1])
+						return
+				if sessionpass == "removechallengeok":
 					savetarget = selectedcard[0]
 					debug(savetarget)
 					interruptcancelcard = nextcardtmp
@@ -4698,21 +5222,115 @@ def next(group, x=0, y=0):
 					remoteCall(me, "setTimer", [me,"interruptcancel",table])
 					nextcardtmp = []
 					return
-			if sessionpass == "adddstrselectok":
+				if play(nextcardtmp):
+					if dwtmpcard != []:
+						kneel(dwtmpcard)
+						dwtmpcard = []
+					if sessionpass != "returndeadselectok":cardtoaction = selectedcard[0]
+					savetarget = selectedcard[0]
+					debug(savetarget)
+					interruptcancelcard = nextcardtmp
+					interruptcancelplayer = me
+					saveactionplayer = me
+					inserttarget = interruptcancelcard
+					mainpass = "challengeaction"
+					remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+					remoteCall(me, "setTimer", [me,"interruptcancel",table])
+					nextcardtmp = []
+					return
+				else:
+					delactioncard(nextcardtmp)
+					nextcardtmp = []
+					sessionpass = ""
+					remoteCall(otherplayer, "action", ["challenge",1])
+					return
+			if sessionpass == "adddstrselectok" or sessionpass == "addstr3selectok" or sessionpass == "attaddstr3selectok" or sessionpass == "standremovechallengeselectok":
 				selectedcard[0] = nextcardtmp
 				kneel(nextcardtmp)
 			if sessionpass == "drawstarkselectok":
 				cardtoaction = me.deck.top()
 				kneel(nextcardtmp)
-		else:
+		elif sessionpass != "3playeraddstr2selectok":
 			delactioncard(nextcardtmp)
 			nextcardtmp = []
 			sessionpass = ""
 			remoteCall(otherplayer, "action", ["challenge",1])
 			return
+		if sessionpass == "3playeraddstr2selectok":
+			if play(nextcardtmp):
+				cardtoaction = selectedcard
+				savetarget = selectedcard[0]
+				debug(savetarget)
+				interruptcancelcard = nextcardtmp
+				interruptcancelplayer = me
+				saveactionplayer = me
+				inserttarget = interruptcancelcard
+				mainpass = "challengeaction"
+				remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+				remoteCall(me, "setTimer", [me,"interruptcancel",table])
+				nextcardtmp = []
+				return
+			else:
+				delactioncard(nextcardtmp)
+				nextcardtmp = []
+				sessionpass = ""
+				remoteCall(otherplayer, "action", ["challenge",1])
+				return
 		nextcardtmp = []
 		sessionpass = "actionok"
 		action("challenge",1)
+	if sessionpass == "ambush":
+		if play(selectedcard[0]):
+			if selectedcard[0].model == actionchallenge['OlennasInformant'][1]:
+				cardtoaction = selectedcard
+				savetarget = selectedcard[0]
+				debug(savetarget)
+				interruptcancelcard = selectedcard[0]
+				interruptcancelplayer = me
+				saveactionplayer = me
+				inserttarget = interruptcancelcard
+				mainpass = "challengeaction"
+				remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+				remoteCall(otherplayer, "interruptevent", ["interruptcancel",2])			
+			if selectedcard[0].model == actionchallenge['AreoHotah'][1]:
+				if checkinchallengeplay("all",0):
+					nextcardtmp = selectedcard[0]
+					for card in me.hand:
+						card.target(False)
+					targetTuple = ([card._id for card in table if card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor)], me._id)
+					setGlobalVariable("tableTargets", str(targetTuple))
+					setGlobalVariable("selectmode", "1")
+					table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+					sessionpass = "removechallengeok"
+					notify("**selectmode**")
+					return
+				else:
+					for card in me.hand:
+						card.target(False)
+					delactioncard(selectedcard[0])
+					nextcardtmp = []
+					sessionpass = ""
+					remoteCall(otherplayer, "action", ["challenge",1])
+					return
+
+		else:
+			for card in me.hand:
+				card.target(False)
+			delactioncard(selectedcard[0])
+			nextcardtmp = []
+			sessionpass = ""
+			remoteCall(otherplayer, "action", ["challenge",1])
+			return
+	if sessionpass == "attatchcardselect":
+		if play(listattach[0]):
+			del listattach[0]
+			if len(listattach) > 0:attatchcard(listattach)
+			else:
+				reordertable(table)
+	if sessionpass == "marshalcardselect":
+		if play(selectedcard[0]):marshalphase(table)
+		else:marshalphase(table)
+
 
 def stealthcard(group, x=0, y=0):
 	mute()
@@ -4730,9 +5348,10 @@ def stealthcard(group, x=0, y=0):
 
 def ondbclick(args):
 	mute()
-	if getGlobalVariable("selectmode") == "1":
+	if getGlobalVariable("selectmode") == "1" or me.getGlobalVariable("setupOk") == "4":
 		list2 = []
-		tuplecard = eval(getGlobalVariable("tableTargets"))
+		if me.getGlobalVariable("setupOk") == "4":tuplecard = eval(me.getGlobalVariable("tableTargets"))
+		else:tuplecard = eval(getGlobalVariable("tableTargets"))
 		debug(tuplecard)
 		if me._id == tuplecard[1]:
 			if args.card.name == "nextbutton":next(table)
@@ -4851,7 +5470,7 @@ def restoreinterruptlib(count):
 		if getGlobalVariable("insertre") == "1" or getGlobalVariable("insertre") == "2":
 			setGlobalVariable("insertre", "")
 			if interruptpass == 0:
-				notify("结算,弃掉插入的牌")
+				notify("over,disc card")
 				debug(inserttarget)
 				debug(interruptcancelok)
 				if mainpass == "leave":
@@ -4883,7 +5502,7 @@ def restoreinterruptlib(count):
 					else:
 						if inserttarget.controller == me:disc(inserttarget)
 						else:remoteCall(otherplayer, "disc", [inserttarget])
-					notify("结算over")
+					notify("ballanceover")
 					if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
 					else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
 			else:
@@ -4899,7 +5518,7 @@ def restoreinterruptlib(count):
 					return
 		if getGlobalVariable("insertre") == "3":
 			setGlobalVariable("insertre", "")
-			notify("结算,弃掉插入的牌")
+			notify("over,disc card")
 			debug(interruptcancelok)
 			debug(inserttarget)
 			if mainpass == "leave":
@@ -4932,7 +5551,7 @@ def restoreinterruptlib(count):
 					if inserttarget.type != "Character":
 						if inserttarget.controller == me:disc(inserttarget)
 						else:remoteCall(otherplayer, "disc", [inserttarget])
-				notify("结算over")
+				notify("ballanceover")
 				if saveactionplayer == me:remoteCall(otherplayer, "interruptevent", ["miljudgementfp",1])
 				else :remoteCall(me, "interruptevent", ["miljudgementfp",1])
 				
@@ -5236,10 +5855,11 @@ def checkaftercalculatereacioncardforce(count):
 			else:remoteCall(otherplayer, "checkaftercalculatereacioncard", [1])
 			return
 
-def delreactioncard(count):
+def delreactioncard(card):
 	mute()
 	global reactioncardlimit
 	global reactionattach
+	c = 0
 	if not reactioncardlimit.has_key(card._id):
 		reactioncardlimit[card._id] = 1
 	else:reactioncardlimit[card._id] += 1
@@ -5261,17 +5881,35 @@ def delreactioncard(count):
 	if c == 0:
 		reactionattach[card._id] -= 1
 		if reactionattach[card._id] == 0:del reactionattach[card._id]
+	notify("reaction cancel.")
 
 def checkinchallengeplay(person,cost):
 	mute()
 	c = 0
 	for card in table:
-		if card.controller == person:
+		if person != "all":
+			if card.controller == person:
+				if challengetype == 1 and card.highlight == MilitaryColor:
+					if cost != 0:
+						if int(card.cost) <= cost:
+							c = 1
+					else:c = 1
+				if challengetype == 2 and card.highlight == IntrigueColor:
+					if cost != 0:
+						if int(card.cost) <= cost:
+							c = 1
+					else:c = 1
+				if challengetype == 2 and card.highlight == PowerColor:
+					if cost != 0:
+						if int(card.cost) <= cost:
+							c = 1
+					else:c = 1
+		else:
 			if challengetype == 1 and card.highlight == MilitaryColor:
-				if cost != 0:
-					if int(card.cost) <= cost:
-						c = 1
-				else:c = 1
+					if cost != 0:
+						if int(card.cost) <= cost:
+							c = 1
+					else:c = 1
 			if challengetype == 2 and card.highlight == IntrigueColor:
 				if cost != 0:
 					if int(card.cost) <= cost:
@@ -5333,6 +5971,7 @@ def checktyrellcharacter(cardcost):
 		if "Tyrell." in card.Faction and int(card.cost) <= cardcost and card.Type == "Character":
 			return True
 			break
+
 def clearreaction(count):
 	mute()
 	global reactionattach
@@ -5340,6 +5979,8 @@ def clearreaction(count):
 	reactionattach = {}
 	sessionpass = ""
 	if count == 1:remoteCall(otherplayer, "clearreaction", [2])
+	if count == 2:
+		challengeaction(1)
 	if count == 3:remoteCall(otherplayer, "clearreaction", [4])
 	if count == 4:
 		if fplay(1) == me:checkaftercalculatereacioncard(1)
@@ -5348,6 +5989,24 @@ def clearreaction(count):
 	if count == 6:
 		if fplay(1) == me:balancechallengefinish(challengetype,winplayer)
 		else:remoteCall(otherplayer, "balancechallengefinish", [challengetype,winplayer])
+
+def clearaction(count):
+	mute()
+	global actionattach
+	global sessionpass
+	actionattach = {}
+	sessionpass = ""
+	if count == 1:remoteCall(otherplayer, "clearaction", [2])
+	if count == 2:
+		if attacker == []:
+			if getGlobalVariable("activeplayer") == str(me._id):challengeAnnounce(table)
+			else:remoteCall(players[1], "challengeAnnounce", table)
+		else:
+			if defender == []:
+				if attacker == me:remoteCall(otherplayer, "announceOpp", [table])
+				else:announceOpp(table)
+			else:
+				challenge(table)
 
 def choosetype(card):
 	mute()
@@ -5364,6 +6023,14 @@ def checkice(cardid):
 	attach = eval(getGlobalVariable("attachmodify"))
 	for card in table:
 		if attach[cardid] == card._id and card.controller == me and card.highlight == MilitaryColor:
+			return True
+			break
+
+def checkheartsbane(cardid):
+	mute()
+	attach = eval(getGlobalVariable("attachmodify"))
+	for card in table:
+		if attach[cardid] == card._id and card.controller == me and card.highlight in (MilitaryColor,IntrigueColor,PowerColor):
 			return True
 			break
 
@@ -5434,7 +6101,7 @@ def keywordforability(count):
 					keywordattach.remove(card)
 		keywordforability(1)
 	else:
-		if getGlobalVariable("mainstep") == "77":setGlobalVariable("mainstep", "78")
+		setGlobalVariable("mainstep", "78")
 		notify("kw over")
 		challengebalanceover(1)
 
@@ -5479,6 +6146,25 @@ def checkmefaction(faction):
 		if card.Faction == faction and card.controller == me and card.type == "Character":
 			return True
 
+def checkburn(player):
+	mute()
+	for card in table:
+		if "Dragon." in card.traits or card.model == "a2f21413-0272-47dc-a197-e364aa942d4c":
+			if card.controller == player and card.orientation == 0:
+				return True
+
+def checkdeadtargaryen(ok):
+	mute()
+	for card in me.piles['Dead Pile']:
+		if card.Faction == "Targaryen." and card.Unique =="Yes" and card.Type == "Character":
+			return True
+
+def checkpr(player):
+	mute()
+	for card in table:
+		if card.model == "12bc6cd7-39f0-44b7-9492-101d8083c468" and card.controller == player:
+			return True
+
 def challengeaction(count):
 	mute()
 	global actionattach
@@ -5503,11 +6189,43 @@ def challengeaction(count):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
+				if actionchallenge[d][2] == "addstr3" and card.orientation == 0:
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
+				if actionchallenge[d][2] == "attaddstr3" and checkheartsbane(card._id) and card.orientation == 0:
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
+				if actionchallenge[d][2] == "standremovechallenge" and checkinchallengeplay(attacker,0) and card.orientation == 0 and me.counters['Gold'].value > 0:
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
 	for card in me.hand:
 		for d in actionchallenge:
 			if card.model == actionchallenge[d][1] and actionchallenge[d][3] == "Hand":
 				if actionchallenge[d][5] == "":
 					if actionchallenge[d][2] == "dischand" and checktraits("R'hllor.","",me) and len(otherplayer.hand) > 0:
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+					if actionchallenge[d][2] == "addstrdraw" and checkchallengefaction("Stark."):
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+					if actionchallenge[d][2] == "addclaim":
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+					if actionchallenge[d][2] == "burn" and checkburn(me) and checkinchallengeplay("all",0) :
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+					if actionchallenge[d][2] == "returndead" and checkdeadtargaryen(1):
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+					if actionchallenge[d][2] == "3playeraddstr2" and checkfaction("Tyrell."):
 						if not actionattach.has_key(card._id):
 							actionattach[card._id] = 1
 						else:actionattach[card._id] += 1
@@ -5528,10 +6246,35 @@ def challengeaction(count):
 								if not actionattach.has_key(card._id):
 									actionattach[card._id] = 1
 								else:actionattach[card._id] += 1
+				if actionchallenge[d][5] == "ambush":
+					if actionchallenge[d][2] == "choosechallenge":
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+					if actionchallenge[d][2] == "removechallenge":
+						if not actionattach.has_key(card._id):
+							actionattach[card._id] = 1
+						else:actionattach[card._id] += 1
+
 
 	debug(actionattach)
-	if fplay(1) == me:action("challenge",1)
-	else:remoteCall(otherplayer, "action", ["challenge",1])
+	if len(actionattach) > 0:setGlobalVariable("action", "1")
+	if count == 1:remoteCall(otherplayer, "challengeaction", [2])
+	if count == 2:
+		if getGlobalVariable("action") == "1":
+			setGlobalVariable("action", "0")
+			if fplay(1) == me:action("challenge",1)
+			else:remoteCall(otherplayer, "action", ["challenge",1])
+		else:
+			if attacker == []:
+				if getGlobalVariable("activeplayer") == str(me._id):challengeAnnounce(table)
+				else:remoteCall(players[1], "challengeAnnounce", table)
+			else:
+				if defender == []:
+					if attacker == me:remoteCall(otherplayer, "announceOpp", [table])
+					else:announceOpp(table)
+				else:
+					challenge(table)
 
 def action(actioninsert,actioncount):
 	mute()
@@ -5550,6 +6293,7 @@ def action(actioninsert,actioncount):
 				if choice == 2:
 					if actioncount == 2:
 						notify("action over")
+						clearaction(1)
 					else:
 						actioncount += 1
 						remoteCall(otherplayer, "action", ["challenge",actioncount])
@@ -5559,6 +6303,7 @@ def action(actioninsert,actioncount):
 				if actioncards == []:
 					if actioncount == 2:
 						notify("action over")
+						clearaction(1)
 					else:
 						actioncount += 1
 						sessionpass = ""
@@ -5571,6 +6316,7 @@ def action(actioninsert,actioncount):
 		else:
 			if actioncount == 2:
 				notify("action over")
+				clearaction(1)
 			else:
 				actioncount += 1
 				remoteCall(otherplayer, "action", ["challenge",actioncount])
@@ -5614,10 +6360,11 @@ def intoaction(cards,count,sepass):
 	sessionpass = sepass
 	recount = count
 
-def delactioncard(count):
+def delactioncard(card):
 	mute()
 	global actioncardlimit
 	global actionattach
+	c = 0
 	if not actioncardlimit.has_key(card._id):
 		actioncardlimit[card._id] = 1
 	else:actioncardlimit[card._id] += 1
@@ -5630,6 +6377,7 @@ def delactioncard(count):
 	if c == 0:
 		actionattach[card._id] -= 1
 		if actionattach[card._id] == 0:del actionattach[card._id]
+	notify("action cancel.")
 
 
 
@@ -5644,6 +6392,7 @@ def actionforability(card,repass):
 	global savetarget
 	sessionpass = ""
 	c = 0
+	f = 0
 	debug(mainpass)
 	if repass == "challengeaction":
 		for d in actionchallenge:
@@ -5658,7 +6407,9 @@ def actionforability(card,repass):
 					if challengetype == 1:cardtoaction.highlight = MilitaryColor
 					if challengetype == 2:cardtoaction.highlight = IntrigueColor
 					if challengetype == 3:cardtoaction.highlight = PowerColor
-					setGlobalVariable("adddeftmp", str(cardtoaction._id))
+					aftercalculatestand = eval(getGlobalVariable("aftercalculatestand"))
+					aftercalculatestand.append(cardtoaction._id)
+					setGlobalVariable("aftercalculatestand", str(aftercalculatestand))
 					notify("{}'s {} action {} participating as a defender".format(me,card,cardtoaction))#OursistheFury
 				if actionchallenge[d][2] == "dischand":
 					remoteCall(otherplayer, "handview", ['all'])
@@ -5698,9 +6449,62 @@ def actionforability(card,repass):
 					else:
 						cardtoaction.moveTo(me.deck)
 						cardtoaction.index = 0
+				if actionchallenge[d][2] == "addstrdraw":
+					cardtoaction.markers[STR_Up] += 2
+					aftercalculatedraw = eval(getGlobalVariable("aftercalculatedraw"))
+					aftercalculatedraw.append(cardtoaction._id)
+					setGlobalVariable("aftercalculatedraw", str(aftercalculatedraw))
+					debug(getGlobalVariable("aftercalculatedraw"))
+					notify("{}'s {} action {} gets +2 STR.".format(me,card,cardtoaction))#FortheNorth
+				if actionchallenge[d][2] == "addclaim":
+					notify("{}'s {} action raise the claim value by 1.".format(me,card))#WinterIsComing
+				if actionchallenge[d][2] == "burn":
+					cardtoaction.markers[Burn] += 1
+					notify("{}'s {} action {} gets -4 STR".format(me,card,cardtoaction))#Dracarys
+					for cards in table:
+						cards.target(False)
+					if int(cardtoaction.strength) + cardtoaction.markers[STR_Up] - cardtoaction.markers[Burn]*4 <= 0:
+						f = 1
+						savetarget = cardtoaction
+				if actionchallenge[d][2] == "returndead":
+					if "Hatchling." in cardtoaction.Traits:
+						if me.isInverted: cardtoaction.moveToTable(150,-230)
+						else: cardtoaction.moveToTable(-130,130)
+						notify("{}'s {} action put {} into play".format(me,card,cardtoaction))#FireandBlood
+					else:
+						cardtoaction.moveTo(me.deck)
+						me.deck.shuffle()
+						notify("{}'s {} action shuffle {} back into {}'s' deck".format(me,card,cardtoaction,me))#FireandBlood
+				if actionchallenge[d][2] == "addstr3":
+					cardtoaction.markers[STR_Up] += 3
+					notify("{}'s {} action {} gets +3 STR.".format(me,card,cardtoaction))#MargaeryTyrell
+				if actionchallenge[d][2] == "attaddstr3":
+					cardtoaction.markers[STR_Up] += 3
+					notify("{}'s {} action {} gets +3 STR.".format(me,card,cardtoaction))#Heartsbane
+				if actionchallenge[d][2] == "standremovechallenge":
+					cardtoaction.orientation = 0
+					cardtoaction.highlight = None
+					notify("{}'s {} action Stand {} and remove it from the challenge.".format(me,card,cardtoaction))#Highgarden
+				if actionchallenge[d][2] == "3playeraddstr2":
+					for addcard in cardtoaction:
+						addcard.markers[STR_Up] += 2
+						notify("{}'s {} action {} gets +2 STR.".format(me,card,addcard))#GrowingStrong
+				if actionchallenge[d][2] == "choosechallenge":
+					choiceList = ['Military', 'Intrigue', 'Power']
+					colorList = ['#ae0603' ,'#006b34','#1a4d8f']
+					choice = askChoice("Which challenge do you want to cannot initiate?", choiceList,colorList)
+					if choice == 0:
+						actionforability(card,repass)
+						return
+					if choice == 1:notify("{}'s {} action name a Military challenge.".format(me,card))#OlennasInformant
+					if choice == 2:notify("{}'s {} action name a Intrigue challenge.".format(me,card))#OlennasInformant
+					if choice == 3:notify("{}'s {} action name a Power challenge.".format(me,card))#OlennasInformant
+				if actionchallenge[d][2] == "removechallenge":
+					card.target(False)
+					cardtoaction.highlight = None
+					notify("{}'s {} action remove {} from the challenge.".format(me,card,cardtoaction))#AreoHotah
 
-
-				cardtoaction == []	
+				cardtoaction == []
 				if not actioncardlimit.has_key(card._id):
 					actioncardlimit[card._id] = 1
 				else:actioncardlimit[card._id] += 1
@@ -5710,7 +6514,14 @@ def actionforability(card,repass):
 		if c == 0:
 			actionattach[card._id] -= 1
 			if actionattach[card._id] == 0:del actionattach[card._id]
-		remoteCall(otherplayer, "action", ["challenge",1])
+		if f == 1:
+			savetarget.highlight = miljudgecolor
+			setGlobalVariable("chaevent", str(me._id))
+			miljudgementfinish([savetarget],1)
+			remoteCall(otherplayer, "miljudgementfinish", [[savetarget],1])
+			remoteCall(otherplayer, "interruptevent", ["miljudgementfp",2])
+		else:
+			remoteCall(otherplayer, "action", ["challenge",1])
 
 def handview(vs):
 	mute()
