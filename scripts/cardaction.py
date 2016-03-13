@@ -101,7 +101,9 @@ actionchallenge =  dict( # 4.2.5 keywords
             MargaeryTyrell =         ("Margaery Tyrell","9e0df853-1c6d-4be2-b799-fe69524a6057","addstr3","table",1,""),
             Heartsbane =             ("Heartsbane","4c8a114e-106c-4460-846b-28f73914fc11","attaddstr3","table",1,""),
             Highgarden =             ("Highgarden","15ae647f-bc30-4cca-aeed-bb675c8096c7","standremovechallenge","table",1,""),
-            GrowingStrong =          ("Growing Strong","92d9670d-d842-4c6c-990c-e1e5cb05759d","3playeraddstr2","Hand",1,""))
+            GrowingStrong =          ("Growing Strong","92d9670d-d842-4c6c-990c-e1e5cb05759d","3playeraddstr2","Hand",1,""),
+            OlennasInformant =       ("Olenna's Informant","e1278811-db3b-4097-9f7c-54d9bab37f91","choosechallenge","Hand",1,"ambush"),
+            AreoHotah =              ("Areo Hotah","7412a0da-c314-4852-ab1f-04bb163dac39","removechallenge","Hand",1,"ambush"))
 
 
 keywordsreaction = dict(
