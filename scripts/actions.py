@@ -399,9 +399,10 @@ def announceOpp(group, x = 0, y = 0):
 						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
-						table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+						else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 						sessionpass = "mildefselect"
-						notify("**selectmode**")
+						notify("**{} into selectmode**".format(me))
 				elif choice == 2:
 					notify("{} declares no defenders.".format(me))
 					defender = me
@@ -418,9 +419,10 @@ def announceOpp(group, x = 0, y = 0):
 						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
-						table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+						else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 						sessionpass = "intdefselect"
-						notify("**selectmode**")
+						notify("**{} into selectmode**".format(me))
 				elif choice == 2:
 					if getGlobalVariable("automode") == "1":
 						c = 0
@@ -449,9 +451,10 @@ def announceOpp(group, x = 0, y = 0):
 						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
-						table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+						else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 						sessionpass = "powdefselect"
-						notify("**selectmode**")
+						notify("**{} into selectmode**".format(me))
 				elif choice == 2:
 					notify("{} declares no defenders.".format(me))
 					defender = me
@@ -1102,8 +1105,10 @@ def attatchcard(listattach):
 	me.setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
 	sessionpass = "attatchcardselect"
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
+	whisper("Please select a target for {}".format(listattach[0]))
 
 def reordertable(group, x = 0, y = 0):
 	mute()
@@ -1417,7 +1422,7 @@ def dominance(group, x=0, y=0):
 	notify("Dominance phase over.")
 	notify("Standing phase start")
 	setGlobalVariable("standingphase","1")
-	standingphase(table)
+	setTimer(me,"dominance",table)
 	return
 
 def standingphase(group, x=0, y=0):
@@ -1774,7 +1779,8 @@ def intomil(group):
 	targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.filter != WaitColor], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 	sessionpass = "milkillplayerselect"
 	whisper("Please select {} players to be killed".format(b))
 	whisper("**selectmode**")
@@ -1916,7 +1922,7 @@ def challengeAnnounce(group, x=0, y=0):
 				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
 				else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 				sessionpass = "milselect"
-				notify("**selectmode**")
+				notify("**{} into selectmode**".format(me))
 			elif choiceList[choice-1] == 'Intrigue':
 				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
@@ -1924,7 +1930,7 @@ def challengeAnnounce(group, x=0, y=0):
 				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
 				else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 				sessionpass = "intselect"
-				notify("**selectmode**")
+				notify("**{} into selectmode**".format(me))
 			elif choiceList[choice-1] == 'Power':
 				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
@@ -1932,7 +1938,7 @@ def challengeAnnounce(group, x=0, y=0):
 				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
 				else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 				sessionpass = "powselect"
-				notify("**selectmode**")
+				notify("**{} into selectmode**".format(me))
 			elif choiceList[choice-1] == 'No challenge and Pass':
 				notify("{} has no challenge to initiate.".format(me))
 				if getGlobalVariable("challengephase") == "1":
@@ -2039,7 +2045,8 @@ def intointerruptevent(count):
 	targetTuple = ([card._id for card in mjfinishcard if card.highlight == miljudgecolor], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 	sessionpass = "miljudgementselect"
 	notify("**{} into selectmode**".format(me))
 	smcount = count
@@ -2109,7 +2116,8 @@ def revealplot(group, x = 0, y = 0):
 			else:
 				card.peek()
 	else:
-		return
+		if getGlobalVariable("automode") == "1":revealplot(table)
+		else:return
 		
 def decidefirstplayer(group, x = 0, y = 0):
 	mute()
@@ -2228,7 +2236,8 @@ def marshalcard(group, x = 0, y = 0):
 	targetTuple = ([card._id for card in me.hand if card.type in ("Character","Location","Attachment")], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 	sessionpass = "marshalcardselect"
 	whisper("**selectmode**")			
 #---------------------------------------------------------------------------
@@ -2907,7 +2916,8 @@ def setTimer(player,actioninsert,group,x = 0,y = 0):
         whisper("You cannot start a new timer until the current one finishes!")
         return
     timerIsRunning = True
-    seconds = 2
+    if actioninsert == "dominance":seconds = 5
+    else:seconds = 2
     #whisper("please action in {} seconds.".format(seconds%60))
     notifications = range(11) + [30] + [x*60 for x in range(seconds/60+1)][1:]
     endTime = time.time() + seconds
@@ -2951,6 +2961,8 @@ def updateTimer(endTime,notifications,actioninsert):
 			reaction("aftercalculate",1)
 		if actioninsert == "keywords":
 			keywordforability(2)
+		if actioninsert == "dominance":
+			standingphase(table)
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -3590,8 +3602,9 @@ def intocharacterkill(cards,count):
 	targetTuple = ([card._id for card in table if card.controller == me and cards.has_key(card._id)], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
 	sessionpass = "killability"
 	kbcount = count
 
@@ -3799,8 +3812,9 @@ def discattch(group, x=0, y=0):
 	targetTuple = ([card._id for card in table if card.type == "Attachment"], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
 	sessionpass = "discattch"
 
 
@@ -3810,8 +3824,9 @@ def kneelplayer(group, x=0, y=0):
 	targetTuple = ([card._id for card in table if card.orientation == 0 and card.type == "Character"], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
 	sessionpass = "kneel"
 
 
@@ -4054,8 +4069,9 @@ def intoreaction(cards,count,sepass):
 	#targetTuple = ([card._id for card in table if card.controller == me and cards.has_key(card._id)], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
 	sessionpass = sepass
 	recount = count
 
@@ -4460,8 +4476,9 @@ def selectstealth(group, x=0, y=0):
 	targetTuple = ([card._id for card in table if card.type == "Character" and card.controller != me and card.keywords.find("Stealth") == -1], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
 	sessionpass = "stealthselect"
 
 def selectcard(group,dlgmax,dlgmin,dlgtitle,dlgtext):
@@ -4635,7 +4652,7 @@ def next(group, x=0, y=0):
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
 				sessionpass = "savecardselect"
-				notify("**selectmode**")
+				notify("**{} into selectmode**".format(me))
 				return
 			else:
 				whisper("You cannot save the character")
@@ -4652,7 +4669,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "bedefendselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 	if sessionpass == "bedefendselect":
 		if len(selectedcard) > 1:
@@ -4673,7 +4690,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "killselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return			
 	if sessionpass == "reactionaftu":
 		if len(selectedcard) > 1:
@@ -4691,7 +4708,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "attkilldefselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['GhastonGrey'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4705,7 +4722,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "returndefenderselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PuttotheSword'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4716,7 +4733,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "killselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['LikeWarmRain'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4726,7 +4743,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "Direwolfselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PuttotheTorch'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4737,7 +4754,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "Locationselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['TearsofLys'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4747,7 +4764,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "lysselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['PlazaofPunishment'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4767,7 +4784,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "popselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['TheMander'][1]:
 			kneel(selectedcard[0])
@@ -4779,7 +4796,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "stmselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['DothrakiSea'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4789,7 +4806,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "dothrakiselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['TheQueenofThorns'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4799,7 +4816,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "tyrellselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['MaesterCaleotte'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4809,7 +4826,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "submarkerselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == aftercalculate['Ice'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4819,7 +4836,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "iceselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 	if sessionpass == "challenge":
 		if len(selectedcard) > 1:
@@ -4838,7 +4855,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "kneelhouseok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['SelyseBaratheon'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4848,7 +4865,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "addintselectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['OursistheFury'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4858,7 +4875,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "adddefselectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['SeenInFlames'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4871,7 +4888,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "adddstrselectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['TheKrakensGrasp'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4881,7 +4898,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "ignorestrselectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['TheThingsIDoForLove'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4893,7 +4910,7 @@ def next(group, x=0, y=0):
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
 				sessionpass = "addstrdrawselectok"
-				notify("**selectmode**")
+				notify("**{} into selectmode**".format(me))
 				return
 			else:
 				delactioncard(nextcardtmp)
@@ -4909,7 +4926,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "addclaimselectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['WinterIsComing'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4925,7 +4942,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "burnselect"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['FireandBlood'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4951,7 +4968,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "addstr3selectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['Heartsbane'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4970,7 +4987,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "standremovechallengeselectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == actionchallenge['GrowingStrong'][1]:
 			nextcardtmp = selectedcard[0]
@@ -4980,7 +4997,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("tableTargets", str(targetTuple))
 			setGlobalVariable("selectmode", "1")
 			sessionpass = "3playeraddstr2selectok"
-			notify("**selectmode**")
+			notify("**{} into selectmode**".format(me))
 			return
 	if sessionpass == "burnselect":
 		dwtmpcard = selectedcard[0]
@@ -4992,7 +5009,7 @@ def next(group, x=0, y=0):
 		setGlobalVariable("tableTargets", str(targetTuple))
 		setGlobalVariable("selectmode", "1")
 		sessionpass = "burnselectok"
-		notify("**selectmode**")
+		notify("**{} into selectmode**".format(me))
 		return
 	if sessionpass == "actionok":
 		if len(selectedcard) > 1:
@@ -5300,9 +5317,10 @@ def next(group, x=0, y=0):
 					targetTuple = ([card._id for card in table if card.type == "Character" and card.highlight in (MilitaryColor,IntrigueColor,PowerColor)], me._id)
 					setGlobalVariable("tableTargets", str(targetTuple))
 					setGlobalVariable("selectmode", "1")
-					table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+					if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+					else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 					sessionpass = "removechallengeok"
-					notify("**selectmode**")
+					notify("**{} into selectmode**".format(me))
 					return
 				else:
 					for card in me.hand:
@@ -6094,8 +6112,9 @@ def keywordforability(count):
 						targetTuple = ([cards._id for cards in table if cards.controller != me and cards.type == "Character" and int(cards.Cost) <= me.counters['Str'].value - otherplayer.counters['Str'].value and cards.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
-						table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-						notify("**selectmode**")
+						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+						else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+						notify("**{} into selectmode**".format(me))
 						sessionpass = "initimidateselect"				
 						return
 					keywordattach.remove(card)
@@ -6355,8 +6374,9 @@ def intoaction(cards,count,sepass):
 	#targetTuple = ([card._id for card in table if card.controller == me and cards.has_key(card._id)], me._id) 
 	setGlobalVariable("tableTargets", str(targetTuple))
 	setGlobalVariable("selectmode", "1")
-	table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
-	notify("**selectmode**")
+	if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+	else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+	notify("**{} into selectmode**".format(me))
 	sessionpass = sepass
 	recount = count
 

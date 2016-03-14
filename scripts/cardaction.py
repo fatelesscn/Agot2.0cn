@@ -85,7 +85,7 @@ keywordslib = dict( # 4.2.5 keywords
             RandyllTarly =           ("Randyll Tarly","dd950122-b92e-4d6b-b1f4-d8a3f623a99a","Renown."),
             TheKnightofFlowers =     ("The Knight of Flowers","dfb7512e-0d80-4dff-8fdf-4807d93ba159","Renown."))
 
-actionchallenge =  dict( # 4.2.5 keywords
+actionchallenge =  dict( # 4.2 action
             WildlingHorde =          ("Wildling Horde","21dda206-536e-4944-8158-b3d174e2b872","kneelhouse+2str","table",1,""),
             SelyseBaratheon =        ("Selyse Baratheon","88de8a8f-4d15-415c-96c8-38edc8f8fe99","addinticon","table",1,""),
             OursistheFury =          ("Ours is the Fury","9d1702a8-32c9-41c2-bbd4-2ce00885e20a","adddef","Hand",1,"defender"),
