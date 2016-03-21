@@ -1,5 +1,18 @@
 # Agot2.0cn
 
+2016-3-19
+finished plot card
+
+![q1] (https://img.alicdn.com/imgextra/i3/66534757/TB2KEDKfpXXXXbiXpXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i3/66534757/TB2UJ2KfpXXXXbQXpXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i3/66534757/TB2XkTZfpXXXXb.XXXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i2/66534757/TB2zOPYfpXXXXclXXXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i3/66534757/TB2bSD9fpXXXXX7XXXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i3/66534757/TB2XzTGfpXXXXcBXpXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i4/66534757/TB2gG2YfpXXXXcwXXXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+![q1] (https://img.alicdn.com/imgextra/i4/66534757/TB2Jnv8fpXXXXXlXXXXXXXXXXXX_!!66534757.jpg_160x160.jpg)
+
+
 2016-3-15
 
 finished automation process(setup,plot,marshal,challenge,dominace,standing,taxaciton)
