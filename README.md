@@ -1,5 +1,9 @@
 # Agot2.0cn
 
+2016-3-15
+
+finished automation process(setup,plot,marshal,challenge,dominace,standing,taxaciton)
+
 
 2016-2-24
 
