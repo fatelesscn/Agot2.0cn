@@ -109,6 +109,18 @@ actionchallenge =  dict( # 4.2 action
 keywordsreaction = dict(
              EuronCrowsEye =         ("Euron Crow's Eye","912e5447-89b3-4896-903c-6f5ed78113e1","all","both","controlllocation",1,"table",""))
 
+plotdict =  dict( # plot
+            AGameofThrones =         ("A Game of Thrones","c6d4c560-873d-425e-a05c-7dd2eb57c324","winint"),
+            ANobleCause =            ("A Noble Cause","0fb3ad4b-5cf3-49e9-a33f-484ecafeabf8","firstll"),
+            AStormofSwords =         ("A Storm of Swords","a02bce64-e292-487e-a666-cd07b4a11e59","addmilcount"),
+            BuildingOrders =         ("Building Orders","34e54ffc-9806-49da-a8a0-d38a17f6753d","10searchatloc"),
+            CallingtheBanners =      ("Calling the Banners","3a3577a4-5ee1-4e9f-a674-49e9f9e81568","1c1g"),
+            CalmOverWesteros =       ("Calm Over Westeros","4ee52602-89fa-4048-accc-dffdb78bee69","subclaim"),
+            Confiscation =           ("Confiscation","446ac0b9-746f-4aa3-b8bf-f132d2b29499","discattachment"),
+            CountingCoppers =        ("Counting Coppers","1b362220-c8c2-4600-b204-06342e58b09c","draw3"),
+            FilthyAccusations =      ("Filthy Accusations","ac8effb7-76cb-42e4-ab33-d88a407c0dda","kneel"),
+            HeadsonSpikes =          ("Heads on Spikes","424194c0-ad9c-473b-b254-40b1274152ba","discplayer"))
+
 def debug(str):
 	mute()
 	global debugMode

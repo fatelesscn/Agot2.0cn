@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
-<game name="AGOT2.0 CHTEST"
-      id="30c200c9-6c98-49a4-a293-106c06295c05"
+<game name="AGOT2.0 TEST"
+      id="c79b3612-748e-430b-a578-033936365582"
       octgnVersion="3.1.0.0"
       version="1.1.0.2"
       scriptVersion="3.1.0.2"
@@ -17,6 +17,7 @@
     <scripts>
         <script src="scripts/actions.py"/>
         <script src="scripts/cardaction.py"/>
+        <script src="scripts/changelog.py"/>
     </scripts>
     <globalvariables>
 	    <globalvariable name="firstplay" value="True" />
@@ -25,6 +26,7 @@
 		<globalvariable name="numplayer" value="0" />
 	</globalvariables>
     <events>
+        <event name="OnTableLoaded" action="on_table_load" />
         <event name="OnDeckLoaded" action="onloaddeck" />
         <event name="OnCardsMoved" action="onmoved" />
         <event name="OnCardDoubleClicked" action="ondbclick" />
@@ -92,7 +94,7 @@
     </card>
 
     <table name="Table" visibility="undefined" ordered="False" width="960" height="540" background="background/background.jpg" backgroundStyle="uniformToFill">       
-        <groupactions    menu="游戏设定">
+       <groupactions    menu="游戏操作">
             <groupaction     menu="开局"                                      shortcut=""       default="False"      execute="setup"/>
             <groupaction     menu="计算手牌上限"                    shortcut="ALT+R"  default="False"      execute="getreserve"/>
             <groupaction     menu="计算权力标记"                     shortcut="CTRL+R" default="False"      execute="recalcPower"/>
@@ -177,7 +179,7 @@
         </cardactions>
     </table>
     
-    <player summary=" 权力标记: {#Power} / 金币: {#Gold} / 手牌上限: {#Reserve} / 优先值: {#Initiative}/ 能力值: {#Str} ">
+    <player summary=" 权力标记: {#Power} / 金币: {#Gold} / 手牌上限: {#Reserve} / 优先值: {#Initiative}/ 能力值: {#Str} / 手牌数: {#Hand} ">
         <counter name="Power"       icon="counters/power.png"/>
         <counter name="Gold"        icon="counters/gold.png"/>
         <counter name="Reserve"     icon="counters/reserve.png"/>
@@ -198,7 +200,7 @@
             <groupaction menu="补牌"                               shortcut="CTRL+D" default="True"                   execute="draw"/>
             <groupaction menu="补多张牌"                          shortcut="CTRL+SHIFT+D"                            execute="drawMany"/>
             <groupaction menu="从牌堆顶部弃除"                                                                 execute="discardManyFromTop"/>
-			<cardaction menu="移动到牌堆底"                                                                 execute="movetobottom"/>
+            <cardaction menu="移动到牌堆底"                                                                 execute="movetobottom"/>
         </group>
         
         <group name="Plot Deck" visibility="me"               width="63" height="88" icon="groups/plot.png">
@@ -215,12 +217,12 @@
             <groupaction menu="随机选择1张加入手牌"                                                               execute="moveOneRandom"/>
         </group>
     </player>
-	<shared>
+    <shared>
         <group name="Titles" visibility="none"                width="63" height="88"                                  collapsed="True">
             <groupaction menu="洗混"                                                                               execute="shuffle"/>
             <groupaction menu="创建头衔牌"                                                                         execute="createTitles"/>
-			<groupaction menu="移除1张头衔牌"                                                                  execute="removeTitles"/>
-			<cardaction  menu="选取头衔牌"                                                             execute="chooseTitle"      default="True"/>
+            <groupaction menu="移除1张头衔牌"                                                                  execute="removeTitles"/>
+            <cardaction  menu="选取头衔牌"                                                             execute="chooseTitle"      default="True"/>
         </group>
     </shared>
     <deck>
