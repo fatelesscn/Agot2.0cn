@@ -1250,9 +1250,12 @@ def countincome(group, x=0, y=0):
 						if card.controller == me and card.type == "Plot" and card.filter == None]
 		plotlist.reverse()
 		for plotcard in plotlist:
-			me.counters['Gold'].value += int(plotcard.plotgoldincome)
-			plotcard.markers[Gold] += me.counters['Gold'].value
-			break
+			if getGlobalVariable("Kingdomgold0") == "1" and "Kingdom" in plotcard.Traits:me.counters['Gold'].value += 0
+			elif getGlobalVariable("Edictgold0") == "1" and "Edict" in plotcard.Traits:me.counters['Gold'].value += 0
+			else:
+				me.counters['Gold'].value += int(plotcard.plotgoldincome)
+				plotcard.markers[Gold] += me.counters['Gold'].value
+				break
 		notify("{} counts income {} gold.".format(me,me.counters['Gold'].value))
 		plotlist.reverse()
 		me.setGlobalVariable("turn", "1")
@@ -1493,11 +1496,11 @@ def taxationphase(group, x = 0, y = 0):
 	me.counters['Str'].value = 0
 	me.setGlobalVariable("turn", "0")
 	me.setGlobalVariable("firstevent", "0")	
-	me.setGlobalVariable("milcount","1")
+	me.setGlobalVariable("milcount","0")
 	me.setGlobalVariable("milcountmax","1")	
-	me.setGlobalVariable("intcount","1")
+	me.setGlobalVariable("intcount","0")
 	me.setGlobalVariable("intcountmax","1")
-	me.setGlobalVariable("powcount","1")
+	me.setGlobalVariable("powcount","0")
 	me.setGlobalVariable("powcountmax","1")
 	me.setGlobalVariable("active","0")
 
@@ -1877,21 +1880,25 @@ def challengeAnnounce(group, x=0, y=0):
 			if getGlobalVariable("winint") == "1" and me.getGlobalVariable("intwin") != "1":
 				ccc = 0
 				whisper("you cannot initiate a [MIL] or [POW] challenge unless won an [INT] challenge this phase.")#AGameofThrones
-			if int(me.getGlobalVariable("milcount")) <= int(me.getGlobalVariable("milcountmax")) and ccc == 1:
+			if me.getGlobalVariable("limitchallenge") != "0":
+				if int(me.getGlobalVariable("milcount")) == int(me.getGlobalVariable("limitchallenge")) or int(me.getGlobalVariable("intcount")) == int(me.getGlobalVariable("limitchallenge")) or int(me.getGlobalVariable("powcount")) == int(me.getGlobalVariable("limitchallenge")):
+					ccc = 0
+					whisper("you cannot challenge this phase.")#SneakAttack
+			if int(me.getGlobalVariable("milcount")) < int(me.getGlobalVariable("milcountmax")) and ccc == 1:
 				for card in table: 
 					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
 						choiceList.append('Military')
 						colorList.append('#ae0603')
 						cc = 1
 						break
-			if int(me.getGlobalVariable("intcount")) <= int(me.getGlobalVariable("intcountmax")):
+			if int(me.getGlobalVariable("intcount")) < int(me.getGlobalVariable("intcountmax")):
 				for card in table: 
 					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
 						choiceList.append('Intrigue')
 						colorList.append('#006b34')
 						cc = 1
 						break
-			if int(me.getGlobalVariable("powcount")) <= int(me.getGlobalVariable("powcountmax")) and ccc == 1:
+			if int(me.getGlobalVariable("powcount")) < int(me.getGlobalVariable("powcountmax")) and ccc == 1:
 				for card in table: 
 					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
 						choiceList.append('Power')
@@ -2098,6 +2105,14 @@ def revealplot(group, x = 0, y = 0):
 	dlg.text = "Select a plot card to reveal."
 	cards = dlg.show()
 	if cards != None:
+		#reset
+		setGlobalVariable("challengeplayer","0")
+		me.setGlobalVariable("cantuseevent", "0")
+		me.setGlobalVariable("cantuselocation", "0")
+		me.setGlobalVariable("cantuseattach", "0")
+		setGlobalVariable("Kingdomgold0","0")
+		setGlobalVariable("Edictgold0","0")
+		
 		countxy = 5
 		for c in table: 
 			if c.Type == "Plot" and c.controller == me:
@@ -2213,6 +2228,7 @@ def plotability(card):
 	global nextcardtmp
 	global plotcard
 	list10 = []
+	listcount = 0
 	searchok = 0
 	drawcount = 0
 	cards = None
@@ -2228,21 +2244,26 @@ def plotability(card):
 				me.setGlobalVariable("milcountmax",str(int(me.getGlobalVariable("milcountmax"))+1))
 				notify("{} reaveled {}, may initiate an additional [MIL] challenge during the challenges phase.".format(me,card,me))#AStormofSwords
 			if plotdict[d][2] == "10searchatloc":
-				list10 = me.deck.top(10)
-				for c in list10:
+				if len(me.deck) < 10:listcount = len(me.deck)
+				else:listcount = 10
+				for c in me.deck.top(listcount):
 					if c.Type in ("Attachment","Location"):
 						searchok = 1
-						break
-				dlg = cardDlg(list10)
+				dlg = cardDlg(me.deck.top(listcount))
 				dlg.title = "These cards are in your deck:"
-				dlg.text = "select 1 card add it to your hand."
+				dlg.text = "select 1 Character card add it to your hand."
 				dlg.min = 0
 				dlg.max = 1
 				cards = dlg.show()
-				if cards != None and cards[0].Type in ("Attachment","Location"):
-					cards[0].moveTo(me.hand)
-					me.deck.shuffle()
-					notify("{} reaveled {}, add {} to {} hand.".format(me,card,cards[0],me))#BuildingOrders
+				if cards != [] and cards != None:
+					if cards[0].Type in ("Attachment","Location"):
+						cards[0].moveTo(me.hand)
+						me.deck.shuffle()
+						notify("{} reaveled {}, add {} to {} hand.".format(me,card,cards[0],me))#BuildingOrders
+					else:
+						if searchok == 1:
+							if confirm("There is a Attachment or Location in these cards, select again？"):plotability(card)
+						else:notify("search failed")
 				else:
 					if searchok == 1:
 						if confirm("There is a Attachment or Location in these cards, select again？"):plotability(card)
@@ -2308,6 +2329,89 @@ def plotability(card):
 			if plotdict[d][2] == "discplayer":
 				cards = players[1].hand.random()
 				remoteCall(players[1], "HeadsonSpikes", [card,cards])
+			if plotdict[d][2] == "challenge1player":
+				setGlobalVariable("challengeplayer","1")
+				notify("{} reaveled {}, Each player cannot declare more than 1 character as an attacker or a defender in each challenge.".format(me,card))#JoustingContest
+			if plotdict[d][2] == "challenge1player":
+				me.setGlobalVariable("cantuseevent", "1")
+				me.setGlobalVariable("cantuselocation", "1")
+				me.setGlobalVariable("cantuseattach", "1")
+				notify("{} reaveled {}, {} cannot marshal locations or attachments, or play events.".format(me,card,me))#MarchingOrders
+			if plotdict[d][2] == "glod0":
+				setGlobalVariable("Kingdomgold0","1")
+				setGlobalVariable("Edictgold0","1")
+				notify("{} reaveled {}, Treat the base gold value on each revealed Kingdom and each revealed Edict plot card as if it were 0.".format(me,card))#NavalSuperiority
+			if plotdict[d][2] == "adddisc3":
+				if len(me.piles['Discard pile']) > 0:
+					for c in me.piles['Discard pile']:
+						list10.append(c)
+					dlg = cardDlg(list10)
+					dlg.title = "These cards are in your deck:"
+					dlg.text = "select Choose up to 3 cards shuffle them into your deck."
+					dlg.min = 0
+					dlg.max = 3
+					cards = dlg.show()
+					if cards != None:
+						for d in cards:
+							d.moveTo(me.deck)
+						me.deck.shuffle()
+						drawcount = len(cards)
+				else:drawcount = 0
+				notify("{} reaveled {}, choose {} cards shuffle them into {} deck..".format(me,card,drawcount,me))#Rebuilding
+			if plotdict[d][2] == "1challenge":
+				me.setGlobalVariable("limitchallenge", "1")
+				notify("{} reaveled {}, {} cannot initiate more than 1 challenge in the challenges phase.".format(me,card,me))#SneakAttack
+			if plotdict[d][2] == "10searchcha":
+				if len(me.deck) < 10:listcount = len(me.deck)
+				else:listcount = 10
+				for c in me.deck.top(listcount):
+					if c.Type in ("Character"):
+						searchok = 1
+				dlg = cardDlg(me.deck.top(listcount))
+				dlg.title = "These cards are in your deck:"
+				dlg.text = "select 1 Character card add it to your hand."
+				dlg.min = 0
+				dlg.max = 1
+				cards = dlg.show()
+				if cards != [] and cards != None:
+					if cards[0].Type in ("Character"):
+						cards[0].moveTo(me.hand)
+						me.deck.shuffle()
+						notify("{} reaveled {}, add {} to {} hand.".format(me,card,cards[0],me))#Summons
+					else:
+						if searchok == 1:
+							if confirm("There is a Character in these cards, select again？"):plotability(card)
+						else:notify("search failed")
+				else:
+					if searchok == 1:
+						if confirm("There is a Character in these cards, select again？"):plotability(card)
+					else:notify("search failed")
+			if plotdict[d][2] == "search5c":
+				choiceList = ['Hand','Discard pile']
+				colorList = ['#ae0603' ,'#1a4d8f']
+				choice = askChoice("Which deck do you want to select?", choiceList,colorList)
+				if choice == 0:
+					plotability(card)
+					return
+				if choice == 1:
+					for c in me.hand:
+						if c.type == "Character" and int(c.cost) <= 5:
+							list10.append(c)
+				if choice == 2:
+					for c in me.piles['Discard pile']:
+						if c.type == "Character" and int(c.cost) <= 5:
+							list10.append(c)
+				dlg = cardDlg(list10)
+				dlg.title = "These cards are in your deck:"
+				dlg.text = "select 1 Character card put it into play.do not select card to reselect."
+				dlg.min = 0
+				dlg.max = 1
+				cards = dlg.show()
+				if cards != [] and cards != None:
+					if me.isInverted:cards[0].moveToTable(20,-100)			
+					else:cards[0].moveToTable(-20,0)
+					notify("{} reaveled {}, put {} to into play.".format(me,card,cards[0]))#Reinforcements
+				elif cards == []:plotability(card)
 
 
 
@@ -2566,6 +2670,15 @@ def play(card):
 	ambush = 0
 	fll = 0
 	if getGlobalVariable("selectmode") == "1":return#and sessionpass == "savecardselect":return
+	if card.type == "Event" and me.getGlobalVariable("cantuseevent") == "1":
+		whisper("You cannot play events.")
+		return
+	if card.type == "Location" and me.getGlobalVariable("cantuselocation") == "1":
+		whisper("You cannot marshal locations .")
+		return
+	if card.type == "Attachment" and me.getGlobalVariable("cantuseattach") == "1":
+		whisper("You cannot marshal attachments ")
+		return
 	c = 0
 	if card.cost == "" : 
 		whisper("You can't play this card")
@@ -2934,7 +3047,7 @@ def movetobottom(card):
 def on_table_load():
 	mute()
 	ver = "1.4.2.0"
-	log = changelog["1.4.2.0"]
+	log = changelogcn["1.4.2.0"]
 	log = '\n\n>>> '.join(log)
 	choice = confirm("Changes in {}:\n>>> {}\n\nSee more info?".format(ver, log))
 	if choice == True:openUrl('https://github.com/TassLehoff/AGoTv2-OCTGN')
@@ -2976,11 +3089,11 @@ def onloaddeck(args):
 	setGlobalVariable("challengephase","1")
 	setGlobalVariable("standingphase","0")
 	setGlobalVariable("taxationphase","0")
-	me.setGlobalVariable("milcount","1")
+	me.setGlobalVariable("milcount","0")
 	me.setGlobalVariable("milcountmax","1")
-	me.setGlobalVariable("intcount","1")
+	me.setGlobalVariable("intcount","0")
 	me.setGlobalVariable("intcountmax","1")
-	me.setGlobalVariable("powcount","1")
+	me.setGlobalVariable("powcount","0")
 	me.setGlobalVariable("powcountmax","1")
 	setGlobalVariable("action","0")
 	setGlobalVariable("activeplayer","")
@@ -2990,6 +3103,16 @@ def onloaddeck(args):
 	me.setGlobalVariable("submilclaim", "0")
 	me.setGlobalVariable("subintclaim", "0")
 	me.setGlobalVariable("subpowclaim", "0")
+	setGlobalVariable("challengeplayer","0")
+
+	me.setGlobalVariable("cantuseevent", "1")
+	me.setGlobalVariable("cantuselocation", "1")
+	me.setGlobalVariable("cantuseattach", "1")
+
+	setGlobalVariable("Kingdomgold0","0")
+	setGlobalVariable("Edictgold0","0")
+
+	me.setGlobalVariable("limitchallenge", "0")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -5231,9 +5354,17 @@ def next(group, x=0, y=0):
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to reaction.")
 			return
+	if sessionpass  in ("milselect","intselect","powselect","mildefselect","intdefselect","powdefselect"):
+		if getGlobalVariable("challengeplayer") != "0":
+			cpc = int(getGlobalVariable("challengeplayer"))
+			if len(selectedcard) > cpc:
+				whisper("You must select only {} Character.".format(cpc))
+				for card in table:
+					card.target(False)
+				return
 	for cardn in table:
 		if cardn.name == "nextbutton" and cardn.controller == me:
-			cardn.delete()
+			cardn.delete()#delete nextbutton
 			stealthcount = 0
 	setGlobalVariable("selectmode", "0")
 	if intertreaction == 0 and sessionpass != "attatchcardselect":

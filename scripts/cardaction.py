@@ -119,7 +119,14 @@ plotdict =  dict( # plot
             Confiscation =           ("Confiscation","446ac0b9-746f-4aa3-b8bf-f132d2b29499","discattachment"),
             CountingCoppers =        ("Counting Coppers","1b362220-c8c2-4600-b204-06342e58b09c","draw3"),
             FilthyAccusations =      ("Filthy Accusations","ac8effb7-76cb-42e4-ab33-d88a407c0dda","kneel"),
-            HeadsonSpikes =          ("Heads on Spikes","424194c0-ad9c-473b-b254-40b1274152ba","discplayer"))
+            HeadsonSpikes =          ("Heads on Spikes","424194c0-ad9c-473b-b254-40b1274152ba","discplayer"),
+            JoustingContest =        ("Jousting Contest","0b94080f-2207-4663-8990-f9370ab77709","challenge1player"),
+            MarchingOrders =         ("Marching Orders","d526faac-594d-4f40-9da5-42300d44c12e","cantuselia"),
+            NavalSuperiority =       ("Naval Superiority","68448806-ca58-496d-b010-2794fd372744","gold0"),
+            Rebuilding =             ("Rebuilding","fedb6fe6-2f55-4c42-9798-3e091b2b2573","adddisc3"),
+            SneakAttack =            ("Sneak Attack","d4576f9d-16a6-430e-9f73-217216fd43b9","1challenge"),
+            Summons =                ("Summons","a380b0e0-610c-47f9-ac9f-ae12163b45fd","10searchcha"),
+            Reinforcements =         ("Reinforcements","5de352a4-c6fd-478c-bac0-39b78de1e68c","search5c"))
 
 def debug(str):
 	mute()
