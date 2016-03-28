@@ -2412,7 +2412,106 @@ def plotability(card):
 					else:cards[0].moveToTable(-20,0)
 					notify("{} reaveled {}, put {} to into play.".format(me,card,cards[0]))#Reinforcements
 				elif cards == []:plotability(card)
+			if plotdict[d][2] == "disc1player":
+				notify("{} reaveled {}, Each player chooses a character he or she controls (if able), and discards it from play (cannot be saved).".format(me,card))#MarchedtotheWall
+				if fplay(1) == me:plotdisccharacter("disc1",card)
+				else:remoteCall(players[1], "plotdisccharacter", ["disc1",card])
+			if plotdict[d][2] == "kill3player":
+				if fplay(1) == me:plotdisccharacter("kill1",card)
+				else:remoteCall(players[1], "plotdisccharacter", ["kill1",card])
 
+
+def plotdisccharacter(typep,card):
+	mute()
+	global sessionpass
+	global plotcard
+	if typep == "disc1":
+		plotcard = card
+		if checkcharacter(me):
+			targetTuple = ([cards._id for cards in table if cards.Type == "Character" and cards.filter == None and cards.controller == me], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "plotdisccharacter1"
+			if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+			else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+			setGlobalVariable("plotdisc","1")
+		else:remoteCall(players[1], "plotdisccharacter", ["disc2",card])
+	if typep == "disc2":
+		plotcard = card
+		if checkcharacter(me):
+			targetTuple = ([cards._id for cards in table if cards.Type == "Character" and cards.filter == None and cards.controller == me], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "plotdisccharacter2"
+			if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+			else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+			setGlobalVariable("plotdisc","1")
+		else:remoteCall(fplay(1), "plotleave", [selectedcard,1])
+	if typep == "kill1":
+		plotcard = card
+		if checkcharacter(me):
+			targetTuple = ([cards._id for cards in table if cards.Type == "Character" and cards.filter == None and cards.controller == me], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "plotkillcharacter1"
+			if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+			else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+			setGlobalVariable("plotkill","1")
+		else:remoteCall(players[1], "plotdisccharacter", ["kill2",card])
+	if typep == "kill2":
+		plotcard = card
+		if checkcharacter(me):
+			targetTuple = ([cards._id for cards in table if cards.Type == "Character" and cards.filter == None and cards.controller == me], me._id) 
+			setGlobalVariable("tableTargets", str(targetTuple))
+			setGlobalVariable("selectmode", "1")
+			sessionpass = "plotkillcharacter2"
+			if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
+			else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
+			setGlobalVariable("plotkill","1")
+		else:
+			cardbekill = []
+			for card in table:
+				if card.highlight == miljudgecolor:cardbekill.append(card)
+			remoteCall(fplay(1), "characterkilled", [cardbekill,1])
+			
+
+
+def plotleave(cardbekill,count):
+	mute()
+	global abilityattach
+	debug(abilityattach)
+	c = 0
+	list = []
+	for card in table:
+		if card.type == "Attachment":
+			list.append(card)
+	for card in cardbekill:
+		for d in cardkill:
+			if card.model == cardkill[d][1] and card.controller == me and cardkill[d][2] != "link":
+				if cardkill[d][4] == "Attachment":
+					if len(list) > 0:
+						if not abilityattach.has_key(card._id):
+							abilityattach[card._id] = 1
+						else:abilityattach[card._id] += 1
+	if count == 1:remoteCall(otherplayer, "plotleave", [selectedcard,2])
+	if count == 2:remoteCall(fplay(1), "interruptevent", ["characterkill",1])
+
+
+def plotdisccard(count):
+	mute()
+	global selectedcard
+	global sessionpass
+	global nextcardtmp
+	global plotcard
+	if nextcardtmp != []:disc(nextcardtmp)
+	notify("{} disc {} for {}.".format(me,nextcardtmp,plotcard))
+	nextcardtmp = []
+	selectedcard = []
+	plotcard = []
+	if count == 1:
+		remoteCall(otherplayer, "plotdisccard", [2])
+	else:
+		setGlobalVariable("plotdisc","0")
 
 
 def HeadsonSpikes(card,cards):
@@ -3079,7 +3178,7 @@ def onloaddeck(args):
 	setGlobalVariable("ignorestr", "[]")
 	setGlobalVariable("addclaim","0")
 	setGlobalVariable("addclaimall","0")
-	setGlobalVariable("reavelplot","0")
+	setGlobalVariable("reavelplot","1")
 	setGlobalVariable("drawphase","0")
 	setGlobalVariable("marshalphase","0")
 	me.setGlobalVariable("inmarshal","1")
@@ -3105,14 +3204,17 @@ def onloaddeck(args):
 	me.setGlobalVariable("subpowclaim", "0")
 	setGlobalVariable("challengeplayer","0")
 
-	me.setGlobalVariable("cantuseevent", "1")
-	me.setGlobalVariable("cantuselocation", "1")
-	me.setGlobalVariable("cantuseattach", "1")
+	me.setGlobalVariable("cantuseevent", "0")
+	me.setGlobalVariable("cantuselocation", "0")
+	me.setGlobalVariable("cantuseattach", "0")
 
 	setGlobalVariable("Kingdomgold0","0")
 	setGlobalVariable("Edictgold0","0")
 
 	me.setGlobalVariable("limitchallenge", "0")
+
+	setGlobalVariable("plotdisc","0")
+	setGlobalVariable("plotkill","0")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -3868,7 +3970,8 @@ def interruptevent(actioninsert,interruptpasscount):
 					return
 				else:
 					if interruptpasscount == 2:
-						cardleavetable(1)
+						if getGlobalVariable("plotdisc") == "1":plotdisccard(1)
+						else:cardleavetable(1)
 					else:
 						interruptpasscount += 1
 						remoteCall(otherplayer, "interruptevent", ["characterkill",interruptpasscount])
@@ -3877,7 +3980,8 @@ def interruptevent(actioninsert,interruptpasscount):
 				killcards = selectedcard
 				if killcards == []:
 					if interruptpasscount == 2:
-						cardleavetable(1)
+						if getGlobalVariable("plotdisc") == "1":plotdisccard(1)
+						else:cardleavetable(1)
 					else:
 						interruptpasscount += 1
 						sessionpass = ""
@@ -3890,7 +3994,8 @@ def interruptevent(actioninsert,interruptpasscount):
 					remoteCall(otherplayer, "checkinterruptkill", [killcard])
 		else:
 			if interruptpasscount == 2:
-				cardleavetable(1)
+				if getGlobalVariable("plotdisc") == "1":plotdisccard(1)
+				else:cardleavetable(1)
 			else:
 				interruptpasscount += 1
 				remoteCall(otherplayer, "interruptevent", ["characterkill",interruptpasscount])
@@ -4157,7 +4262,7 @@ def cardleavetable(count):
 					notify("{} killed {}.".format(me,card))
 				card.moveTo(me.piles['Dead pile'])
 	leavecardtype = []
-	abilityattach = []
+	abilityattach = {}
 	if count == 1:
 		remoteCall(otherplayer, "getleavetablecard", [leavetablecard])
 		remoteCall(otherplayer, "cardleavetable", [2])
@@ -4169,7 +4274,7 @@ def cardleavetable(count):
 			if card1.controller == me:
 				checkreactioncard(1)
 			else:
-				remoteCall(otherplayer, "checkreaction", [1])
+				remoteCall(otherplayer, "checkreactioncard", [1])
 
 def getleavetablecard(leavetablecardn):
 	global leavetablecard
@@ -4222,7 +4327,8 @@ def reaction(actioninsert,reactioncount):
 				if getGlobalVariable("insertre") != "":
 					restoreinterruptlib(1)
 					return
-				if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
+				if getGlobalVariable("plotkill") == "1":return
+				if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)			
 				else:remoteCall(winplayer, "keyword", [1])
 			else:
 				reactioncount += 1
@@ -5346,6 +5452,16 @@ def next(group, x=0, y=0):
 		if len(selectedcard) > 1:
 			whisper("You must select only one Character.")
 			return
+	if sessionpass == "plotdisccharacter1" or sessionpass == "plotdisccharacter2":
+		if len(selectedcard) > 1 or len(selectedcard) == 0:
+			whisper("You must select only one Character.")
+			return
+	if sessionpass == "plotkillcharacter1" or sessionpass == "plotkillcharacter2":
+		if len(selectedcard) > 3:
+			whisper("You must select up to 3 characters.")
+			return
+		if len(selectedcard) == 0:
+			if not confirm ("This will kill all of your characters,continue?"):return
 	if sessionpass == "killabilitychooseone":
 		if len(selectedcard) > 1:
 			whisper("You must select only one Character.")
@@ -5682,6 +5798,29 @@ def next(group, x=0, y=0):
 			nextcardtmp = []
 			sessionpass = ""
 			return
+	if sessionpass == "plotdisccharacter1":
+		sessionpass = ""
+		nextcardtmp = selectedcard[0]
+		remoteCall(players[1], "plotdisccharacter", ["disc2",plotcard])
+	if sessionpass == "plotdisccharacter2":
+		sessionpass = ""
+		nextcardtmp = selectedcard[0]
+		remoteCall(fplay(1), "plotleave", [selectedcard,1])
+	if sessionpass == "plotkillcharacter1":
+		sessionpass = ""
+		for cards in table:
+			if cards.Type == "Character" and cards.filter == None and cards.controller == me and cards not in selectedcard:cards.highlight = miljudgecolor
+		remoteCall(players[1], "plotdisccharacter", ["kill2",plotcard])
+	if sessionpass == "plotkillcharacter2":
+		sessionpass = ""
+		for cards in table:
+			if cards.Type == "Character" and cards.filter == None and cards.controller == me and cards not in selectedcard:cards.highlight = miljudgecolor
+		cardbekill = []
+		for card in table:
+			if card.highlight == miljudgecolor:cardbekill.append(card)
+		remoteCall(fplay(1), "characterkilled", [cardbekill,1])
+
+
 
 
 def stealthcard(group, x=0, y=0):
@@ -5992,6 +6131,12 @@ def checkotherloaction(count):
 		if card.Type == "Location" and card.controller != me:
 			list.append(card)
 	return len(list)
+
+def checkcharacter(player):
+	mute()
+	for card in table:
+		if card.Type == "Character" and card.controller == player:
+			return True
 
 def checkothercharacter(count):
 	mute()

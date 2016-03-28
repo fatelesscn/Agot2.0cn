@@ -13,8 +13,8 @@ cardability = dict( # save card ability
              RisenfromtheSea =            ("Risen from the Sea", "0e42b4fb-8a0e-40d1-a398-fd9c0f7912a4", "Attachment", "Greyjoy", "savetarget"))
 
 cardkill = dict( # leave ability
-             BenjenStark =            ("Benjen Stark", "dcbbfe54-078f-44c9-88e7-02efe235911c", "me", "2 power"),
-             SerDavosSeaworth =       ("Ser Davos Seaworth", "813fb666-b32f-4ae9-b2ac-3fe09adccf9a", "none", ""),
+             BenjenStark =            ("Benjen Stark", "dcbbfe54-078f-44c9-88e7-02efe235911c", "me", "2 power",""),
+             SerDavosSeaworth =       ("Ser Davos Seaworth", "813fb666-b32f-4ae9-b2ac-3fe09adccf9a", "none", "",""),
              ViserysTargaryen =       ("Viserys Targaryen", "6580b898-de89-4a6d-89b4-72cfc3b505e6", "all", "discard", "Attachment"),
              SerWaymarRoyce =         ("Ser Waymar Royce", "e65c6d16-075b-4634-a490-a200bb75e3be", "other", "discard", "card"),
              ShireenBaratheon =       ("Shireen Baratheon", "6967fd81-f9f9-4077-8d5a-c9ca189a5e41", "all", "kneel", "Character"),
@@ -126,7 +126,9 @@ plotdict =  dict( # plot
             Rebuilding =             ("Rebuilding","fedb6fe6-2f55-4c42-9798-3e091b2b2573","adddisc3"),
             SneakAttack =            ("Sneak Attack","d4576f9d-16a6-430e-9f73-217216fd43b9","1challenge"),
             Summons =                ("Summons","a380b0e0-610c-47f9-ac9f-ae12163b45fd","10searchcha"),
-            Reinforcements =         ("Reinforcements","5de352a4-c6fd-478c-bac0-39b78de1e68c","search5c"))
+            Reinforcements =         ("Reinforcements","5de352a4-c6fd-478c-bac0-39b78de1e68c","search5c"),
+            MarchedtotheWall =       ("Reinforcements","a9f2fccd-11f3-4562-aa5a-76d606712311","disc1player"),
+            WildfireAssault =        ("Wildfire Assault","d10a1ced-df94-419b-af8e-4eadc2eb4688","kill3player"))
 
 def debug(str):
 	mute()
