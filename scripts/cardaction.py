@@ -130,6 +130,20 @@ plotdict =  dict( # plot
             MarchedtotheWall =       ("Reinforcements","a9f2fccd-11f3-4562-aa5a-76d606712311","disc1player"),
             WildfireAssault =        ("Wildfire Assault","d10a1ced-df94-419b-af8e-4eadc2eb4688","kill3player"))
 
+
+generalaction =  dict( # generalaction
+            HearMeRoar =          ("Hear Me Roar","2ad9b318-4ff7-4ace-91ee-81e223fd176c","addlan","Hand",1,""),
+            ArianneMartell =      ("Arianne Martell","fa34ed25-de84-45c9-89c1-1428ec505458","add5returnme","table",1,""),
+            EdricDayne  =         ("Edric Dayne","b32b7ea7-7997-4b02-8b2f-25ad4d1072fa","1goldicon","table",1,""),
+            Confinement =         ("Confinement","9aafaad7-3f74-4aff-ba0c-bf19e5de0bdf","loseicon","Hand",1,""),
+            OldForestHunter =     ("Old Forest Hunter","89207067-9a33-4689-9b8a-66c85f7c68c1","d1cg1g","table",1,""),
+            VeteranBuilder =      ("Veteran Builder","ae0ac552-9668-4df3-a236-49389b7f4cb8","standlocation","table",1,""),
+            MagisterIllyrio =     ("Magister Illyrio","f5f343ea-a561-415b-adfd-9afdd65820c2","2gstandc","table",1,""),
+            Handmaiden  =         ("Handmaiden","a575226f-fba6-4d79-bdf7-e5a0c2e0d192","standlady","table",1,""),
+            WakingtheDragon =     ("Waking the Dragon","393fb603-c449-4043-a73f-21c4b47be039","standtc","Hand",1,""),
+            TheBearandtheMaidenFair =("The Bear and the Maiden Fair","202b37de-c6bf-4c21-93fd-f3cf6bbad04d","5t3b","Hand",1,""))
+
+
 def debug(str):
 	mute()
 	global debugMode
