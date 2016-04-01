@@ -3498,14 +3498,16 @@ def interruptevent(actioninsert,interruptpasscount):
 	if actioninsert == "interruptcancel":
 		debug(interruptcancelcard)
 		debug(interruptlib)
-		if interruptpasscount < 2:
-			choiceList = ['interrupt', 'cancel']
-			colorList = ['#ae0603' ,'#006b34']
-			choice = askChoice("Do you want to interrupt {}'s {} ?".format(interruptcancelplayer,interruptcancelcard.name), choiceList,colorList)
-		if interruptpasscount == 2:
-			choiceList = ['interrupt', 'cancel']
-			colorList = ['#ae0603' ,'#006b34']
-			choice = askChoice("Do you want to interrupt {}'s {} ?".format(interruptcancelplayer,interruptcancelcard.name), choiceList,colorList)
+		if checkcountercharater(interruptcancelcard):
+			if interruptpasscount < 2:
+				choiceList = ['interrupt', 'cancel']
+				colorList = ['#ae0603' ,'#006b34']
+				choice = askChoice("Do you want to interrupt {}'s {} ?".format(interruptcancelplayer,interruptcancelcard.name), choiceList,colorList)
+			if interruptpasscount == 2:
+				choiceList = ['interrupt', 'cancel']
+				colorList = ['#ae0603' ,'#006b34']
+				choice = askChoice("Do you want to interrupt {}'s {} ?".format(interruptcancelplayer,interruptcancelcard.name), choiceList,colorList)
+		else:choice = 2
 		if choice == 1:
 			for c in me.hand:
 				ee = 0
@@ -4091,18 +4093,35 @@ def checkinterruptkill(killcard):
 
 def checkcountercharater(charatercard):
 	ee = 0
-	for cardhand in me.hand:
-		for d in counterevent:
-			if cardhand.model == counterevent[d][1] and counterevent[d][4].find(charatercard.Type) != -1:
-				if counterevent[d][5] == "all":
-					if counterevent[d][7] == "opponent" and charatercard.controller != me:ee = 1
-					elif counterevent[d][7] == "all":ee = 1
-				elif counterevent[d][5] != "all":
-					for cardunique in table:
-						if cardunique.Faction == counterevent[d][5] and cardunique.Unique == counterevent[d][6]:
-							if counterevent[d][7] == "opponent" and charatercard.controller != me:ee = 1
-							elif counterevent[d][7] == "all":ee = 1
+	subcost = 0
+	# for cardhand in me.hand:
+	# 	for d in counterevent:
+	# 		if cardhand.model == counterevent[d][1] and counterevent[d][4].find(charatercard.Type) != -1:
+	# 			if counterevent[d][5] == "all":
+	# 				if counterevent[d][7] == "opponent" and charatercard.controller != me:ee = 1
+	# 				elif counterevent[d][7] == "all":ee = 1
+	# 			elif counterevent[d][5] != "all":
+	# 				for cardunique in table:
+	# 					if cardunique.Faction == counterevent[d][5] and cardunique.Unique == counterevent[d][6]:
+	# 						if counterevent[d][7] == "opponent" and charatercard.controller != me:ee = 1
+	# 						elif counterevent[d][7] == "all":ee = 1
+	# if ee == 1:return True
+	if charatercard.type in("Location","Character","Attachment"):
+		if checkcardstatus(deck = table,player = me,cardtype = "Faction",faction = "Lannister."):
+			if checkcardstatus(deck = table,player = me,cardtype = "Character",faction = "Lannister.",unique = "Yes"):
+				if me.counters['Gold'].value >= 1:
+					ee = 1
+	elif charatercard.type == "Event":
+		if charatercard.cost == "X":ee = 1
+		else:
+			if me.getGlobalVariable("firstevent") == "0" and checkpr(me):subcost = 1
+			if me.counters['Gold'].value >= int(charatercard.cost)-subcost:
+				debug(subcost)
+				ee =1
+
 	if ee == 1:return True
+
+
 
 def savepassfinish(ok):
 	for d in cardability:
