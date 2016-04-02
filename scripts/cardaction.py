@@ -141,7 +141,8 @@ generalaction =  dict( # generalaction
             MagisterIllyrio =     ("Magister Illyrio","f5f343ea-a561-415b-adfd-9afdd65820c2","2gstandc","table",1,""),
             Handmaiden  =         ("Handmaiden","a575226f-fba6-4d79-bdf7-e5a0c2e0d192","standlady","table",1,""),
             WakingtheDragon =     ("Waking the Dragon","393fb603-c449-4043-a73f-21c4b47be039","standtc","Hand",1,""),
-            TheBearandtheMaidenFair =("The Bear and the Maiden Fair","202b37de-c6bf-4c21-93fd-f3cf6bbad04d","5t3b","Hand",1,""))
+            TheBearandtheMaidenFair =("The Bear and the Maiden Fair","202b37de-c6bf-4c21-93fd-f3cf6bbad04d","5t3b","Hand",1,""),
+            Fealty =              ("Fealty","83754e87-8448-49af-a20f-bc4dc72d1dba","kneelfaction","table",1,""))
 
 
 def debug(str):

@@ -2,7 +2,7 @@
 
 <set name="00-Markers"
 	 id="d2e1abfc-fead-4067-a3b7-14973a19ca21" 
-	 gameId="30c200c9-6c98-49a4-a293-106c06295c05" 
+	 gameId="c79b3612-748e-430b-a578-033936365582" 
 	 gameVersion="1.0.0.8" 
 	 version="1.8">
 	 
@@ -15,17 +15,23 @@
 		<marker id="99452bc7-d95b-4c54-8577-41d98dd3e30b" name="TokenBlue"/>
 		<marker id="7e9610d4-c06d-437d-a5e6-100000000001" name="MilitaryIcon"/>
 		<marker id="0cabfb36-01b4-46c4-bb2a-42889fb63e8b" name="IntrigueIcon"/>
-		<marker id="a6b9db40-b0ad-4b22-b049-5837c4ece904" name="PowerIcon"/>		
+		<marker id="a6b9db40-b0ad-4b22-b049-5837c4ece904" name="PowerIcon"/>
+		<marker id="353db31d-b5d7-4f17-9683-08b03151ff83" name="standIcon"/>
+		<marker id="aba7e269-4096-4b60-b1c5-0ab97dd9caa0" name="poisonIcon"/>
+		<marker id="9aecf04c-b623-4e0f-b9db-6ac3246fb00c" name="betrayalIcon"/>
+		<marker id="786f6eb1-22bf-4623-9423-7854f5f078d6" name="subMilitaryIcon"/>
+		<marker id="7dadfabe-8024-4d93-91a7-81c11a51ff24" name="subIntrigueIcon"/>
+		<marker id="d042dab3-176a-471e-a917-1041c64c6579" name="subPowerIcon"/>
 	</markers>
 	<cards>
-    <card id="73a6655b-60b6-4080-b428-f4e0099e0f77" name="1st Player Token">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="656f69c4-c506-4014-932b-9dff4422f09e" name="Done Token">
-      <property name="Type" value="Internal" />
-	</card>
-	<card id="584a37d7-5a30-4018-ae21-0ad325203fa0" name="nextbutton" size="button">
-      <property name="Type" value="Internal" />
-	</card>
+		<card id="73a6655b-60b6-4080-b428-f4e0099e0f77" name="1st Player Token">
+			<property name="Type" value="Internal" />
+		</card>
+		<card id="656f69c4-c506-4014-932b-9dff4422f09e" name="Done Token">
+			<property name="Type" value="Internal" />
+		</card>
+		<card id="584a37d7-5a30-4018-ae21-0ad325203fa0" name="nextbutton" size="button">
+      			<property name="Type" value="Internal" />
+		</card>
 	</cards>
 </set>

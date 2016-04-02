@@ -33,13 +33,13 @@ FAQ_URL = "https://images-cdn.fantasyflightgames.com/filer_public/03/43/034309e6
 MilitaryIcon = ("MilitaryIcon", "7e9610d4-c06d-437d-a5e6-100000000001")
 IntrigueIcon = ("IntrigueIcon", "0cabfb36-01b4-46c4-bb2a-42889fb63e8b")
 PowerIcon = ("PowerIcon", "a6b9db40-b0ad-4b22-b049-5837c4ece904")
-mdict = dict(
-	strup=("STR_Up", "7898d5a0-1d59-42b2-bbfb-5051cc420cd8"),
-	powicon=("PowerIcon", "a6b9db40-b0ad-4b22-b049-5837c4ece904"),
-	inticon=("IntrigueIcon", "0cabfb36-01b4-46c4-bb2a-42889fb63e8b"),
-	milicon=("MilitaryIcon", "7e9610d4-c06d-437d-a5e6-100000000001"),
-	burnicon=("Burn", "c272aa0c-f283-4ff5-b545-a5a3f150e6da"),
-	tkred=("TokenRed","6238a357-41b7-4bca-b394-925fc1b2caf8"))
+subMilitaryIcon = ("subMilitaryIcon", "786f6eb1-22bf-4623-9423-7854f5f078d6")
+subIntrigueIcon = ("subIntrigueIcon", "7dadfabe-8024-4d93-91a7-81c11a51ff24")
+subPowerIcon = ("subPowerIcon", "d042dab3-176a-471e-a917-1041c64c6579")
+poisonIcon = ("poisonIcon", "aba7e269-4096-4b60-b1c5-0ab97dd9caa0")
+standIcon = ("standIcon", "353db31d-b5d7-4f17-9683-08b03151ff83")
+betrayalIcon = ("betrayalIcon", "d042dab3-176a-471e-a917-1041c64c6579")
+
 debugMode = True
 countusedplot = 0
 Heartsbaneused = 0
@@ -105,6 +105,12 @@ mainpasstmp = ""
 insertreactioncard = []
 
 listattach = []
+
+#turnreset
+
+addicon_turn = []
+returntohand_turn = []
+
 import re
 import time
 
@@ -189,7 +195,7 @@ def announceMil(group, x = 0, y = 0):
 		for card in table:
 			card.highlight = None
 			card.target(False)
-			if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+			if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"milicon") and card.orientation == 0:
 				list.append(card)
 		if len(list) == 0:
 			whisper("No more card can eclares a MIL challenge.")
@@ -264,7 +270,7 @@ def announceInt(group, x = 0, y = 0):
 		for card in table:
 			card.highlight = None
 			card.target(False)
-			if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0:
+			if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0:
 				list.append(card)
 		dlg = cardDlg(list)
 		dlg.title = "These cards are in your table:"
@@ -326,7 +332,7 @@ def announcePow(group, x = 0, y = 0):
 		for card in table:
 			card.highlight = None
 			card.target(False)
-			if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0:
+			if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"powicon") and card.orientation == 0:
 				list.append(card)
 		dlg = cardDlg(list)
 		dlg.title = "These cards are in your table:"
@@ -398,7 +404,7 @@ def announceOpp(group, x = 0, y = 0):
 					if getGlobalVariable("automode") != "1":
 						defMil(table)
 					else:
-						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0], me._id) 
+						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and checkchallengeicon(card,"milicon") and card.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
 						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
@@ -418,7 +424,7 @@ def announceOpp(group, x = 0, y = 0):
 					if getGlobalVariable("automode") != "1":
 						defInt(table)
 					else:
-						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0], me._id) 
+						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and checkchallengeicon(card,"inticon") and card.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
 						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
@@ -429,7 +435,7 @@ def announceOpp(group, x = 0, y = 0):
 					if getGlobalVariable("automode") == "1":
 						c = 0
 						for card in table:
-							if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0 and card.highlight != IntrigueColor:
+							if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and checkchallengeicon(card,"powicon") and card.orientation == 0 and card.highlight != IntrigueColor:
 								card.highlight = IntrigueColor
 								card.orientation = 1
 								c = 1
@@ -450,7 +456,7 @@ def announceOpp(group, x = 0, y = 0):
 					if getGlobalVariable("automode") != "1":
 						defPow(table)
 					else:
-						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0], me._id) 
+						targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and card.highlight != Stealthcolor and checkchallengeicon(card,"powicon") and card.orientation == 0], me._id) 
 						setGlobalVariable("tableTargets", str(targetTuple))
 						setGlobalVariable("selectmode", "1")
 						if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
@@ -488,7 +494,7 @@ def defMil(group, x = 0, y = 0):
 		list = []
 		for card in table:
 			card.target(False)
-			if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+			if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"milicon") and card.orientation == 0:
 				list.append(card)
 		dlg = cardDlg(list)
 		dlg.title = "These cards are in your table:"
@@ -523,7 +529,7 @@ def defInt(group, x = 0, y = 0):
 		list = []
 		for card in table:
 			card.target(False)
-			if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0:
+			if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0:
 				list.append(card)
 		dlg = cardDlg(list)
 		dlg.title = "These cards are in your table:"
@@ -540,7 +546,7 @@ def defInt(group, x = 0, y = 0):
 			c.orientation = 1
 		if getGlobalVariable("automode") == "1":
 			for card in table:
-				if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0 and card.highlight != IntrigueColor:
+				if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0 and card.highlight != IntrigueColor:
 					card.highlight = IntrigueColor
 					card.orientation = 1
 			setGlobalVariable("bedefend","")
@@ -549,7 +555,7 @@ def defInt(group, x = 0, y = 0):
 		if getGlobalVariable("automode") == "1":
 			c = 0
 			for card in table:
-				if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0 and card.highlight != IntrigueColor:
+				if str(card._id) in getGlobalVariable("bedefend") and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0 and card.highlight != IntrigueColor:
 					card.highlight = IntrigueColor
 					card.orientation = 1
 					c = 1
@@ -575,7 +581,7 @@ def defPow(group, x = 0, y = 0):
 		list = []
 		for card in table:
 			card.target(False)
-			if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0:
+			if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"powicon") and card.orientation == 0:
 				list.append(card)
 		dlg = cardDlg(list)
 		dlg.title = "These cards are in your table:"
@@ -707,12 +713,12 @@ def addGold(card, x = 0, y = 0):
 	notify("{} adds a Gold to {}.".format(me, card))
 	card.markers[Gold] += 1
 	me.counters['Gold'].value += 1
-    
+
 def addPower(card, x = 0, y = 0):
-    mute()
-    notify("{} adds a Power to {}.".format(me, card))
-    card.markers[Power] += 1
-    me.counters['Power'].value += 1
+	mute()
+	notify("{} adds a Power to {}.".format(me, card))
+	card.markers[Power] += 1
+	me.counters['Power'].value += 1
 	
 def addSTR_Up(card, x = 0, y = 0):
 	mute()
@@ -1886,21 +1892,21 @@ def challengeAnnounce(group, x=0, y=0):
 					whisper("you cannot challenge this phase.")#SneakAttack
 			if int(me.getGlobalVariable("milcount")) < int(me.getGlobalVariable("milcountmax")) and ccc == 1:
 				for card in table: 
-					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+					if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"milicon") and card.orientation == 0:
 						choiceList.append('Military')
 						colorList.append('#ae0603')
 						cc = 1
 						break
 			if int(me.getGlobalVariable("intcount")) < int(me.getGlobalVariable("intcountmax")):
 				for card in table: 
-					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+					if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0:
 						choiceList.append('Intrigue')
 						colorList.append('#006b34')
 						cc = 1
 						break
 			if int(me.getGlobalVariable("powcount")) < int(me.getGlobalVariable("powcountmax")) and ccc == 1:
 				for card in table: 
-					if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0:
+					if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"powicon") and card.orientation == 0:
 						choiceList.append('Power')
 						colorList.append('#1a4d8f')
 						cc = 1
@@ -1927,7 +1933,7 @@ def challengeAnnounce(group, x=0, y=0):
 			if choice == 0:return
 		else:
 			if choiceList[choice-1] == 'Military':
-				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Military == "Yes" or card.markers[MilitaryIcon] > 0) and card.orientation == 0], me._id) 
+				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"milicon") and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
 				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
@@ -1935,7 +1941,7 @@ def challengeAnnounce(group, x=0, y=0):
 				sessionpass = "milselect"
 				notify("**{} into selectmode**".format(me))
 			elif choiceList[choice-1] == 'Intrigue':
-				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Intrigue == "Yes" or card.markers[IntrigueIcon] > 0) and card.orientation == 0], me._id) 
+				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
 				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
@@ -1943,7 +1949,7 @@ def challengeAnnounce(group, x=0, y=0):
 				sessionpass = "intselect"
 				notify("**{} into selectmode**".format(me))
 			elif choiceList[choice-1] == 'Power':
-				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and (card.Power == "Yes" or card.markers[PowerIcon] > 0) and card.orientation == 0], me._id) 
+				targetTuple = ([card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"powicon") and card.orientation == 0], me._id) 
 				setGlobalVariable("tableTargets", str(targetTuple))
 				setGlobalVariable("selectmode", "1")
 				if me.isInverted:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",130,-250)
@@ -2286,10 +2292,10 @@ def plotability(card):
 				colorList = ['#ae0603' ,'#006b34','#1a4d8f']
 				choice = askChoice("Which challenge do you want to name?", choiceList,colorList)
 				if choice == 1:
-					card.markers[MilitaryIcon] += 1
+					cardmarkers(card,"milicon",1)
 					players[1].setGlobalVariable("submilclaim", str(int(players[1].getGlobalVariable("submilclaim"))+1))
 				if choice == 2:
-					card.markers[IntrigueIcon] += 1
+					cardmarkers(card,"inticon",1)
 					players[1].setGlobalVariable("subintclaim", str(int(players[1].getGlobalVariable("subintclaim"))+1))
 				if choice == 3:
 					addPower(card)
@@ -2643,13 +2649,13 @@ def disc(card, x = 0, y = 0):
 					#rollback
 					if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
 						cardc.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
-					if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and cardc.model == "df79718d-b01d-4338-8907-7b6abff58303":cardc.markers[MilitaryIcon] -= 1#096
+					if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and cardc.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(cardc,"milicon",-1)#096
 					if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 						stradd = re.search('\+\d\sSTR', card.Text).group()
 						cardc.markers[STR_Up] -= int(stradd[1])
-					if re.search('\[INT]\sicon', card.Text):cardc.markers[IntrigueIcon] -= 1
+					if re.search('\[INT]\sicon', card.Text):cardc.cardmarkers(card,"inticon",-1)
 					if re.search('\[POW]\sicon', card.Text):cardc.markers[PowerIcon] -= 1
-					if re.search('\[MIL]\sicon', card.Text) and cardc.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardc.markers[MilitaryIcon] -= 1
+					if re.search('\[MIL]\sicon', card.Text) and cardc.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(cardc,"milicon",-1)
 		if card.highlight == sacrificecolor:
 			card.highlight = None
 			notify("{} sacrifice {}.".format(me, card))
@@ -2794,6 +2800,10 @@ def play(card):
 				cost=int(card.Cost)-1
 				if cost < 0:cost = 0
 				notify("You control Paxter Redwyne the first event you play Reduce the gold cost by 1.")
+		if card.loyal == "Yes":
+			cost -= int(me.getGlobalVariable("reduceloyal_turn"))
+			me.setGlobalVariable("reduceloyal_turn", "0")
+
 
 		if me.getGlobalVariable("inmarshal") == "1" and me.getGlobalVariable("firstll") == "1" and me.getGlobalVariable("firstcharacter") == "0":
 			if card.type == "Character" and card.Traits.find('Lord') != -1 or card.Traits.find('Lady') != -1:
@@ -2876,14 +2886,14 @@ def play(card):
 							attach[card._id] = choose._id
 						else:attach[card._id].append(choose._id)
 						setGlobalVariable("attachmodify",str(attach))
-						if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and choose.model == "df79718d-b01d-4338-8907-7b6abff58303":choose.markers[MilitaryIcon] += 1#096
+						if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and choose.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(choose,"milicon",1)#096
 						if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":choose.markers[STR_Up] += countusedplot
 						if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 							stradd = re.search('\+\d\sSTR', card.Text).group()
 							choose.markers[STR_Up] += int(stradd[1])
-						if re.search('\[INT]\sicon', card.Text):choose.markers[IntrigueIcon] += 1
-						if re.search('\[POW]\sicon', card.Text):choose.markers[PowerIcon] += 1
-						if re.search('\[MIL]\sicon', card.Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":choose.markers[MilitaryIcon] += 1
+						if re.search('\[INT]\sicon', card.Text):cardmarkers(choose,"inticon",1)
+						if re.search('\[POW]\sicon', card.Text):cardmarkers(choose,"powicon",1)
+						if re.search('\[MIL]\sicon', card.Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(choose,"milicon",1)
 						card.sendToBack()
 						if len(me.piles['Plot Deck']) == 7:
 							notify("{} plays {} and attachs to {}.".format(me,card,choose))
@@ -3218,6 +3228,8 @@ def onloaddeck(args):
 	setGlobalVariable("plotkill","0")
 
 	setGlobalVariable("generalaction", "1")
+
+	me.setGlobalVariable("reduceloyal_turn", "0")
 	player = args.player
 	if player==me:
 		checkdeck()
@@ -3281,13 +3293,13 @@ def onmoved(args):
 					#rollback
 						if args.cards[index].model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
 							card.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
-						if args.cards[index].model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and card.model == "df79718d-b01d-4338-8907-7b6abff58303":card.markers[MilitaryIcon] -= 1#096
+						if args.cards[index].model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and card.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(card,"milicon",-1)#096
 						if re.search('\+\d\sSTR', args.cards[index].Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 							stradd = re.search('\+\d\sSTR', args.cards[index].Text).group()
 							card.markers[STR_Up] -= int(stradd[1])
-						if re.search('\[INT]\sicon', args.cards[index].Text):card.markers[IntrigueIcon] -= 1
+						if re.search('\[INT]\sicon', args.cards[index].Text):cardmarkers(card,"inticon",-1)
 						if re.search('\[POW]\sicon', args.cards[index].Text):subPower(card)
-						if re.search('\[MIL]\sicon', args.cards[index].Text) and args.cards[index].model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":card.markers[MilitaryIcon] -= 1
+						if re.search('\[MIL]\sicon', args.cards[index].Text) and args.cards[index].model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(card,"milicon",-1)
 			args.cards[index].resetProperties()
 		if args.cards[index].type == "Character" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.owner == me:
 			for d in attach:
@@ -4115,9 +4127,8 @@ def checkcountercharater(charatercard):
 		if charatercard.cost == "X":ee = 1
 		else:
 			if me.getGlobalVariable("firstevent") == "0" and checkpr(me):subcost = 1
-			if me.counters['Gold'].value >= int(charatercard.cost)-subcost:
-				debug(subcost)
-				ee =1
+			if me.counters['Gold'].value >= int(charatercard.cost)-subcost:ee = 1
+			if checkcardstatus(deck = table,player = me,model = "9e56783a-c133-4f81-9914-4e81b92ba5d1"):ee = 1
 
 	if ee == 1:return True
 
@@ -4781,13 +4792,13 @@ def reactionforability(card,repass):
 				if aftercalculate[d][4] == "submarker":
 					choiceList = []
 					colorList = []
-					if cardtoaction.Military == "Yes" or cardtoaction.markers[MilitaryIcon] > 0:
+					if checkchallengeicon(cardtoaction,"milicon") > 0:
 						choiceList.append("Military")
 						colorList.append('#ae0603')
-					if cardtoaction.Intrigue == "Yes" or cardtoaction.markers[IntrigueIcon] > 0:
+					if checkchallengeicon(cardtoaction,"inticon") > 0:
 						choiceList.append("Intrigue")
 						colorList.append('#006b34')
-					if cardtoaction.Power == "Yes" or cardtoaction.markers[PowerIcon] > 0:
+					if checkchallengeicon(cardtoaction,"powicon") > 0:
 						choiceList.append("Power")
 						colorList.append('#1a4d8f')
 					if choiceList != []:
@@ -4803,9 +4814,9 @@ def reactionforability(card,repass):
 					addhousepow(1)
 					notify("{}'s {} reaction move 1 power icon from {}".format(me,card,otherplayer))#AClashofKings
 				if aftercalculate[d][4] == "addred":
-					card.markers[TokenRed] += 1
+					card.markers[betrayalIcon] += 1
 					notify("{}'s {} forced reaction add 1 betrayal token".format(me,card))#SerJorahMormont
-					if card.markers[TokenRed] == 3:
+					if card.markers[betrayalIcon] == 3:
 						card.highlight = sacrificecolor
 						notify("{}'s {} reaction already have 3 betrayal token,sacrifice him".format(me,card))#SerJorahMormont
 						disc(card)
@@ -5517,39 +5528,41 @@ def next(group, x=0, y=0):
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['EdricDayne'][1]:
 			nextcardtmp = selectedcard[0]
-			sessionpass == "1goldiconselectok"
+			sessionpass = "1goldiconselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Confinement'][1]:
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",cost = 4)
-			nextselectcard(selectlist,"loseiconselectok",me.hand)
+			nextselectcard(selectlist,"loseiconselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['OldForestHunter'][1]:
 			nextcardtmp = selectedcard[0]
-			sessionpass == "d1cg1gselectok"
+			sessionpass = "d1cg1gselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['VeteranBuilder'][1]:
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Location",stand = 1)
-			nextselectcard(selectlist,"standlocationselectok",me.hand)
+			nextselectcard(selectlist,"standlocationselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['MagisterIllyrio'][1]:
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",stand = 1)
-			nextselectcard(selectlist,"2gstandcselectok",me.hand)
-			return
+			nextselectcard(selectlist,"2gstandcselectok",table)
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Handmaiden'][1]:
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",traits = "Lady.",stand = 1)
-			nextselectcard(selectlist,"standladyselectok",me.hand)
+			nextselectcard(selectlist,"standladyselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['WakingtheDragon'][1]:
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",faction = "Targaryen.",unique = "Yes")
-			nextselectcard(selectlist,"standtcselectok",me.hand)
+			nextselectcard(selectlist,"standtcselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['TheBearandtheMaidenFair'][1]:
 			nextcardtmp = selectedcard[0]
-			sessionpass == "5t3bselectok"
-			
+			sessionpass = "5t3bselectok"
+		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Fealty'][1]:
+			nextcardtmp = selectedcard[0]
+			sessionpass = "kneelfactionselectok"
+
 	
 
 	if sessionpass == "actionok":
@@ -5945,9 +5958,33 @@ def next(group, x=0, y=0):
 			if card.highlight == miljudgecolor:cardbekill.append(card)
 		remoteCall(fplay(1), "characterkilled", [cardbekill,1])
 	
-	if sessionpass in("addlanselectok","add5returnmeselectok","loseiconselectok","standlocationselectok","2gstandcselectok","standladyselectok","standtcselectok"):
-		if len(selectedcard) != 1:
+	if sessionpass in ("1goldiconselectok","d1cg1gselectok","2gstandcselectok","kneelfactionselectok"):
+		if sessionpass == "1goldiconselectok":
+			me.counters['Gold'].value -= 1
+			for incomecard in table:
+				if incomecard.controller == me and incomecard.markers[Gold] > 0:
+					incomecard.markers[Gold] -= 1
+		if sessionpass == "1goldiconselectok":disc(me.hand)
+		if sessionpass == "2gstandcselectok":
+			me.counters['Gold'].value -= 2
+			for incomecard in table:
+				if incomecard.controller == me and incomecard.markers[Gold] > 0:
+					incomecard.markers[Gold] -= 2
+		nextcardtmp = []
+		sessionpass = "actionok"
+		action("general",1)
+		return
+
+
+	if sessionpass in("addlanselectok","add5returnmeselectok","loseiconselectok","standlocationselectok","2gstandcselectok","standladyselectok","standtcselectok","5t3bselectok"):
+		if len(selectedcard) > 1:
 			whisper("You must select only one card to action.")
+			return
+		if len(selectedcard) == 0:
+			delactioncard(nextcardtmp)
+			nextcardtmp = []
+			sessionpass = ""
+			remoteCall(otherplayer, "action", ["general",1])
 			return
 		if play(nextcardtmp):
 			cardtoaction = selectedcard[0]
@@ -6005,6 +6042,7 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
+
 	actiongeneral(1)
 
 def checksavecard(savecard):
@@ -6812,7 +6850,7 @@ def checkkneelfaction(faction):
 		if card.Faction == faction and card.orientation == 1 and card.controller == me:
 			return True
 
-def checkcardstatus(deck = table,faction = "",cardtype = "",cardstr = -1,stand = -1,unique = "",cost = -1,player = "",traits = "",mil = "",intcard = "",powcard = "",highlight = ""):
+def checkcardstatus(deck = table,faction = "",cardtype = "",cardstr = -1,stand = -1,unique = "",cost = -1,player = "",traits = "",mil = "",intcard = "",powcard = "",highlight = "",model = ""):
 	mute()
 	for card in deck:
 		if checkcardunique(card,unique) and checkcardstand(card,stand) and checkcardstr(card,cardstr) and checkcardcost(card,cost) and checkcardtype(card,cardtype) and checkcardfaction(card,faction) and checkcardplayer(card,player) and checkcardtraits(card,traits) and checkcardmil(card,mil) and checkcardint(card,intcard) and checkcardpow(card,powcard) and checkcardhl(card,highlight):
@@ -6885,6 +6923,11 @@ def checkcardhl(card,highlight):
 	mute()
 	if highlight != "" and card.highlight in highlight:return True
 	if highlight == "":return True
+
+def checkcardunique(card,model):
+	mute()
+	if model != "" and card.model == model:return True
+	if model == "":return True
 
 def checkburn(player):
 	mute()
@@ -7039,7 +7082,7 @@ def actiongeneral(count):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
 
-	for card in me.hand:
+	for card in table:
 		for d in generalaction:
 			if card.model == generalaction[d][1] and card.controller == me and generalaction[d][3] == "table":
 				if generalaction[d][2] == "add5returnme" and checkcardstatus(deck = me.hand,cost = 5):
@@ -7063,6 +7106,10 @@ def actiongeneral(count):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
 				if generalaction[d][2] == "standlady" and checkcardstatus(traits = "Lady",stand = 1):
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
+				if generalaction[d][2] == "kneelfaction" and checkcardstatus(type = "Faction",stand = 0):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
@@ -7234,6 +7281,7 @@ def actionforability(card,repass):
 	global intertreaction
 	global cardtoaction
 	global savetarget
+	global addicon
 	sessionpass = ""
 	c = 0
 	f = 0
@@ -7373,7 +7421,112 @@ def actionforability(card,repass):
 					if me.isInverted:cardtoaction.moveToTable(150,-230)
 					else: cardtoaction.moveToTable(-130,130)
 					notify("{}'s {} action put {} into play".format(me,card,cardtoaction))#HearMeRoar
-
+				if generalaction[d][2] == "add5returnme":
+					uniquecards = []
+					dc = 0
+					for u in table:
+						if u.controller == me and u.unique == "Yes":
+							uniquecards.append(u.name)
+							if cardtoaction.name in uniquecards: 
+								cost=0
+								dc = 1   #Duplicates
+								x,y = u.position
+								break
+					if dc == 1:
+						if me.isInverted: 
+							cardtoaction.moveToTable(x-8,y-8)
+						else:
+							cardtoaction.moveToTable(x+8,y+8)
+						cardtoaction.filter = "#005c3521"
+						cardtoaction.sendToBack()
+						notify("{}'s {} action put {}'s duplicate into play".format(me,card,cardtoaction))#ArianneMartell
+					else:
+						if me.isInverted:cardtoaction.moveToTable(150,-230)
+						else: cardtoaction.moveToTable(-130,130)
+						card.moveTo(me.hand)
+						notify("{}'s {} action put {} into play,{} return {}'s Hand".format(me,card,cardtoaction,card,me))#ArianneMartell
+				if generalaction[d][2] == "1goldicon":
+					choiceList = ['Military', 'Intrigue', 'Power']
+					colorList = ['#ae0603' ,'#006b34','#1a4d8f']
+					choice = askChoice("Which challenge do you want to cannot initiate?", choiceList,colorList)
+					if choice == 0:
+						actionforability(card,repass)
+						return
+					if choice == 1:
+						cardmarkers(card,"milicon",1)
+						notify("{}'s {} action get a Military icon until the end of the phase.".format(me,card))#EdricDayne
+					if choice == 2:
+						cardmarkers(card,"inticon",1)
+						notify("{}'s {} action get a Intrigue icon until the end of the phase.".format(me,card))#EdricDayne
+					if choice == 3:
+						cardmarkers(card,"powicon",1)
+						notify("{}'s {} action get a Power icon until the end of the phase.".format(me,card))#EdricDayne
+					addicon_turn.append(card)
+				if generalaction[d][2] == "loseicon":
+					cardmarkers(cardtoaction,"milicon",-1)
+					cardmarkers(cardtoaction,"inticon",-1)
+					cardmarkers(cardtoaction,"powicon",-1)
+					notify("{}'s {} action {} loses a [MIL], an [INT] and a [POW] icon.".format(me,card,cardtoaction))#Confinement
+				if generalaction[d][2] == "d1cg1g":
+					me.counters['Gold'].value += 1
+					for incomecard in table:
+						if incomecard.controller == me and incomecard.type == "Plot" and incomecard.filter == None:
+							incomecard.markers[Gold] += 1
+					notify("{}'s {} action gain 1 gold.".format(me,card))#OldForestHunter
+				if generalaction[d][2] == "standlocation":
+					cardtoaction.orientation = 0
+					card.moveTo(me.piles['Dead pile'])
+					notify("{}'s {} action Sacrifice {} to stand {}.".format(me,card,card,cardtoaction))#VeteranBuilder
+				if generalaction[d][2] == "2gstandc":
+					cardtoaction.orientation = 0
+					notify("{}'s {} action pay 2 gold to stand {}.".format(me,card,cardtoaction))#MagisterIllyrio
+				if generalaction[d][2] == "standlady":
+					cardtoaction.orientation = 0
+					card.moveTo(me.piles['Dead pile'])
+					notify("{}'s {} action Sacrifice {} to stand {}.".format(me,card,card,cardtoaction))#Handmaiden
+				if generalaction[d][2] == "standtc":
+					cardtoaction.orientation = 0
+					notify("{}'s {} action to stand {}.".format(me,card,cardtoaction))#WakingtheDragon
+					returntohand_turn.append(card)
+				if generalaction[d][2] == "5t3b":
+					colorList = ['#1a4d8f','#ae0603']
+					choiceList = ['{}'.format(me),'{}'.format(players[1])]
+					choice = askChoice("select {}'s target.".format(card), choiceList,colorList)
+					if choice == 0:
+						actionforability(card,repass)
+						return
+					if choice == 1:
+						if len(me.deck) >= 5:top5list = me.deck.top(5)
+						else:top5list = me.deck.top(len(me.deck))
+					if choice == 2:
+						if len(players[1].deck) >= 5:top5list = players[1].deck.top(5)
+						else:top5list = players[1].deck.top(len(players[1].deck))
+					dlg = cardDlg(top5list, [])
+					dlg.title = "These cards are you can moved"
+					dlg.text = "place up to 3 of those cards on the bottom of that deck, and the others on top, in any order. click close button if none or cancel."
+					dlg.label = "Top of the deck"
+					dlg.bottomLabel = "bottom of the deck"
+					dlg.min = 2
+					dlg.max = 5
+					cardmove = dlg.show()
+					if cardmove != None:
+						dlg.list.reverse()
+						if choice == 1:
+							remoteCall(me, "movedeckbottom", [dlg.bottomList])
+							remoteCall(me, "movedeckbottom", [dlg.list])
+							notify("{}'s {} action reorder {}'deck.".format(me,card,me))#TheBearandtheMaidenFair
+						if choice == 2:
+							remoteCall(otherplayer, "movedeckbottom", [dlg.bottomList])
+							remoteCall(otherplayer, "movedecktop", [dlg.list])
+							notify("{}'s {} action reorder {}'deck.".format(me,card,players[1]))#TheBearandtheMaidenFair
+					else:notify("{}'s {} action cancel.".format(me,card))#TheBearandtheMaidenFair
+				if generalaction[d][2] == "kneelfaction":
+					for cardk in table:
+						if cardk.type == "Faction" and cardk.controller == me:
+							cardk.orientation = 0
+							cardtoaction = cardk
+					me.setGlobalVariable("reduceloyal_turn", "1")
+					notify("{}'s {} action kneel {} to reduce the cost of the next loyal card marshal or play this phase by 1.".format(me,card,cardtoaction))#VeteranBuilder
 				cardtoaction == []
 				if not actioncardlimit.has_key(card._id):
 					actioncardlimit[card._id] = 1
@@ -7386,6 +7539,15 @@ def handview(vs):
 	mute()
 	me.hand.visibility = vs
 
+def movedeckbottom(cardlist):
+	mute()
+	for card in cardlist:
+		card.moveToBottom(me.Deck)
+
+def movedecktop(cardlist):
+	mute()
+	for card in cardlist:
+		card.moveTo(me.Deck)
 
 def nextselectcard(selectlist,spass,deck = table,):
 	mute()
@@ -7398,3 +7560,43 @@ def nextselectcard(selectlist,spass,deck = table,):
 	sessionpass = spass
 	notify("**{} into selectmode**".format(me))
 	return
+
+def cardmarkers(card,marker,add):
+	mute()
+	if marker == "milicon":
+		addmodify = card.markers[MilitaryIcon] - card.markers[subMilitaryIcon] + add
+		debug(addmodify)
+		if addmodify > 0:card.markers[MilitaryIcon] = addmodify
+		if addmodify < 0:card.markers[subMilitaryIcon] = abs(addmodify)
+		if addmodify == 0:
+			card.markers[MilitaryIcon] = 0
+			card.markers[subMilitaryIcon] = 0
+	if marker == "inticon":
+		addmodify = card.markers[IntrigueIcon] - card.markers[subIntrigueIcon] + add
+		debug(addmodify)
+		if addmodify > 0:card.markers[IntrigueIcon] = addmodify
+		if addmodify < 0:card.markers[subIntrigueIcon] = abs(addmodify)
+		if addmodify == 0:
+			card.markers[IntrigueIcon] = 0
+			card.markers[subIntrigueIcon] = 0
+	if marker == "powicon":
+		addmodify = card.markers[PowerIcon] - card.markers[subPowerIcon] + add
+		debug(addmodify)
+		if addmodify > 0:card.markers[PowerIcon] = addmodify
+		if addmodify < 0:card.markers[subPowerIcon] = abs(addmodify)
+		if addmodify == 0:
+			card.markers[PowerIcon] = 0
+			card.markers[subPowerIcon] = 0
+
+def checkchallengeicon(card,marker):
+	mute()
+	c = 0
+	if marker == "milicon":
+		if card.Military == "Yes":c = 1
+		if card.markers[MilitaryIcon] - card.markers[subMilitaryIcon] + c > 0:return True
+	if marker == "inticon":
+		if card.Intrigue == "Yes":c = 1
+		if card.markers[IntrigueIcon] - card.markers[subIntrigueIcon] + c > 0:return True
+	if marker == "powicon":
+		if card.Power == "Yes":c = 1
+		if card.markers[PowerIcon] - card.markers[subPowerIcon] + c > 0:return True
