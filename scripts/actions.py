@@ -1260,7 +1260,7 @@ def countincome(group, x=0, y=0):
 			elif getGlobalVariable("Edictgold0") == "1" and "Edict" in plotcard.Traits:me.counters['Gold'].value += 0
 			else:
 				me.counters['Gold'].value += int(plotcard.plotgoldincome)
-				plotcard.markers[Gold] += me.counters['Gold'].value
+				plotcard.markers[Gold] = me.counters['Gold'].value
 				break
 		notify("{} counts income {} gold.".format(me,me.counters['Gold'].value))
 		plotlist.reverse()
@@ -1509,6 +1509,7 @@ def taxationphase(group, x = 0, y = 0):
 	me.setGlobalVariable("powcount","0")
 	me.setGlobalVariable("powcountmax","1")
 	me.setGlobalVariable("active","0")
+	me.setGlobalVariable("reduceloyal_turn", "0")
 
 	if getGlobalVariable("taxationphase") == "1.5":
 		setGlobalVariable("taxationphase","2")
@@ -1527,6 +1528,7 @@ def taxationphase(group, x = 0, y = 0):
 		setGlobalVariable("taxationphase","0")
 		setGlobalVariable("action","0")
 		setGlobalVariable("activeplayer","")
+		setGlobalVariable("generalaction", "1")
 		notify("{} is ready for a new turn.".format(me))
 		notify("Taxation phase over")
 		notify("A new turn start")
@@ -2119,10 +2121,20 @@ def revealplot(group, x = 0, y = 0):
 		me.setGlobalVariable("cantuseattach", "0")
 		setGlobalVariable("Kingdomgold0","0")
 		setGlobalVariable("Edictgold0","0")
+		setGlobalVariable("winint","0")
+		me.setGlobalVariable("intwin", "0")
+		me.setGlobalVariable("submilclaim", "0")
+		me.setGlobalVariable("subintclaim", "0")
+		me.setGlobalVariable("subpowclaim", "0")
+		me.setGlobalVariable("limitchallenge", "0")
+		setGlobalVariable("plotdisc","0")
+		setGlobalVariable("plotkill","0")
+		setGlobalVariable("firstreveal", "")
 		
 		countxy = 5
 		for c in table: 
 			if c.Type == "Plot" and c.controller == me:
+				c.markers[standIcon] = 0
 				c.filter = "#0099ffff"
 				x, y = c.position
 				c.moveToTable(x-countxy,y)
@@ -2198,17 +2210,22 @@ def askfirstplayer(group, x = 0, y = 0):
 def askfirstreveal(group, x = 0, y = 0):
 	mute()
 	if fplay(1) == me:
+		for card in table:
+			if card.type == "Plot" and card.controller == me and card.filter == None:meplotcard = card
+			if card.type == "Plot" and card.controller == players[1] and card.filter == None:otherplotcard = card
 		colorList = ['#1a4d8f','#ae0603']
-		choiceList = ['{}'.format(me),'{}'.format(players[1])]
+		choiceList = ["{}'s {}".format(me,meplotcard.name),"{}'s {}".format(players[1],otherplotcard.name)]
 		choice = askChoice("Decide who will First reveal.", choiceList,colorList)
 
 		if choice == 1:
 			notify("{} First reveal.".format(me))
 			setGlobalVariable("reavelplot","1")
+			setGlobalVariable("firstreveal", str(me._id))
 			reavelplot(table)
 		if choice == 2:
 			notify("{} First reveal.".format(players[1]))
 			setGlobalVariable("reavelplot","1")
+			setGlobalVariable("firstreveal", str(players[1]._id))
 			remoteCall(players[1], "reavelplot", table)
 	else:remoteCall(players[1], "askfirstreveal", table)
 
@@ -2218,6 +2235,7 @@ def reavelplot(group, x = 0, y = 0):
 		if card.type == "Plot" and card.controller == me and card.filter == None:
 			notify("use {}'s ability".format(card))
 			plotability(card)
+			break
 	# if getGlobalVariable("reavelplot") == "1":
 	# 	setGlobalVariable("reavelplot","2")
 	# 	remoteCall(players[1], "reavelplot", table)
@@ -2336,6 +2354,7 @@ def plotability(card):
 			if plotdict[d][2] == "discplayer":
 				cards = players[1].hand.random()
 				remoteCall(players[1], "HeadsonSpikes", [card,cards])
+				return
 			if plotdict[d][2] == "challenge1player":
 				setGlobalVariable("challengeplayer","1")
 				notify("{} reaveled {}, Each player cannot declare more than 1 character as an attacker or a defender in each challenge.".format(me,card))#JoustingContest
@@ -2359,8 +2378,8 @@ def plotability(card):
 					dlg.max = 3
 					cards = dlg.show()
 					if cards != None:
-						for d in cards:
-							d.moveTo(me.deck)
+						for dc in cards:
+							dc.moveTo(me.deck)
 						me.deck.shuffle()
 						drawcount = len(cards)
 				else:drawcount = 0
@@ -2423,9 +2442,25 @@ def plotability(card):
 				notify("{} reaveled {}, Each player chooses a character he or she controls (if able), and discards it from play (cannot be saved).".format(me,card))#MarchedtotheWall
 				if fplay(1) == me:plotdisccharacter("disc1",card)
 				else:remoteCall(players[1], "plotdisccharacter", ["disc1",card])
+				return
 			if plotdict[d][2] == "kill3player":
 				if fplay(1) == me:plotdisccharacter("kill1",card)
 				else:remoteCall(players[1], "plotdisccharacter", ["kill1",card])
+				return
+			if plotdict[d][2] == "addstandicon":
+				card.markers[standIcon] = 1
+				notify("{} reaveled {}, Place a stand token on {}.".format(me,card,card))#PowerBehindtheThrone
+	if getGlobalVariable("reavelplot") == "1":
+		setGlobalVariable("reavelplot","2")
+		if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+		else:reavelplot(table)
+		return
+	if getGlobalVariable("reavelplot") == "2":
+		notify("plot phase over")
+		setGlobalVariable("reavelplot","0")
+		setGlobalVariable("drawphase","1")
+		notify("draw phase start")
+		drawphase(table)
 
 
 def plotdisccharacter(typep,card):
@@ -2511,7 +2546,7 @@ def plotdisccard(count):
 	global nextcardtmp
 	global plotcard
 	if nextcardtmp != []:disc(nextcardtmp)
-	notify("{} disc {} for {}.".format(me,nextcardtmp,plotcard))
+	notify("{} disc {} for {}.".format(me,nextcardtmp,plotcard))#MarchedtotheWall
 	nextcardtmp = []
 	selectedcard = []
 	plotcard = []
@@ -2519,6 +2554,17 @@ def plotdisccard(count):
 		remoteCall(otherplayer, "plotdisccard", [2])
 	else:
 		setGlobalVariable("plotdisc","0")
+		if getGlobalVariable("reavelplot") == "1":
+			setGlobalVariable("reavelplot","2")
+			if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+			else:reavelplot(table)
+			return
+		if getGlobalVariable("reavelplot") == "2":
+			notify("plot phase over")
+			setGlobalVariable("reavelplot","0")
+			setGlobalVariable("drawphase","1")
+			notify("draw phase start")
+			drawphase(table)
 
 
 def HeadsonSpikes(card,cards):
@@ -2530,6 +2576,17 @@ def HeadsonSpikes(card,cards):
 	else:
 		cards.moveTo(me.piles['Discard pile'])
 		notify("{} reaveled {}, {} disc {}.".format(players[1],card,me,cards))#HeadsonSpikes
+	if getGlobalVariable("reavelplot") == "1":
+		setGlobalVariable("reavelplot","2")
+		if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+		else:reavelplot(table)
+		return
+	if getGlobalVariable("reavelplot") == "2":
+		notify("plot phase over")
+		setGlobalVariable("reavelplot","0")
+		setGlobalVariable("drawphase","1")
+		notify("draw phase start")
+		drawphase(table)
 
 
 def drawphase(group, x = 0, y = 0):
@@ -3196,6 +3253,7 @@ def onloaddeck(args):
 	me.setGlobalVariable("firstevent", "0")
 	me.setGlobalVariable("firstcharacter", "0")
 	me.setGlobalVariable("firstll", "0")#A Noble Cause
+	setGlobalVariable("firstreveal", "")
 	setGlobalVariable("challengephase","1")
 	setGlobalVariable("standingphase","0")
 	setGlobalVariable("taxationphase","0")
@@ -3382,6 +3440,19 @@ def updateTimer(endTime,notifications,actioninsert):
 			plotcard.target(False)
 			cardtoaction = []
 			plotcard = []
+
+		if actioninsert in ("FilthyAccusationsselect","Confiscationselect"):
+			if getGlobalVariable("reavelplot") == "1":
+				setGlobalVariable("reavelplot","2")
+				if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+				else:reavelplot(table)
+				return
+			if getGlobalVariable("reavelplot") == "2":
+				notify("plot phase over")
+				setGlobalVariable("reavelplot","0")
+				setGlobalVariable("drawphase","1")
+				notify("draw phase start")
+				drawphase(table)
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -4381,6 +4452,19 @@ def reaction(actioninsert,reactioncount):
 						if getGlobalVariable("insertre") != "":
 							restoreinterruptlib(1)
 							return
+						if getGlobalVariable("plotkill") == "1":
+							if getGlobalVariable("reavelplot") == "1":
+								setGlobalVariable("reavelplot","2")
+								if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+								else:reavelplot(table)
+								return
+							if getGlobalVariable("reavelplot") == "2":
+								notify("plot phase over")
+								setGlobalVariable("reavelplot","0")
+								setGlobalVariable("drawphase","1")
+								notify("draw phase start")
+								drawphase(table)
+								return
 						if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
 						else:remoteCall(winplayer, "keyword", [1])
 					else:
@@ -4391,6 +4475,19 @@ def reaction(actioninsert,reactioncount):
 				reactioncards = selectedcard
 				if reactioncards == []:
 					if reactioncount == 2:
+						if getGlobalVariable("plotkill") == "1":
+							if getGlobalVariable("reavelplot") == "1":
+								setGlobalVariable("reavelplot","2")
+								if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+								else:reavelplot(table)
+								return
+							if getGlobalVariable("reavelplot") == "2":
+								notify("plot phase over")
+								setGlobalVariable("reavelplot","0")
+								setGlobalVariable("drawphase","1")
+								notify("draw phase start")
+								drawphase(table)
+								return
 						if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
 						else:remoteCall(winplayer, "keyword", [1])
 					else:
@@ -4408,7 +4505,19 @@ def reaction(actioninsert,reactioncount):
 				if getGlobalVariable("insertre") != "":
 					restoreinterruptlib(1)
 					return
-				if getGlobalVariable("plotkill") == "1":return
+				if getGlobalVariable("plotkill") == "1":
+					if getGlobalVariable("reavelplot") == "1":
+						setGlobalVariable("reavelplot","2")
+						if str(me._id) == getGlobalVariable("firstreveal"):remoteCall(players[1], "reavelplot", table)
+						else:reavelplot(table)
+						return
+					if getGlobalVariable("reavelplot") == "2":
+						notify("plot phase over")
+						setGlobalVariable("reavelplot","0")
+						setGlobalVariable("drawphase","1")
+						notify("draw phase start")
+						drawphase(table)
+						return
 				if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)			
 				else:remoteCall(winplayer, "keyword", [1])
 			else:
@@ -5562,6 +5671,10 @@ def next(group, x=0, y=0):
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Fealty'][1]:
 			nextcardtmp = selectedcard[0]
 			sessionpass = "kneelfactionselectok"
+		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['PowerBehindtheThrone'][1]:
+			nextcardtmp = selectedcard[0]
+			selectlist = checkcardid(deck = table,cardtype = "Character",stand = 1)
+			nextselectcard(selectlist,"standiconselectok",table)
 
 	
 
@@ -5976,7 +6089,7 @@ def next(group, x=0, y=0):
 		return
 
 
-	if sessionpass in("addlanselectok","add5returnmeselectok","loseiconselectok","standlocationselectok","2gstandcselectok","standladyselectok","standtcselectok","5t3bselectok"):
+	if sessionpass in("addlanselectok","add5returnmeselectok","loseiconselectok","standlocationselectok","2gstandcselectok","standladyselectok","standtcselectok","5t3bselectok","standiconselectok"):
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to action.")
 			return
@@ -7113,6 +7226,10 @@ def actiongeneral(count):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
+				if generalaction[d][2] == "standicon" and card.markers[standIcon] == 1:
+					if not actionattach.has_key(card._id):
+						actionattach[card._id] = 1
+					else:actionattach[card._id] += 1
 
 
 	debug(actionattach)
@@ -7526,7 +7643,11 @@ def actionforability(card,repass):
 							cardk.orientation = 0
 							cardtoaction = cardk
 					me.setGlobalVariable("reduceloyal_turn", "1")
-					notify("{}'s {} action kneel {} to reduce the cost of the next loyal card marshal or play this phase by 1.".format(me,card,cardtoaction))#VeteranBuilder
+					notify("{}'s {} action kneel {} to reduce the cost of the next loyal card marshal or play this phase by 1.".format(me,card,cardtoaction))#Fealty
+				if generalaction[d][2] == "standicon":
+					cardtoaction.orientation = 0
+					card.markers[standIcon] = 0
+					notify("{}'s {} action to stand {}.".format(me,card,cardtoaction))#PowerBehindtheThrone
 				cardtoaction == []
 				if not actioncardlimit.has_key(card._id):
 					actioncardlimit[card._id] = 1
