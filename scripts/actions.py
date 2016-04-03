@@ -2351,6 +2351,7 @@ def plotability(card):
 					else:table.create("584a37d7-5a30-4018-ae21-0ad325203fa0",-300,200)
 					sessionpass = "FilthyAccusationsselect"
 					notify("**{} into selectmode**".format(me))
+					return
 			if plotdict[d][2] == "discplayer":
 				cards = players[1].hand.random()
 				remoteCall(players[1], "HeadsonSpikes", [card,cards])
@@ -2456,11 +2457,13 @@ def plotability(card):
 		else:reavelplot(table)
 		return
 	if getGlobalVariable("reavelplot") == "2":
-		notify("plot phase over")
-		setGlobalVariable("reavelplot","0")
-		setGlobalVariable("drawphase","1")
-		notify("draw phase start")
-		drawphase(table)
+		if fplay(1) == me:actiongeneral(1)
+		else:remoteCall(players[1], "actiongeneral", 1)
+		# notify("plot phase over")
+		# setGlobalVariable("reavelplot","0")
+		# setGlobalVariable("drawphase","1")
+		# notify("draw phase start")
+		# drawphase(table)
 
 
 def plotdisccharacter(typep,card):
@@ -2560,11 +2563,8 @@ def plotdisccard(count):
 			else:reavelplot(table)
 			return
 		if getGlobalVariable("reavelplot") == "2":
-			notify("plot phase over")
-			setGlobalVariable("reavelplot","0")
-			setGlobalVariable("drawphase","1")
-			notify("draw phase start")
-			drawphase(table)
+			if fplay(1) == me:actiongeneral(1)
+			else:remoteCall(players[1], "actiongeneral", 1)
 
 
 def HeadsonSpikes(card,cards):
@@ -2582,12 +2582,8 @@ def HeadsonSpikes(card,cards):
 		else:reavelplot(table)
 		return
 	if getGlobalVariable("reavelplot") == "2":
-		notify("plot phase over")
-		setGlobalVariable("reavelplot","0")
-		setGlobalVariable("drawphase","1")
-		notify("draw phase start")
-		drawphase(table)
-
+		if fplay(1) == me:actiongeneral(1)
+		else:remoteCall(players[1], "actiongeneral", 1)
 
 def drawphase(group, x = 0, y = 0):
 	mute()
@@ -2600,13 +2596,15 @@ def drawphase(group, x = 0, y = 0):
 		remoteCall(players[1], "drawphase", table)
 		return
 	if getGlobalVariable("drawphase") == "2":
-		notify("draw phase over")
-		setGlobalVariable("drawphase","0")
-		notify("marshal phase start")
-		setGlobalVariable("marshalphase","1")
-		me.setGlobalVariable("inmarshal","1")
-		if fplay(1) == me:marshalphase(table)
-		else:remoteCall(players[1], "marshalphase", table)
+		if fplay(1) == me:actiongeneral(1)
+		else:remoteCall(players[1], "actiongeneral", 1)
+		# notify("draw phase over")
+		# setGlobalVariable("drawphase","0")
+		# notify("marshal phase start")
+		# setGlobalVariable("marshalphase","1")
+		# me.setGlobalVariable("inmarshal","1")
+		# if fplay(1) == me:marshalphase(table)
+		# else:remoteCall(players[1], "marshalphase", table)
 
 def marshalphase(group, x = 0, y = 0):
 	mute()
@@ -3448,11 +3446,8 @@ def updateTimer(endTime,notifications,actioninsert):
 				else:reavelplot(table)
 				return
 			if getGlobalVariable("reavelplot") == "2":
-				notify("plot phase over")
-				setGlobalVariable("reavelplot","0")
-				setGlobalVariable("drawphase","1")
-				notify("draw phase start")
-				drawphase(table)
+				if fplay(1) == me:actiongeneral(1)
+				else:remoteCall(players[1], "actiongeneral", 1)
 
 
 def interruptevent(actioninsert,interruptpasscount):
@@ -4459,11 +4454,8 @@ def reaction(actioninsert,reactioncount):
 								else:reavelplot(table)
 								return
 							if getGlobalVariable("reavelplot") == "2":
-								notify("plot phase over")
-								setGlobalVariable("reavelplot","0")
-								setGlobalVariable("drawphase","1")
-								notify("draw phase start")
-								drawphase(table)
+								if fplay(1) == me:actiongeneral(1)
+								else:remoteCall(players[1], "actiongeneral", 1)
 								return
 						if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
 						else:remoteCall(winplayer, "keyword", [1])
@@ -4482,11 +4474,8 @@ def reaction(actioninsert,reactioncount):
 								else:reavelplot(table)
 								return
 							if getGlobalVariable("reavelplot") == "2":
-								notify("plot phase over")
-								setGlobalVariable("reavelplot","0")
-								setGlobalVariable("drawphase","1")
-								notify("draw phase start")
-								drawphase(table)
+								if fplay(1) == me:actiongeneral(1)
+								else:remoteCall(players[1], "actiongeneral", 1)
 								return
 						if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)
 						else:remoteCall(winplayer, "keyword", [1])
@@ -4512,11 +4501,8 @@ def reaction(actioninsert,reactioncount):
 						else:reavelplot(table)
 						return
 					if getGlobalVariable("reavelplot") == "2":
-						notify("plot phase over")
-						setGlobalVariable("reavelplot","0")
-						setGlobalVariable("drawphase","1")
-						notify("draw phase start")
-						drawphase(table)
+						if fplay(1) == me:actiongeneral(1)
+						else:remoteCall(players[1], "actiongeneral", 1)
 						return
 				if getGlobalVariable("aftcuevent") != "-1" or getGlobalVariable("chaevent") != "-1":challengebalanceover(1)			
 				else:remoteCall(winplayer, "keyword", [1])
@@ -5626,52 +5612,64 @@ def next(group, x=0, y=0):
 		if len(selectedcard) == 0:
 			remoteCall(otherplayer, "action", ["general",1])
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['HearMeRoar'][1]:
+			for card in me.hand:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = me.hand,cardtype = "Character",faction = "Lannister.")
 			nextselectcard(selectlist,"addlanselectok",me.hand)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['ArianneMartell'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = me.hand,cardtype = "Character",cost = 5)
 			nextselectcard(selectlist,"add5returnmeselectok",me.hand)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['EdricDayne'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			sessionpass = "1goldiconselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Confinement'][1]:
+			for card in me.hand:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",cost = 4)
 			nextselectcard(selectlist,"loseiconselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['OldForestHunter'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			sessionpass = "d1cg1gselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['VeteranBuilder'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Location",stand = 1)
 			nextselectcard(selectlist,"standlocationselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['MagisterIllyrio'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",stand = 1)
 			nextselectcard(selectlist,"2gstandcselectok",table)
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Handmaiden'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",traits = "Lady.",stand = 1)
 			nextselectcard(selectlist,"standladyselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['WakingtheDragon'][1]:
+			for card in me.hand:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",faction = "Targaryen.",unique = "Yes")
 			nextselectcard(selectlist,"standtcselectok",table)
 			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['TheBearandtheMaidenFair'][1]:
+			for card in me.hand:card.target(False)
 			nextcardtmp = selectedcard[0]
 			sessionpass = "5t3bselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Fealty'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			sessionpass = "kneelfactionselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['PowerBehindtheThrone'][1]:
+			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",stand = 1)
 			nextselectcard(selectlist,"standiconselectok",table)
@@ -6099,6 +6097,10 @@ def next(group, x=0, y=0):
 			sessionpass = ""
 			remoteCall(otherplayer, "action", ["general",1])
 			return
+		if sessionpass in("add5returnmeselectok","standlocationselectok","2gstandcselectok","standladyselectok","standiconselectok"):
+			cardtoaction = selectedcard[0]
+			selectedcard[0] = nextcardtmp
+			selectedcard[0].arrow(cardtoaction)
 		if play(nextcardtmp):
 			cardtoaction = selectedcard[0]
 			savetarget = selectedcard[0]
@@ -6111,12 +6113,17 @@ def next(group, x=0, y=0):
 			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
 			remoteCall(me, "setTimer", [me,"interruptcancel",table])
 			nextcardtmp = []
+			return
 		else:
 			delactioncard(nextcardtmp)
 			nextcardtmp = []
 			sessionpass = ""
 			remoteCall(otherplayer, "action", ["general",1])
 			return
+		nextcardtmp = []
+		sessionpass = "actionok"
+		action("general",1)
+		return
 
 
 def stealthcard(group, x=0, y=0):
@@ -6798,9 +6805,21 @@ def clearaction(count):
 	global sessionpass
 	actionattach = {}
 	sessionpass = ""
+	debug(getGlobalVariable("drawphase"))
 	if count == 1:remoteCall(otherplayer, "clearaction", [2])
 	if count == 2:
 		if getGlobalVariable("generalaction") == "2":
+			notify("plot phase over")
+			setGlobalVariable("reavelplot","0")
+			setGlobalVariable("generalaction","0")
+			setGlobalVariable("drawphase","1")
+			notify("draw phase start")
+			drawphase(table)
+			return
+		if getGlobalVariable("drawphase") == "2":
+			notify("draw phase over")
+			setGlobalVariable("drawphase","0")
+			notify("marshal phase start")
 			return
 		if attacker == []:
 			if getGlobalVariable("activeplayer") == str(me._id):challengeAnnounce(table)
@@ -7240,6 +7259,20 @@ def actiongeneral(count):
 			setGlobalVariable("generalaction", "2")
 			if fplay(1) == me:action("general",1)
 			else:remoteCall(otherplayer, "action", ["general",1])
+		else:
+			if getGlobalVariable("generalaction") == "2":
+				notify("plot phase over")
+				setGlobalVariable("reavelplot","0")
+				setGlobalVariable("generalaction","0")
+				setGlobalVariable("drawphase","1")
+				notify("draw phase start")
+				drawphase(table)
+				return
+		if getGlobalVariable("drawphase") == "2":
+				notify("draw phase over")
+				setGlobalVariable("drawphase","0")
+				notify("marshal phase start")
+				return
 
 
 def action(actioninsert,actioncount):
