@@ -1181,10 +1181,55 @@ def reordertable(group, x = 0, y = 0):
 							i+=12
 	notify("{} finished setup phase".format(me))
 	me.setGlobalVariable("setupOk","5")
+
+	targetTuple = (["setupOk"], me._id)
+	me.setGlobalVariable("tableTargets", str(targetTuple))
+	setGlobalVariable("selectmode", "1")
+	if me.isInverted:table.create("62bad042-fbb0-4121-85d2-92149576308b",130,-250)
+	else:table.create("62bad042-fbb0-4121-85d2-92149576308b",-300,200)
+	notify("**{} into selectmode**".format(me))
 	# if me.getGlobalVariable("setupOk") == players[1].getGlobalVariable("setupOk") == "5":
 	# 	notify("Plot phase start")
 	# 	remoteCall(me, "revealplot", [table])
 	# 	remoteCall(players[1], "revealplot", [table])
+
+def setupnext(group, x = 0, y = 0):
+	mute()
+	for cardn in table:
+		if cardn.name == "setupnextbutton" and cardn.controller == me:
+			cardn.delete()#delete setupnextbutton
+	me.setGlobalVariable("setupOk","6")
+	if me.getGlobalVariable("setupOk") == players[1].getGlobalVariable("setupOk") == "6":
+		notify("Plot phase start")
+		remoteCall(me, "revealplot", [table])
+		remoteCall(players[1], "revealplot", [table])
+
+def plotnext(group, x = 0, y = 0):
+	mute()
+	for cardn in table:
+		if cardn.name == "plotnextbutton" and cardn.controller == me:
+			cardn.delete()#delete plotnextbutton
+	me.setGlobalVariable("plotOk","finished")
+	if me.getGlobalVariable("plotOk") == players[1].getGlobalVariable("plotOk") == "finished":
+		notify("plot phase over")
+		setGlobalVariable("reavelplot","0")
+		setGlobalVariable("generalaction","0")
+		setGlobalVariable("drawphase","1")
+		notify("draw phase start")
+		drawphase(table)
+		return
+
+def drawnext(group, x = 0, y = 0):
+	mute()
+	for cardn in table:
+		if cardn.name == "drawnextbutton" and cardn.controller == me:
+			cardn.delete()#delete drawnextbutton
+	me.setGlobalVariable("drawOk","finished")
+	if me.getGlobalVariable("drawOk") == players[1].getGlobalVariable("drawOk") == "finished":
+		notify("draw phase over")
+		setGlobalVariable("drawphase","0")
+		notify("marshal phase start")
+		return
 
 def endturn(group, x = 0, y = 0): 
 	count = 0
@@ -3282,6 +3327,8 @@ def onloaddeck(args):
 
 	setGlobalVariable("plotdisc","0")
 	setGlobalVariable("plotkill","0")
+	me.setGlobalVariable("plotOk","")
+	me.setGlobalVariable("drawOk","")
 
 	setGlobalVariable("generalaction", "1")
 
@@ -5636,7 +5683,9 @@ def next(group, x=0, y=0):
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['OldForestHunter'][1]:
 			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
+			selectlist = checkcardid(deck = me.hand)
 			sessionpass = "d1cg1gselectok"
+			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['VeteranBuilder'][1]:
 			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
@@ -6069,7 +6118,7 @@ def next(group, x=0, y=0):
 			if card.highlight == miljudgecolor:cardbekill.append(card)
 		remoteCall(fplay(1), "characterkilled", [cardbekill,1])
 	
-	if sessionpass in ("1goldiconselectok","d1cg1gselectok","2gstandcselectok","kneelfactionselectok"):
+	if sessionpass in ("1goldiconselectok","2gstandcselectok","kneelfactionselectok"):
 		if sessionpass == "1goldiconselectok":
 			me.counters['Gold'].value -= 1
 			for incomecard in table:
@@ -6087,7 +6136,7 @@ def next(group, x=0, y=0):
 		return
 
 
-	if sessionpass in("addlanselectok","add5returnmeselectok","loseiconselectok","standlocationselectok","2gstandcselectok","standladyselectok","standtcselectok","5t3bselectok","standiconselectok"):
+	if sessionpass in("addlanselectok","add5returnmeselectok","loseiconselectok","standlocationselectok","2gstandcselectok","standladyselectok","standtcselectok","5t3bselectok","standiconselectok","d1cg1gselectok"):
 		if len(selectedcard) > 1:
 			whisper("You must select only one card to action.")
 			return
@@ -6101,25 +6150,26 @@ def next(group, x=0, y=0):
 			cardtoaction = selectedcard[0]
 			selectedcard[0] = nextcardtmp
 			selectedcard[0].arrow(cardtoaction)
-		if play(nextcardtmp):
-			cardtoaction = selectedcard[0]
-			savetarget = selectedcard[0]
-			debug(savetarget)
-			interruptcancelcard = nextcardtmp
-			interruptcancelplayer = me
-			saveactionplayer = me
-			inserttarget = interruptcancelcard
-			mainpass = "generalaction"
-			remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
-			remoteCall(me, "setTimer", [me,"interruptcancel",table])
-			nextcardtmp = []
-			return
-		else:
-			delactioncard(nextcardtmp)
-			nextcardtmp = []
-			sessionpass = ""
-			remoteCall(otherplayer, "action", ["general",1])
-			return
+		if sessionpass in("addlanselectok","loseiconselectok","5t3bselectok","d1cg1gselectok"):
+			if play(nextcardtmp):
+				cardtoaction = selectedcard[0]
+				savetarget = selectedcard[0]
+				debug(savetarget)
+				interruptcancelcard = nextcardtmp
+				interruptcancelplayer = me
+				saveactionplayer = me
+				inserttarget = interruptcancelcard
+				mainpass = "generalaction"
+				remoteCall(otherplayer,"savetargetinserttarget",[savetarget,inserttarget,interruptcancelcard,interruptcancelplayer,interruptcancellastcard,interruptcanceledcard,interruptcancelok,saveactionplayer,mainpass])
+				remoteCall(me, "setTimer", [me,"interruptcancel",table])
+				nextcardtmp = []
+				return
+			else:
+				delactioncard(nextcardtmp)
+				nextcardtmp = []
+				sessionpass = ""
+				remoteCall(otherplayer, "action", ["general",1])
+				return
 		nextcardtmp = []
 		sessionpass = "actionok"
 		action("general",1)
@@ -6142,14 +6192,20 @@ def stealthcard(group, x=0, y=0):
 
 def ondbclick(args):
 	mute()
-	if getGlobalVariable("selectmode") == "1" or me.getGlobalVariable("setupOk") == "4":
+	if getGlobalVariable("selectmode") == "1" or me.getGlobalVariable("setupOk") in ("4","5") or me.getGlobalVariable("plotOk") == "ok" or me.getGlobalVariable("drawOk") == "ok":
 		list2 = []
-		if me.getGlobalVariable("setupOk") == "4":tuplecard = eval(me.getGlobalVariable("tableTargets"))
+		if me.getGlobalVariable("setupOk") in ("4","5") or me.getGlobalVariable("plotOk") == "ok" or me.getGlobalVariable("drawOk") == "ok":tuplecard = eval(me.getGlobalVariable("tableTargets"))
 		else:tuplecard = eval(getGlobalVariable("tableTargets"))
 		debug(tuplecard)
 		if me._id == tuplecard[1]:
 			if args.card.name == "nextbutton":next(table)
+			if args.card.name == "setupnextbutton":setupnext(table)
+			if args.card.name == "plotnextbutton":plotnext(table)
+			if args.card.name == "drawnextbutton":drawnext(table)
 			else:
+				if tuplecard[0] == ["setupOk"]:
+					whisper("card cant be selected")
+					return
 				if args.card._id in tuplecard[0]:
 					if args.card.targetedBy == me:
 						args.card.target(False)
@@ -6806,15 +6862,29 @@ def clearaction(count):
 	actionattach = {}
 	sessionpass = ""
 	debug(getGlobalVariable("drawphase"))
-	if count == 1:remoteCall(otherplayer, "clearaction", [2])
+	if getGlobalVariable("generalaction") == "2":
+		me.setGlobalVariable("plotOk","ok")
+		targetTuple = (["plotOk"], me._id)
+		me.setGlobalVariable("tableTargets", str(targetTuple))
+		setGlobalVariable("selectmode", "1")
+		if me.isInverted:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",130,-250)
+		else:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-300,200)
+		notify("**{} into selectmode**".format(me))
+	if getGlobalVariable("drawphase") == "2":
+		me.setGlobalVariable("drawOk","ok")
+		targetTuple = (["drawOk"], me._id)
+		me.setGlobalVariable("tableTargets", str(targetTuple))
+		setGlobalVariable("selectmode", "1")
+		if me.isInverted:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",130,-250)
+		else:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-300,200)
+		notify("**{} into selectmode**".format(me))
+
+	if count == 1:
+
+		remoteCall(otherplayer, "clearaction", [2])
 	if count == 2:
 		if getGlobalVariable("generalaction") == "2":
-			notify("plot phase over")
-			setGlobalVariable("reavelplot","0")
-			setGlobalVariable("generalaction","0")
-			setGlobalVariable("drawphase","1")
-			notify("draw phase start")
-			drawphase(table)
+
 			return
 		if getGlobalVariable("drawphase") == "2":
 			notify("draw phase over")
@@ -7241,7 +7311,7 @@ def actiongeneral(count):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
-				if generalaction[d][2] == "kneelfaction" and checkcardstatus(type = "Faction",stand = 0):
+				if generalaction[d][2] == "kneelfaction" and checkcardstatus(cardtype = "Faction",stand = 0):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
@@ -7618,6 +7688,7 @@ def actionforability(card,repass):
 					cardmarkers(cardtoaction,"powicon",-1)
 					notify("{}'s {} action {} loses a [MIL], an [INT] and a [POW] icon.".format(me,card,cardtoaction))#Confinement
 				if generalaction[d][2] == "d1cg1g":
+					disc(cardtoaction)
 					me.counters['Gold'].value += 1
 					for incomecard in table:
 						if incomecard.controller == me and incomecard.type == "Plot" and incomecard.filter == None:
@@ -7688,6 +7759,9 @@ def actionforability(card,repass):
 				if actioncardlimit[card._id] == generalaction[d][4]:
 					del actionattach[card._id]
 					c = 1
+		if c == 0:
+			actionattach[card._id] -= 1
+			if actionattach[card._id] == 0:del actionattach[card._id]
 		remoteCall(otherplayer, "action", ["general",1])
 def handview(vs):
 	mute()
