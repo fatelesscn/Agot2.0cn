@@ -5657,7 +5657,9 @@ def next(group, x=0, y=0):
 			whisper("You must select only one card to action.")
 			return
 		if len(selectedcard) == 0:
+			sessionpass = ""
 			remoteCall(otherplayer, "action", ["general",1])
+			return
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['HearMeRoar'][1]:
 			for card in me.hand:card.target(False)
 			nextcardtmp = selectedcard[0]
@@ -5722,6 +5724,7 @@ def next(group, x=0, y=0):
 			nextcardtmp = selectedcard[0]
 			selectlist = checkcardid(deck = table,cardtype = "Character",stand = 1)
 			nextselectcard(selectlist,"standiconselectok",table)
+			return
 
 	
 
@@ -6124,12 +6127,13 @@ def next(group, x=0, y=0):
 			for incomecard in table:
 				if incomecard.controller == me and incomecard.markers[Gold] > 0:
 					incomecard.markers[Gold] -= 1
-		if sessionpass == "1goldiconselectok":disc(me.hand)
+		if sessionpass == "d1cg1gselectok":disc(selectedcard[0])
 		if sessionpass == "2gstandcselectok":
 			me.counters['Gold'].value -= 2
 			for incomecard in table:
 				if incomecard.controller == me and incomecard.markers[Gold] > 0:
 					incomecard.markers[Gold] -= 2
+		if sessionpass == "kneelfactionselectok":kneel(nextcardtmp)
 		nextcardtmp = []
 		sessionpass = "actionok"
 		action("general",1)
@@ -6219,7 +6223,7 @@ def ondbclick(args):
 def test(group, x=0, y=0):
 	mute()
 
-	actiongeneral(1)
+	checkcardstatus(cardstr = 4)
 
 def checksavecard(savecard):
 	list = []
@@ -6862,7 +6866,7 @@ def clearaction(count):
 	actionattach = {}
 	sessionpass = ""
 	debug(getGlobalVariable("drawphase"))
-	if getGlobalVariable("generalaction") == "2":
+	if getGlobalVariable("reavelplot") == "2":
 		me.setGlobalVariable("plotOk","ok")
 		targetTuple = (["plotOk"], me._id)
 		me.setGlobalVariable("tableTargets", str(targetTuple))
@@ -7055,15 +7059,17 @@ def checkkneelfaction(faction):
 def checkcardstatus(deck = table,faction = "",cardtype = "",cardstr = -1,stand = -1,unique = "",cost = -1,player = "",traits = "",mil = "",intcard = "",powcard = "",highlight = "",model = ""):
 	mute()
 	for card in deck:
-		if checkcardunique(card,unique) and checkcardstand(card,stand) and checkcardstr(card,cardstr) and checkcardcost(card,cost) and checkcardtype(card,cardtype) and checkcardfaction(card,faction) and checkcardplayer(card,player) and checkcardtraits(card,traits) and checkcardmil(card,mil) and checkcardint(card,intcard) and checkcardpow(card,powcard) and checkcardhl(card,highlight):
-			return True
+		if card.type not in ("Internal","Agenda","Faction"):
+			if checkcardunique(card,unique) and checkcardstand(card,stand) and checkcardstr(card,cardstr) and checkcardcost(card,cost) and checkcardtype(card,cardtype) and checkcardfaction(card,faction) and checkcardplayer(card,player) and checkcardtraits(card,traits) and checkcardmil(card,mil) and checkcardint(card,intcard) and checkcardpow(card,powcard) and checkcardhl(card,highlight):
+				return True
 
 def checkcardid(deck = table,faction = "",cardtype = "",cardstr = -1,stand = -1,unique = "",cost = -1,player = "",traits = "",mil = "",intcard = "",powcard = "",highlight = ""):
 	mute()
 	listid = []
 	for card in deck:
-		if checkcardunique(card,unique) and checkcardstand(card,stand) and checkcardstr(card,cardstr) and checkcardcost(card,cost) and checkcardtype(card,cardtype) and checkcardfaction(card,faction) and checkcardplayer(card,player) and checkcardtraits(card,traits) and checkcardmil(card,mil) and checkcardint(card,intcard) and checkcardpow(card,powcard) and checkcardhl(card,highlight) and card.filter == None:
-			listid.append(card._id)
+		if card.type not in ("Internal","Agenda","Faction"):
+			if checkcardunique(card,unique) and checkcardstand(card,stand) and checkcardstr(card,cardstr) and checkcardcost(card,cost) and checkcardtype(card,cardtype) and checkcardfaction(card,faction) and checkcardplayer(card,player) and checkcardtraits(card,traits) and checkcardmil(card,mil) and checkcardint(card,intcard) and checkcardpow(card,powcard) and checkcardhl(card,highlight) and card.filter == None:
+				listid.append(card._id)
 	return listid
 
 def checkcardunique(card,unique):
@@ -7078,7 +7084,7 @@ def checkcardstand(card,stand):
 
 def checkcardstr(card,cardstr):
 	mute()
-	if cardstr != -1 and int(card.strength) <= cardstr:return True
+	if cardstr != -1 and int(card.strength) <= 5:return True
 	if cardstr == -1:return True
 
 def checkcardcost(card,cost):
@@ -7271,7 +7277,7 @@ def actiongeneral(count):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
-				if generalaction[d][2] == "loseicon" and checkcardstatus(cardstr = 4):
+				if generalaction[d][2] == "loseicon" and checkcardstatus(cardtype = "Character",cardstr = 4):
 					if not actionattach.has_key(card._id):
 						actionattach[card._id] = 1
 					else:actionattach[card._id] += 1
@@ -7330,19 +7336,7 @@ def actiongeneral(count):
 			if fplay(1) == me:action("general",1)
 			else:remoteCall(otherplayer, "action", ["general",1])
 		else:
-			if getGlobalVariable("generalaction") == "2":
-				notify("plot phase over")
-				setGlobalVariable("reavelplot","0")
-				setGlobalVariable("generalaction","0")
-				setGlobalVariable("drawphase","1")
-				notify("draw phase start")
-				drawphase(table)
-				return
-		if getGlobalVariable("drawphase") == "2":
-				notify("draw phase over")
-				setGlobalVariable("drawphase","0")
-				notify("marshal phase start")
-				return
+			clearaction(1)
 
 
 def action(actioninsert,actioncount):
@@ -7668,7 +7662,7 @@ def actionforability(card,repass):
 				if generalaction[d][2] == "1goldicon":
 					choiceList = ['Military', 'Intrigue', 'Power']
 					colorList = ['#ae0603' ,'#006b34','#1a4d8f']
-					choice = askChoice("Which challenge do you want to cannot initiate?", choiceList,colorList)
+					choice = askChoice("Which challenge do you want select?", choiceList,colorList)
 					if choice == 0:
 						actionforability(card,repass)
 						return
