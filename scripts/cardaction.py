@@ -121,7 +121,7 @@ plotdict =  dict( # plot
             FilthyAccusations =      ("Filthy Accusations","ac8effb7-76cb-42e4-ab33-d88a407c0dda","kneel"),
             HeadsonSpikes =          ("Heads on Spikes","424194c0-ad9c-473b-b254-40b1274152ba","discplayer"),
             JoustingContest =        ("Jousting Contest","0b94080f-2207-4663-8990-f9370ab77709","challenge1player"),
-            MarchingOrders =         ("Marching Orders","d526faac-594d-4f40-9da5-42300d44c12e","cantuselia"),
+            MarchingOrders =         ("Marching Orders","d526faac-594d-4f40-9da5-42300d44c12e","manual","cantuselia"),
             NavalSuperiority =       ("Naval Superiority","68448806-ca58-496d-b010-2794fd372744","gold0"),
             Rebuilding =             ("Rebuilding","fedb6fe6-2f55-4c42-9798-3e091b2b2573","adddisc3"),
             SneakAttack =            ("Sneak Attack","d4576f9d-16a6-430e-9f73-217216fd43b9","1challenge"),
@@ -129,23 +129,42 @@ plotdict =  dict( # plot
             Reinforcements =         ("Reinforcements","5de352a4-c6fd-478c-bac0-39b78de1e68c","search5c"),
             MarchedtotheWall =       ("Reinforcements","a9f2fccd-11f3-4562-aa5a-76d606712311","disc1player"),
             WildfireAssault =        ("Wildfire Assault","d10a1ced-df94-419b-af8e-4eadc2eb4688","kill3player"),
-            PowerBehindtheThrone =   ("Power Behind the Throne","12f6e8de-5627-4e71-90f6-1f79f17be44e","addstandicon"))
+            PowerBehindtheThrone =   ("Power Behind the Throne","12f6e8de-5627-4e71-90f6-1f79f17be44e","addstandicon"),
+            TradingwiththePentoshi = ("Trading with the Pentoshi","bc3547ae-82fc-4da1-a375-209ba0c07748","gain3gold"),
+            HeretoServe =            ("Here to Serve","f68a9d16-dea2-4eae-a03f-8fbc48e2c85c","search3maester"),
+            PoliticalDisaster =      ("Political Disaster","bc45b0f8-21ae-4ae2-b86d-f78008f25566","select2location"))
 
 
 generalaction =  dict( # generalaction
             HearMeRoar =          ("Hear Me Roar","2ad9b318-4ff7-4ace-91ee-81e223fd176c","addlan","Hand",1,""),
             ArianneMartell =      ("Arianne Martell","fa34ed25-de84-45c9-89c1-1428ec505458","add5returnme","table",1,""),
-            EdricDayne  =         ("Edric Dayne","b32b7ea7-7997-4b02-8b2f-25ad4d1072fa","1goldicon","table",1,""),
+            EdricDayne  =         ("Edric Dayne","b32b7ea7-7997-4b02-8b2f-25ad4d1072fa","1goldicon","table",1,"gold1"),
             Confinement =         ("Confinement","9aafaad7-3f74-4aff-ba0c-bf19e5de0bdf","loseicon","Hand",1,""),
             OldForestHunter =     ("Old Forest Hunter","89207067-9a33-4689-9b8a-66c85f7c68c1","d1cg1g","table",1,""),
             VeteranBuilder =      ("Veteran Builder","ae0ac552-9668-4df3-a236-49389b7f4cb8","standlocation","table",1,""),
-            MagisterIllyrio =     ("Magister Illyrio","f5f343ea-a561-415b-adfd-9afdd65820c2","2gstandc","table",1,""),
+            MagisterIllyrio =     ("Magister Illyrio","f5f343ea-a561-415b-adfd-9afdd65820c2","2gstandc","table",1,"gold2"),
             Handmaiden  =         ("Handmaiden","a575226f-fba6-4d79-bdf7-e5a0c2e0d192","standlady","table",1,""),
             WakingtheDragon =     ("Waking the Dragon","393fb603-c449-4043-a73f-21c4b47be039","standtc","Hand",1,""),
             TheBearandtheMaidenFair =("The Bear and the Maiden Fair","202b37de-c6bf-4c21-93fd-f3cf6bbad04d","5t3b","Hand",1,""),
             Fealty =              ("Fealty","83754e87-8448-49af-a20f-bc4dc72d1dba","kneelfaction","table",1,""),
-            PowerBehindtheThrone =   ("Power Behind the Throne","12f6e8de-5627-4e71-90f6-1f79f17be44e","standicon","table",1,""))
+            PowerBehindtheThrone =   ("Power Behind the Throne","12f6e8de-5627-4e71-90f6-1f79f17be44e","standicon","table",1,""),
+            Halder =              ("Halder","ba89a709-fe0b-4c19-bc2e-5a55c1ef4659","manual","table",1,""))#manual
 
+dominancestart =  dict( # dominancestart
+            FieryFollowers =      ("Fiery Followers","21c87233-3c2e-4a66-9ea0-ffaf5ac0594c","stand","table",1,""))
+
+dominancewin =  dict( # dominancewin
+            AFeastforCrows =            ("A Feast for Crows","0ed58a09-7482-4632-b88f-309ae5621c2e","2power","table",1,""),
+            AeronDamphair =             ("Aeron Damphair","c4fbe19b-fe3b-4f5c-b1c6-065c13c4a9db","returniron","table",1,""),
+            ChamberofthePaintedTable =  ("Chamber of the Painted Table","8b8d9c4c-a100-4d95-b68b-5156766035d9","move1pow","table",1,""))
+
+dominanceaction =  dict( # dominanceaction
+            TaketheBlack =          ("Take the Black","1a0183ed-61fd-4302-b19b-1640f0c11500","controll6","Hand",1,""),#manual
+            MessengerRaven =        ("Messenger Raven","0ebedb0f-d94c-4f8f-a478-2cffc712c6c7","returndraw1","table",1,""),
+            TheTickler  =           ("The Tickler","5e826f43-d1d0-4c3c-8939-789ce55bcf1d","disctop","table",1,""))#manual
+
+dominanceend =  dict( # dominanceend
+            Varys =               ("Varys","78845c6e-c91a-47a2-9742-d72b19d0ed26","cleartable","table",1,""))#manual
 
 def debug(str):
 	mute()

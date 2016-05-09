@@ -23,6 +23,8 @@
 	    <globalvariable name="firstplay" value="True" />
         <globalvariable name="AID"       value="" />
         <globalvariable name="BID"       value="" />
+        <globalvariable name="aside"       value="0" />
+        <globalvariable name="bside"       value="0" />
 		<globalvariable name="numplayer" value="0" />
 	</globalvariables>
     <events>
@@ -30,6 +32,9 @@
         <event name="OnDeckLoaded" action="onloaddeck" />
         <event name="OnCardsMoved" action="onmoved" />
         <event name="OnCardDoubleClicked" action="ondbclick" />
+        <event name="OnCardClicked" action="onclick" />
+        <event name="OnMarkerChanged" action="checkwinner" />
+        <event name="OnCounterChanged" action="checkcounter" />
     </events>
 
     <proxygen definitionsrc="proxy/proxydef.xml">
@@ -90,9 +95,13 @@
         <property name="Dominance"      type="String"     hidden="True"/>
         <size name="HorizontalCards" width="88" height="63" backWidth="88" backHeight="63" back="cards/backH.png" front="cards/frontH.png" cornerRadius="2"/> 
         <size name="TokenSize" width="35" height="35" back="cards/front.png" front="cards/front.png"/>
-        <size name="button" width="208" height="48" back="cards/front.png" front="cards/front.png"/>
+        <size name="button" width="170" height="60" back="cards/front.png" front="cards/front.png"/>
+        <size name="nextbutton" width="250" height="60" back="cards/front.png" front="cards/front.png"/>
     </card>
 
+    <gameboards x="-500" y="-375" width="1000" height="750" src="background/background.jpg" >
+        <gameboard name="setup" x="-500" y="-375" width="1000" height="750" src="background/403429.jpg" />
+    </gameboards>
     <table name="Table" visibility="undefined" ordered="False" width="960" height="540" background="background/background.jpg" backgroundStyle="uniformToFill">       
        <groupactions    menu="游戏操作">
             <groupaction     menu="开局"                                      shortcut=""       default="False"      execute="setup"/>

@@ -778,6 +778,7 @@
 			<property name="能力"                       value="响应：在你作为进攻方赢得一次阴谋争夺后，在失败的对手控制的一名没有阴谋符号的角色上放置一枚毒药标记。在本阶段结束时，如果该毒药标记仍在该角色上，移除该标记并杀死该角色。（每次争夺至多1次。）"/>
 			<property name="Faction"                    value="Neutral."/>
 			<property name="Type"                       value="Event"/>
+			<property name="Traits"                     value="Poison."/>
 			<property name="Text"                       value="Reaction: After you win an [INT] challenge as the attacking player, place a poison token on a character without an [INT] icon controlled by the losing opponent. At the end of the phase, if that character still has the poison token, remove it and kill that character. (Max 1 per challenge.)"/>
 			<property name="Unique"                     value="No"/>
 			<property name="Loyal"                      value="No"/>
