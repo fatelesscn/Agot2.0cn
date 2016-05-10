@@ -1498,6 +1498,8 @@ def endphase(group, x=0, y=0):
 	if getGlobalVariable("marshalphase") == "2":
 		resetperturn()
 		setGlobalVariable("marshalphase","0")
+		for card in table:
+			if card.highlight == PowerColor:card.highlight = None
 		notify("marshalend")
 		challengephasestart(1)
 		return
@@ -1517,6 +1519,8 @@ def endphase(group, x=0, y=0):
 		resetperturn()
 		setGlobalVariable("challengephase","0")
 		setGlobalVariable("activeplayer","")
+		for card in table:
+			if card.highlight == PowerColor:card.highlight = None
 		notify("challengephaseend")
 		dominancephasestart(1)
 		return
@@ -1976,16 +1980,16 @@ def challengeAnnounce(group, x=0, y=0):
 def challengedeficon(ctype):
 	mute()
 	if ctype == "mil":
-		if me.isInverted:table.create("a576df8f-7ff2-4b79-bb7d-8fa54d47ccf8",-375,-250)
-		else:table.create("a576df8f-7ff2-4b79-bb7d-8fa54d47ccf8",-240,150)
+		if me.isInverted:table.create("a576df8f-7ff2-4b79-bb7d-8fa54d47ccf8",-280,-195)
+		else:table.create("a576df8f-7ff2-4b79-bb7d-8fa54d47ccf8",-280,105)
 	if ctype == "int":
-		if me.isInverted:table.create("6ebd872e-b372-4973-b793-cd4d84d31476",-375,-250)
-		else:table.create("6ebd872e-b372-4973-b793-cd4d84d31476",-240,150)
-	if ctype == "int":
-		if me.isInverted:table.create("9944aa40-0680-4f77-a668-80b5585af2df",-375,-250)
-		else:table.create("9944aa40-0680-4f77-a668-80b5585af2df",-240,150)
-	if me.isInverted:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",150,-250)
-	else:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",-300,150)
+		if me.isInverted:table.create("6ebd872e-b372-4973-b793-cd4d84d31476",-280,-195)
+		else:table.create("6ebd872e-b372-4973-b793-cd4d84d31476",-280,105)
+	if ctype == "pow":
+		if me.isInverted:table.create("9944aa40-0680-4f77-a668-80b5585af2df",-280,-195)
+		else:table.create("9944aa40-0680-4f77-a668-80b5585af2df",-280,105)
+	if me.isInverted:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",-320,--215)
+	else:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",-320,125)
 
 
 def challengeAnnounceold(group, x=0, y=0):
@@ -2116,21 +2120,15 @@ def selectchallenge(ctype):
 			if card.highlight != Stealthcolor:card.highlight = None
 			card.target(False)
 	if ctype == "mil":
-		for cardn in table:
-			if cardn.name in ("DefendMil","DefendInt","DefendPow","DefendNon"):
-				cardn.delete()
+		remoteCall(players[1], "deletecicon", [])
 		targetTuple = [card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"milicon") and card.orientation == 0]
 		selectcardnext(targetTuple,"milselect",table,[],me,1,99)
 	if ctype == "int":
-		for cardn in table:
-			if cardn.name in ("DefendMil","DefendInt","DefendPow","DefendNon"):
-				cardn.delete()
+		remoteCall(players[1], "deletecicon", [])
 		targetTuple = [card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"inticon") and card.orientation == 0]
 		selectcardnext(targetTuple,"intselect",table,[],me,1,99)
 	if ctype == "pow":
-		for cardn in table:
-			if cardn.name in ("DefendMil","DefendInt","DefendPow","DefendNon"):
-				cardn.delete()
+		remoteCall(players[1], "deletecicon", [])
 		targetTuple = [card._id for card in table if card.type == "Character" and card.controller == me and card.isFaceUp and checkchallengeicon(card,"powicon") and card.orientation == 0]
 		selectcardnext(targetTuple,"powselect",table,[],me,1,99)
 	if ctype == "defmil":
@@ -2166,7 +2164,7 @@ def selectchallenge(ctype):
 def deletecicon():
 	mute()
 	for cardn in table:
-		if cardn.name in ("DefendInt","DefendPow","DefendNon"):
+		if cardn.name in ("DefendMil","DefendInt","DefendPow","DefendNon"):
 			cardn.delete()
 
 
@@ -2321,7 +2319,7 @@ def revealplot(group, x = 0, y = 0):
 		
 		countxy = 5
 		for c in table: 
-			if c.Type == "Plot" and c.controller == me:
+			if c.Type == "Plot" and c.controller == me and c not in cards:
 				c.markers[standIcon] = 0
 				c.filter = "#0099ffff"
 				x, y = c.position
@@ -2545,7 +2543,7 @@ def plotability(card):
 					return
 				else:notify("There is no attachment card in table can't use {} 's ability".format(card))
 			if plotdict[d][2] == "draw3":
-				for count in range(0,2):
+				for count in range(0,3):
 					if len(me.deck) > 0:
 						draw(me.deck)
 						drawcount += 1
@@ -3191,6 +3189,9 @@ def play(card):
 			cost=int(re.search('Ambush\s\(\d\).', card.keywords).group()[8])
 			ambush = 1
 		else:cost=int(card.Cost)
+		if me.getGlobalVariable("firstlimit") != "0":
+			whisper("You can only play one limited card")
+			return
 		if me.getGlobalVariable("firstevent") == "0":
 			if checkpr(me) and card.type == "Event":
 				cost=int(card.Cost)-1
@@ -3305,6 +3306,8 @@ def play(card):
 						else:
 							card.highlight = PlayColor
 							notify("{} plays {} and attachs to {} for {} Gold (Cost reduced by {}).".format(me,card,choose,cost,reduc))
+						if me.getGlobalVariable("firstlimit") == "0":
+							if "Limited" in card.keywords:me.setGlobalVariable("firstlimit","1")
 						return True
 				else:
 					whisper("Attachment cards must be attached to another card or game element.")
@@ -3363,7 +3366,10 @@ def play(card):
 			for incomecard in table:
 				if incomecard.controller == me and incomecard.markers[Gold] > 0:
 					incomecard.markers[Gold] -= cost
+			if me.getGlobalVariable("firstlimit") == "0":
+				if "Limited" in card.keywords:me.setGlobalVariable("firstlimit","1")
 			return True
+		
 	else:
 		if me.isInverted: 
 			card.moveToTable(x-8,y-8)
@@ -3671,6 +3677,7 @@ def afterload(player):
 
 	setGlobalVariable("Kingdomgold0","0")
 	setGlobalVariable("Edictgold0","0")
+	me.setGlobalVariable("firstlimit","0")
 
 	me.setGlobalVariable("limitchallenge", "0")
 
@@ -5134,20 +5141,8 @@ def reaction(actioninsert,reactioncount):
 		if len(reactionattach) > 0:
 			debug(sessionpass)
 			if sessionpass == "":
-				choiceList = ['reaction', 'cancel']
-				colorList = ['#006b34' ,'#ae0603']
-				choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
-				if choice == 1:
-					intoreaction(reactionattach,reactioncount,actioninsert)
-					return
-				if choice == 2:
-					if reactioncount == 2:
-						notify("reaction over")
-						clearreaction(1)
-					else:
-						reactioncount += 1
-						remoteCall(players[1], "reaction", [actioninsert,reactioncount])
-					return
+				intoreaction(reactionattach,reactioncount,actioninsert)
+				return
 			if sessionpass in ("reactiondsuok","reactiondswinok"):
 				reactioncards = selectedcard
 				if reactioncards == []:
@@ -5176,20 +5171,8 @@ def reaction(actioninsert,reactioncount):
 		if len(reactionattach) > 0:
 			debug(sessionpass)
 			if sessionpass == "":
-				choiceList = ['reaction', 'cancel']
-				colorList = ['#006b34' ,'#ae0603']
-				choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
-				if choice == 1:
-					intoreaction(reactionattach,reactioncount,actioninsert)
-					return
-				if choice == 2:
-					if reactioncount == 2:
-						notify("reaction over")
-						clearreaction(1)
-					else:
-						reactioncount += 1
-						remoteCall(players[1], "reaction", [actioninsert,reactioncount])
-					return
+				intoreaction(reactionattach,reactioncount,actioninsert)
+				return
 			if sessionpass in ("reactionstandingok"):
 				reactioncards = selectedcard
 				if reactioncards == []:
@@ -5218,20 +5201,8 @@ def reaction(actioninsert,reactioncount):
 		if len(reactionattach) > 0:
 			debug(sessionpass)
 			if sessionpass == "":
-				choiceList = ['reaction', 'cancel']
-				colorList = ['#006b34' ,'#ae0603']
-				choice = askChoice("Which Pass do you want to action?", choiceList,colorList)
-				if choice == 1:
-					intoreaction(reactionattach,reactioncount,actioninsert)
-					return
-				if choice == 2:
-					if reactioncount == 2:
-						notify("reaction over")
-						clearreaction(1)
-					else:
-						reactioncount += 1
-						remoteCall(players[1], "reaction", [actioninsert,reactioncount])
-					return
+				intoreaction(reactionattach,reactioncount,actioninsert)
+				return
 			if sessionpass in ("reactiontaxationok"):
 				reactioncards = selectedcard
 				if reactioncards == []:
@@ -7214,8 +7185,10 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
-	actiongeneral(2)
-	resetperturn()
+	dominancestartreaction(2)
+	#challengedeficon("pow")
+	#actiongeneral(2)
+	#resetperturn()
 	#resetplot()
 	#challengeAnnounce(table)
 	#taxationphasestart(1)
@@ -9276,7 +9249,7 @@ def dominance(group, x=0, y=0):
 		setGlobalVariable("dominancewinplayer",players[winner]._id)
 		for housecard in table:
 			if housecard.type == "Faction" and housecard.controller == players[winner]:
-				addPower(housecard)
+				remoteCall(housecard.controller, "addPower", [housecard])
 	if fplay(1) == me:dominancewinreaction(1)
 	else:remoteCall(players[1], "dominancewinreaction", [1])
 
@@ -9693,18 +9666,18 @@ def taxationphaseend(group, x=0, y=0):
 
 def startnextphase(count):
 	mute()
-	for c in table: 
-		if c.Type == "Plot" and c.controller == me:
-			if len(me.piles['Plot Deck']) > 0:
-				c.filter = "#0099ffff"
-				x, y = c.position
-				if me.isInverted:c.moveToTable(x, y-20)
-				else:c.moveToTable(x, y+20)
-			else:
-				if c.filter == usedplotcolor:
-					c.moveTo(me.piles['Plot Deck'])
-				else:
-					c.filter = "#0099ffff"
+	# for c in table: 
+	# 	if c.Type == "Plot" and c.controller == me:
+	# 		if len(me.piles['Plot Deck']) > 0:
+	# 			c.filter = "#0099ffff"
+	# 			x, y = c.position
+	# 			if me.isInverted:c.moveToTable(x, y-20)
+	# 			else:c.moveToTable(x, y+20)
+	# 		else:
+	# 			if c.filter == usedplotcolor:
+	# 				c.moveTo(me.piles['Plot Deck'])
+	# 			else:
+	# 				c.filter = "#0099ffff"
 	
 	me.counters['Reserve'].value = 0
 	me.counters['Initiative'].value = 0
@@ -9734,6 +9707,7 @@ def startnextphase(count):
 	me.setGlobalVariable("plotOk","")
 	me.setGlobalVariable("drawOk","")
 	me.setGlobalVariable("setupOk","")
+	me.setGlobalVariable("firstlimit","0")
 
 	if count == 1:remoteCall(players[1], "startnextphase", 2)
 	if count == 2:
