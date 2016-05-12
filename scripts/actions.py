@@ -6,6 +6,7 @@
 Gold = ("Gold", "4e8046ba-759b-428c-917f-7e9268a5af90") #The GUID from markers.o8g
 Power = ("Power", "d115ea96-ed05-4bf7-ba22-a34c8675c676") #The GUID from markers.o8g
 STR_Up = ("STR_Up", "7898d5a0-1d59-42b2-bbfb-5051cc420cd8") #The GUID from markers.o8g
+STR_Sub = ("STR_Sub", "1be0aa4d-8f52-42d7-bc3f-798c9759ba5e") #The GUID from markers.o8g
 Burn = ("Burn", "c272aa0c-f283-4ff5-b545-a5a3f150e6da") #The GUID from markers.o8g
 TokenRed = ("TokenRed", "6238a357-41b7-4bca-b394-925fc1b2caf8") #The GUID from markers.o8g
 TokenBlue = ("TokenBlue", "99452bc7-d95b-4c54-8577-41d98dd3e30b") #The GUID from markers.o8g
@@ -14,6 +15,7 @@ IntrigueColor = "#006b34" #A shade of green from the Intrigue Icon
 PowerColor = "#1a4d8f" #A shade of blue from the Power Icon
 WaitColor = "#5c3521" # Grey
 PlayColor = "#ffA6f7" # Yellow
+showColor = "#ffA6f7"
 miljudgecolor = "#000000" # black
 milsavecolor = "#ff0000" # red
 saveactioncolor = "#6aa84f" # green
@@ -1224,6 +1226,23 @@ def reordertable(group, x = 0, y = 0):
 							carda.moveToTable(x1-i,y1-i)
 							carda.sendToBack()
 							i+=12
+	for cards in table:
+		if cards.controller == me and cards.filter != WaitColor:
+			if "Warship" in cards.traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002":cardadd.markers[STR_Up] += 1
+			if "The Reach" in cards.traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "3e1a5952-f5d1-4bca-9226-2b94531cfa54":cardadd.markers[STR_Up] += 1
+			if cards.model == "5d20e021-5d12-4338-8bdd-42d008bff919":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.Faction == "Night's Watch." and cardadd.type == "Character" and cardadd.filter != WaitColor:cardadd.markers[STR_Up] += 1
+			if "Direwolf" in cards.traits and cards.model != "c41d4a72-6919-4e32-97ef-a4b0f1acb281":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281":cardadd.markers[STR_Up] += 1
+			if cards.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and cards._id != cardadd._id:cardadd.markers[STR_Up] += 1
 	notify("{} finished setup phase".format(me))
 	me.setGlobalVariable("setupOk","5")
 
@@ -1232,6 +1251,9 @@ def reordertable(group, x = 0, y = 0):
 	# setGlobalVariable("selectmode", "1")
 	if me.isInverted:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,-250)
 	else:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,200)
+	for card in table:
+		if card.model=="62bad042-fbb0-4121-85d2-92149576308b" and card.controller==me:
+			card.select()
 	# notify("**{} into selectmode**".format(me))
 
 def setupnext(group, x = 0, y = 0):
@@ -1988,7 +2010,7 @@ def challengedeficon(ctype):
 	if ctype == "pow":
 		if me.isInverted:table.create("9944aa40-0680-4f77-a668-80b5585af2df",-280,-195)
 		else:table.create("9944aa40-0680-4f77-a668-80b5585af2df",-280,105)
-	if me.isInverted:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",-320,--215)
+	if me.isInverted:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",-320,-215)
 	else:table.create("0952de65-f260-49d1-a8aa-184a6ff7251b",-320,125)
 
 
@@ -2170,8 +2192,8 @@ def deletecicon():
 
 def challengephaseend(group, x=0, y=0):
 	mute()
-	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,-250)
-	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,200)
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def Militarychallenge(claim = 0):
 	mute()
@@ -2490,9 +2512,14 @@ def plotability(card):
 				cards = dlg.show()
 				if cards != [] and cards != None:
 					if cards[0].Type in ("Attachment","Location"):
-						cards[0].moveTo(me.hand)
+						cardintable(cards[0],"Location")
+						plotcard = cards[0]
+						cards[0].highlight = showColor
+						#cards[0].moveTo(me.hand)
 						me.deck.shuffle()
 						notify("{} reaveled {}, add {} to {} hand.".format(me,card,cards[0],me))#BuildingOrders
+						remoteCall(me, "setTimer", [me,"plotshow",table])
+						return
 					else:
 						if searchok == 1:
 							if confirm("There is a Attachment or Location in these cards, select again？"):
@@ -2681,7 +2708,7 @@ def plotability(card):
 						cardintable(cards[0],"Character")
 						#cards[0].moveTo(me.hand)
 						me.deck.shuffle()
-						notify("{} reaveled {}, add {} to {} hand.".format(me,card,cards[0],me))#HeretoServe
+						notify("{} reaveled {}, add {} to table.".format(me,card,cards[0]))#HeretoServe
 					else:
 						debug("1111")
 						if searchok == 1:
@@ -2707,8 +2734,8 @@ def plotability(card):
 		else:reavelplot(table)
 		return
 	if getGlobalVariable("reavelplot") == "2":
-		resetplot()
-		remoteCall(players[1], "resetplot", [])
+		#resetplot()
+		#remoteCall(players[1], "resetplot", [])
 		if fplay(1) == me:actiongeneral(1)
 		else:remoteCall(players[1], "actiongeneral", 1)
 		return
@@ -2942,8 +2969,8 @@ def marshalaction():
 
 def marshalphaseend():
 	mute()
-	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,-250)
-	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,200)
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def marshalcard(group, x = 0, y = 0):
 	mute()
@@ -3162,9 +3189,12 @@ def cardintable(card,cardtype):
 		if me.isInverted: card.moveToTable(x-80,y)
 		else:card.moveToTable(x+80,y)
 	else:
-		if me.isInverted:card.moveToTable(-60,-100)			
-		else:card.moveToTable(-60,10)
-
+		if cardtype == "Character":
+			if me.isInverted:card.moveToTable(-60,-100)			
+			else:card.moveToTable(-60,10)
+		else:
+			if me.isInverted:card.moveToTable(-60,-220)			
+			else:card.moveToTable(-60,120)
 def play(card):
 	mute()
 	ambush = 0
@@ -3189,7 +3219,7 @@ def play(card):
 			cost=int(re.search('Ambush\s\(\d\).', card.keywords).group()[8])
 			ambush = 1
 		else:cost=int(card.Cost)
-		if me.getGlobalVariable("firstlimit") != "0":
+		if me.getGlobalVariable("firstlimit") != "0" and "Limited" in card.keywords:
 			whisper("You can only play one limited card")
 			return
 		if me.getGlobalVariable("firstevent") == "0":
@@ -3251,6 +3281,13 @@ def play(card):
 							whisper("{} can only be attached to [{}] characters.".format(card,chaonly))
 							targetcard.filter = None
 							if cardtmp != []:cardtmp.arrow(cardtmp,False)
+					elif card.model == "2b3f8c07-5602-4dc0-9929-5c1f8ca9cfd6":
+						if not "Limited" in targetcard.keywords and targetcard.type == "Location" and int(targetcard.cost) <= 3:
+							list.append(targetcard)
+							targetcard.filter = None
+						else:
+							whisper("{} cannot be attached.".format(targetcard))
+							targetcard.filter = None
 					else:
 						if me.getGlobalVariable("setupOk") in ("4","5"):
 							if targetcard.controller == me:list.append(targetcard)
@@ -3292,14 +3329,23 @@ def play(card):
 							attach[card._id] = choose._id
 						else:attach[card._id].append(choose._id)
 						setGlobalVariable("attachmodify",str(attach))
+						debug(card.text)
 						if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and choose.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(choose,"milicon",1)#096
 						if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":choose.markers[STR_Up] += countusedplot
 						if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 							stradd = re.search('\+\d\sSTR', card.Text).group()
-							choose.markers[STR_Up] += int(stradd[1])
-						if re.search('\[INT]\sicon', card.Text):cardmarkers(choose,"inticon",1)
-						if re.search('\[POW]\sicon', card.Text):cardmarkers(choose,"powicon",1)
-						if re.search('\[MIL]\sicon', card.Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(choose,"milicon",1)
+							#choose.markers[STR_Up] += int(stradd[1])
+							cardmarkers(choose,"str",int(stradd[1]))
+						if re.search('\-\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
+							stradd = re.search('\-\d\sSTR', card.Text).group()
+							#choose.markers[STR_Sub] += int(stradd[1])
+							cardmarkers(choose,"str",-int(stradd[1]))
+						if re.search('gains an \[INT]\sicon', card.Text):cardmarkers(choose,"inticon",1)
+						if re.search('gains a \[POW]\sicon', card.Text):cardmarkers(choose,"powicon",1)
+						if re.search('gains a \[MIL]\sicon', card.Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(choose,"milicon",1)
+						if re.search('loses an \[INT]\sicon', card.Text):cardmarkers(choose,"inticon",-1)
+						if re.search('loses a \[POW]\sicon', card.Text):cardmarkers(choose,"powicon",-1)
+						if re.search('loses a [MIL]\sicon', card.Text):cardmarkers(choose,"milicon",-1)
 						card.sendToBack()
 						if len(me.piles['Plot Deck']) == 7:
 							notify("{} plays {} and attachs to {}.".format(me,card,choose))
@@ -3700,9 +3746,12 @@ def afterload(player):
 def onmoved(args):
 	mute()
 	index = 0
+
 	for card in args.cards:
+		debug(args.toGroups[index].name)
+		debug(args.fromGroups[index].name)
 		attach = eval(getGlobalVariable("attachmodify"))
-		if args.cards[index].type == "Character" and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.controller == me and card.filter != WaitColor:
+		if args.cards[index].type in ("Character","Location") and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.controller == me and card.filter != WaitColor:
 			list = []
 			list2 = []
 			list3 = []
@@ -3834,7 +3883,7 @@ def setTimer(player,actioninsert,group,x = 0,y = 0):
         whisper("You cannot start a new timer until the current one finishes!")
         return
     timerIsRunning = True
-    if actioninsert == "dominance":seconds = 5
+    if actioninsert == "plotshow":seconds = 4
     else:seconds = 2
     #whisper("please action in {} seconds.".format(seconds%60))
     notifications = range(11) + [30] + [x*60 for x in range(seconds/60+1)][1:]
@@ -3894,8 +3943,12 @@ def updateTimer(endTime,notifications,actioninsert):
 			plotcard.target(False)
 			cardtoaction = []
 			plotcard = []
+		if actioninsert == "plotshow":
+			plotcard.moveTo(me.hand)
+			cardtoaction = []
+			plotcard = []
 
-		if actioninsert in ("FilthyAccusationsselect","Confiscationselect"):
+		if actioninsert in ("FilthyAccusationsselect","Confiscationselect","plotshow"):
 			sessionpass = ""
 			if getGlobalVariable("reavelplot") == "1":
 				setGlobalVariable("reavelplot","2")
@@ -7185,7 +7238,7 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
-	dominancestartreaction(2)
+	#dominancestartreaction(2)
 	#challengedeficon("pow")
 	#actiongeneral(2)
 	#resetperturn()
@@ -7197,7 +7250,7 @@ def test(group, x=0, y=0):
 	#setGlobalVariable("drawphase","2")
 	#standcharacter("stand1")
 	#actiongeneral(1)
-	#reavelplot(table)
+	reavelplot(table)
 	#dominancewinreaction(1)
 	#dominancestartreaction(1)
 	#debug(checkstannis())
@@ -8941,6 +8994,14 @@ def clearfilter(player = ""):
 
 def cardmarkers(card,marker,add):
 	mute()
+	if marker == "str":
+		addmodify = card.markers[STR_Up] - card.markers[STR_Sub] + add
+		debug(addmodify)
+		if addmodify > 0:card.markers[STR_Up] = addmodify
+		if addmodify < 0:card.markers[STR_Sub] = abs(addmodify)
+		if addmodify == 0:
+			card.markers[STR_Up] = 0
+			card.markers[STR_Sub] = 0
 	if marker == "milicon":
 		addmodify = card.markers[MilitaryIcon] - card.markers[subMilitaryIcon] + add
 		debug(addmodify)
@@ -9308,8 +9369,8 @@ def dominanceendreaction(count):
 
 def dominancephaseend(group, x=0, y=0):
 	mute()
-	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,-250)
-	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,200)
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def actiondominance(count):
 	mute()
@@ -9515,8 +9576,8 @@ def standingendreaction(count):
 
 def standingphaseend(group, x=0, y=0):
 	mute()
-	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,-250)
-	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,200)
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def taxationphasestart(count):
 	mute()
@@ -9661,8 +9722,8 @@ def taxationendreaction(count):
 
 def taxationphaseend(group, x=0, y=0):
 	mute()
-	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,-250)
-	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-375,200)
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def startnextphase(count):
 	mute()
@@ -9812,3 +9873,61 @@ def checkcounter(args):
 		i = 0 
 		for card in table:
 			if card.controller == me and card.model == "390a8cf7-8bc4-45c1-bea5-e6a694e9f2d5":card.markers[STR_Up] += me.counters['Gold'].value-args.value#Tywin Lannister
+
+def onsmoved(args):
+	index = 0
+
+	for card in args.cards:
+		debug(args.toGroups[index].name)
+		debug(args.fromGroups[index].name)
+		if args.cards[index].model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and "Warship" in cardadd.traits:args.cards[index].markers[STR_Up] += 1
+		if args.cards[index].model == "3e1a5952-f5d1-4bca-9226-2b94531cfa54" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and "The Reach" in cardadd.traits:args.cards[index].markers[STR_Up] += 1
+		if args.cards[index].Faction == "Night's Watch." and args.cards[index].type == "Character" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and cardadd.model == "5d20e021-5d12-4338-8bdd-42d008bff919" and cardadd.filter != WaitColor:args.cards[index].markers[STR_Up] += 1
+		if args.cards[index].model == "390a8cf7-8bc4-45c1-bea5-e6a694e9f2d5" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:args.cards[index].markers[STR_Up] += me.counters['Gold'].value
+		if args.cards[index].model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and cardadd.model != "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and "Direwolf" in cardadd.traits:args.cards[index].markers[STR_Up] += 1
+				if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and args.cards[index]._id != cardadd._id:
+					for cardadd2 in table:
+						if cardadd2.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and cardadd2._id != cardadd._id and cardadd2._id != args.cards[index]._id:cardadd2.markers[STR_Up] -= 1
+				if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281":
+					for cardadd2 in table:
+						if cardadd2.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and cardadd2._id != cardadd._id:cardadd2.markers[STR_Up] += 1
+		if args.cards[index].model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and args.cards[index]._id != cardadd._id:cardadd.markers[STR_Up] -= 1
+		if args.cards[index].model != "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if "Direwolf" in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281":cardadd.markers[STR_Up] += 1
+		if args.cards[index].model != "c41d4a72-6919-4e32-97ef-a4b0f1acb281" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if "Direwolf" in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "c41d4a72-6919-4e32-97ef-a4b0f1acb281":cardadd.markers[STR_Up] -= 1
+		if args.cards[index].type == "Location" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if "Warship" in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002":cardadd.markers[STR_Up] += 1
+			if "The Reach" in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "3e1a5952-f5d1-4bca-9226-2b94531cfa54":cardadd.markers[STR_Up] += 1
+			if args.cards[index].model == "5d20e021-5d12-4338-8bdd-42d008bff919":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.Faction == "Night's Watch." and cardadd.type == "Character" and cardadd.filter != WaitColor:cardadd.markers[STR_Up] += 1
+		if args.cards[index].type == "Location" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if "Warship" in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002":cardadd.markers[STR_Up] -= 1
+			if "The Reach" in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "3e1a5952-f5d1-4bca-9226-2b94531cfa54":cardadd.markers[STR_Up] -= 1
+			if args.cards[index].model == "5d20e021-5d12-4338-8bdd-42d008bff919":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.Faction == "Night's Watch."and cardadd.type == "Character" and cardadd.filter != WaitColor:cardadd.markers[STR_Up] -= 1
+	index += 1

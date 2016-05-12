@@ -35,6 +35,7 @@
         <event name="OnCardClicked" action="onclick" />
         <event name="OnMarkerChanged" action="checkwinner" />
         <event name="OnCounterChanged" action="checkcounter" />
+        <event name="OnScriptedCardsMoved" action="onsmoved" />
     </events>
 
     <proxygen definitionsrc="proxy/proxydef.xml">
@@ -99,7 +100,7 @@
         <size name="nextbutton" width="250" height="60" back="cards/front.png" front="cards/front.png"/>
     </card>
 
-    <gameboards x="-500" y="-375" width="1000" height="750" src="background/background.jpg" >
+    <gameboards x="-500" y="-375" width="1000" height="750" src="background/background2.jpg" >
         <gameboard name="setup" x="-500" y="-375" width="1000" height="750" src="background/403429.jpg" />
     </gameboards>
     <table name="Table" visibility="undefined" ordered="False" width="960" height="540" background="background/background.jpg" backgroundStyle="uniformToFill">       
