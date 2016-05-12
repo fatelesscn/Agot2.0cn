@@ -121,7 +121,7 @@ insertreactioncard = []
 manualcard = []
 
 listattach = []
-
+aryaduplicate = []
 #turnreset
 
 addiconmil_turn = []
@@ -1251,9 +1251,6 @@ def reordertable(group, x = 0, y = 0):
 	# setGlobalVariable("selectmode", "1")
 	if me.isInverted:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,-250)
 	else:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,200)
-	for card in table:
-		if card.model=="62bad042-fbb0-4121-85d2-92149576308b" and card.controller==me:
-			card.select()
 	# notify("**{} into selectmode**".format(me))
 
 def setupnext(group, x = 0, y = 0):
@@ -2632,9 +2629,14 @@ def plotability(card):
 				cards = dlg.show()
 				if cards != [] and cards != None:
 					if cards[0].Type in ("Character"):
-						cards[0].moveTo(me.hand)
+						cardintable(cards[0],"Character")
+						plotcard = cards[0]
+						cards[0].highlight = showColor
+						#cards[0].moveTo(me.hand)
 						me.deck.shuffle()
 						notify("{} reaveled {}, add {} to {} hand.".format(me,card,cards[0],me))#Summons
+						remoteCall(me, "setTimer", [me,"plotshow",table])
+						return
 					else:
 						debug("1111")
 						if searchok == 1:
@@ -3049,7 +3051,7 @@ def disc(card, x = 0, y = 0):
 						stradd = re.search('\+\d\sSTR', card.Text).group()
 						cardc.markers[STR_Up] -= int(stradd[1])
 					if re.search('\[INT]\sicon', card.Text):cardc.cardmarkers(card,"inticon",-1)
-					if re.search('\[POW]\sicon', card.Text):cardc.markers[PowerIcon] -= 1
+					if re.search('\[POW]\sicon', card.Text):cardc.cardmarkers(card,"powicon",-1)
 					if re.search('\[MIL]\sicon', card.Text) and cardc.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(cardc,"milicon",-1)
 		if card.highlight == sacrificecolor:
 			card.highlight = None
@@ -3197,6 +3199,8 @@ def cardintable(card,cardtype):
 			else:card.moveToTable(-60,120)
 def play(card):
 	mute()
+	global nextcardtmp
+	global selectedcard
 	ambush = 0
 	fll = 0
 	if getGlobalVariable("selectmode") == "1":return#and sessionpass == "savecardselect":return
@@ -3219,26 +3223,26 @@ def play(card):
 			cost=int(re.search('Ambush\s\(\d\).', card.keywords).group()[8])
 			ambush = 1
 		else:cost=int(card.Cost)
-		if me.getGlobalVariable("firstlimit") != "0" and "Limited" in card.keywords:
-			whisper("You can only play one limited card")
-			return
-		if me.getGlobalVariable("firstevent") == "0":
-			if checkpr(me) and card.type == "Event":
-				cost=int(card.Cost)-1
-				if cost < 0:cost = 0
-				notify("You control Paxter Redwyne the first event you play Reduce the gold cost by 1.")
-		if card.loyal == "Yes":
-			cost -= int(me.getGlobalVariable("reduceloyal_turn"))
-			if me.getGlobalVariable("reduceloyal_turn") != "0":notify("Reduce the cost of the next loyal card you marshal or play this phase by 1 from Fealty")
-			me.setGlobalVariable("reduceloyal_turn", "0")
+		# if me.getGlobalVariable("firstlimit") != "0" and "Limited" in card.keywords:
+		# 	whisper("You can only play one limited card")
+		# 	return
+		# if me.getGlobalVariable("firstevent") == "0":
+		# 	if checkpr(me) and card.type == "Event":
+		# 		cost=int(card.Cost)-1
+		# 		if cost < 0:cost = 0
+		# 		notify("You control Paxter Redwyne the first event you play Reduce the gold cost by 1.")
+		# if card.loyal == "Yes":
+		# 	cost -= int(me.getGlobalVariable("reduceloyal_turn"))
+		# 	if me.getGlobalVariable("reduceloyal_turn") != "0":notify("Reduce the cost of the next loyal card you marshal or play this phase by 1 from Fealty")
+		# 	me.setGlobalVariable("reduceloyal_turn", "0")
 
 
-		if me.getGlobalVariable("inmarshal") == "1" and me.getGlobalVariable("firstll") == "1" and me.getGlobalVariable("firstcharacter") == "0":
-			if card.type == "Character" and card.Traits.find('Lord') != -1 or card.Traits.find('Lady') != -1:
-				cost=int(card.Cost)-2
-				if cost < 0:cost = 0
-				fll = 1
-				notify(" the first Lord or Lady character you marshal this round by 2")
+		# if me.getGlobalVariable("inmarshal") == "1" and me.getGlobalVariable("firstll") == "1" and me.getGlobalVariable("firstcharacter") == "0":
+		# 	if card.type == "Character" and card.Traits.find('Lord') != -1 or card.Traits.find('Lady') != -1:
+		# 		cost=int(card.Cost)-2
+		# 		if cost < 0:cost = 0
+		# 		fll = 1
+		# 		notify(" the first Lord or Lady character you marshal this round by 2")
 
 
 	uniquecards = []
@@ -3256,45 +3260,71 @@ def play(card):
 			global countusedplot
 			countusedplot = len(me.piles['Used Plot Pile'])
 			list = []
-			for targetcard in table:
-				if targetcard.filter == targetcardcolor or targetcard.targetedBy == me:
-					if targetcard.Keywords == 'No attachments.':
-						whisper("{} cannot be attached.".format(targetcard))
-						targetcard.filter = None
-						if cardtmp != []:cardtmp.arrow(cardtmp,False)
-					elif re.search(r'(.*) or (.*) character only.', card.Text,re.I):
-						if targetcard.Traits.find('Lord') != -1 or targetcard.Traits.find('Lady') != -1:
-							list.append(targetcard)
-							targetcard.filter = None
-							if cardtmp != []:cardtmp.arrow(cardtmp,False)
-						else:
-							whisper("{} can only be attached to [Lord or Lady] characters.".format(card))
-							targetcard.filter = None
-							if cardtmp != []:cardtmp.arrow(cardtmp,False)
-					elif re.search(r'\[(.*)] character only.', card.Text,re.I):
-						chaonly = re.search(r'\[(.*)] character only.', card.Text,re.I).group(1)
-						if targetcard.Faction.find(chaonly) != -1 or targetcard.Traits.find(chaonly) != -1:
-							list.append(targetcard)
-							targetcard.filter = None
-							if cardtmp != []:cardtmp.arrow(cardtmp,False)
-						else:
-							whisper("{} can only be attached to [{}] characters.".format(card,chaonly))
-							targetcard.filter = None
-							if cardtmp != []:cardtmp.arrow(cardtmp,False)
-					elif card.model == "2b3f8c07-5602-4dc0-9929-5c1f8ca9cfd6":
-						if not "Limited" in targetcard.keywords and targetcard.type == "Location" and int(targetcard.cost) <= 3:
-							list.append(targetcard)
-							targetcard.filter = None
-						else:
+			if me.getGlobalVariable("playattach") == "1":
+				me.setGlobalVariable("playattach","")
+				list.append(selectedcard[0])
+				nextcardtmp = []
+				selectedcard = []
+			else:
+				for targetcard in table:
+					if targetcard.filter == targetcardcolor:
+						if targetcard.Keywords == 'No attachments.':
 							whisper("{} cannot be attached.".format(targetcard))
 							targetcard.filter = None
-					else:
-						if me.getGlobalVariable("setupOk") in ("4","5"):
-							if targetcard.controller == me:list.append(targetcard)
-						else:list.append(targetcard)
-						targetcard.filter = None
-						if cardtmp != []:cardtmp.arrow(cardtmp,False)
-				if len(list) == 1:cards=list
+							if cardtmp != []:cardtmp.arrow(cardtmp,False)
+						elif re.search(r'(.*) or (.*) character only.', card.Text,re.I):
+							if targetcard.Traits.find('Lord') != -1 or targetcard.Traits.find('Lady') != -1:
+								list.append(targetcard)
+								targetcard.filter = None
+								if cardtmp != []:cardtmp.arrow(cardtmp,False)
+							else:
+								whisper("{} can only be attached to [Lord or Lady] characters.".format(card))
+								targetcard.filter = None
+								if cardtmp != []:cardtmp.arrow(cardtmp,False)
+						elif re.search(r'\[(.*)] character only.', card.Text,re.I):
+							chaonly = re.search(r'\[(.*)] character only.', card.Text,re.I).group(1)
+							if targetcard.Faction.find(chaonly) != -1 or targetcard.Traits.find(chaonly) != -1:
+								list.append(targetcard)
+								targetcard.filter = None
+								if cardtmp != []:cardtmp.arrow(cardtmp,False)
+							else:
+								whisper("{} can only be attached to [{}] characters.".format(card,chaonly))
+								targetcard.filter = None
+								if cardtmp != []:cardtmp.arrow(cardtmp,False)
+						elif card.model == "2b3f8c07-5602-4dc0-9929-5c1f8ca9cfd6":
+							if not "Limited" in targetcard.keywords and targetcard.type == "Location" and int(targetcard.cost) <= 3:
+								list.append(targetcard)
+								targetcard.filter = None
+							else:
+								whisper("{} cannot be attached.".format(targetcard))
+								targetcard.filter = None
+						else:
+							if me.getGlobalVariable("setupOk") in ("4","5"):
+								if targetcard.controller == me:list.append(targetcard)
+							else:list.append(targetcard)
+							targetcard.filter = None
+							if cardtmp != []:cardtmp.arrow(cardtmp,False)
+					elif len(me.piles['Plot Deck']) != 7:
+						debug(targetcard)
+						if re.search(r'(.*) or (.*) character only.', card.Text,re.I):
+							if targetcard.Traits.find('Lord') != -1 or targetcard.Traits.find('Lady') != -1:
+								list.append(targetcard)
+						elif re.search(r'\[(.*)] character only.', card.Text,re.I):
+							chaonly = re.search(r'\[(.*)] character only.', card.Text,re.I).group(1)
+							if targetcard.Faction.find(chaonly) != -1 or targetcard.Traits.find(chaonly) != -1:
+								list.append(targetcard)
+						elif card.model == "2b3f8c07-5602-4dc0-9929-5c1f8ca9cfd6":
+							if not "Limited" in targetcard.keywords and targetcard.type == "Location" and int(targetcard.cost) <= 3:
+								list.append(targetcard)
+						else:
+							if targetcard.type == "Character" and 'No attachments.' not in targetcard.Keywords:list.append(targetcard)
+				if len(me.piles['Plot Deck']) != 7:
+					nextcardtmp = card
+					targetTuple = [cardatt._id for cardatt in list]
+					debug(nextcardtmp)
+					selectcardnext(targetTuple,"playattach",table,[],me,1,1)
+					return
+			if len(list) == 1:cards=list
 			if list == []:
 				whisper("You must targeted(use Shift+mouse left button) a card which you want to attach to.")
 				return
@@ -3418,9 +3448,9 @@ def play(card):
 		
 	else:
 		if me.isInverted: 
-			card.moveToTable(x-8,y-8)
+			card.moveToTable(x-12,y-12)
 		else:
-			card.moveToTable(x+8,y+8)
+			card.moveToTable(x+12,y+12)
 		card.filter = "#005c3521"
 		notify("{} plays {}'s duplicate.".format(me,card))
 		card.sendToBack()
@@ -3737,7 +3767,7 @@ def afterload(player):
 	setGlobalVariable("standingaction", "0")
 	setGlobalVariable("actiontaxation", "0")
 	
-
+	me.setGlobalVariable("playattach","")
 	me.setGlobalVariable("reduceloyal_turn", "0")
 	if player == me:
 		checkdeck()
@@ -3746,10 +3776,8 @@ def afterload(player):
 def onmoved(args):
 	mute()
 	index = 0
-
+	global aryaduplicate
 	for card in args.cards:
-		debug(args.toGroups[index].name)
-		debug(args.fromGroups[index].name)
 		attach = eval(getGlobalVariable("attachmodify"))
 		if args.cards[index].type in ("Character","Location") and args.toGroups[index].name == "Table" and args.fromGroups[index].name == "Table" and card.controller == me and card.filter != WaitColor:
 			list = []
@@ -3760,6 +3788,8 @@ def onmoved(args):
 					list.append(d)
 			for dcard in table:
 				if dcard.name == args.cards[index].name and dcard.filter == WaitColor and dcard.controller == me:
+					list2.append(dcard._id)
+				if dcard in aryaduplicate:
 					list2.append(dcard._id)
 			list.reverse()
 			for cardatt in table:
@@ -3784,6 +3814,7 @@ def onmoved(args):
 									else:cardattd.moveToTable(x2+k,y2-k)
 									cardattd.sendToBack()
 									k+=12
+								
 			i = 12
 			if args.cards[index].unique == "Yes":
 				if len(list2) > 0:
@@ -3794,6 +3825,11 @@ def onmoved(args):
 								carda.moveToTable(x1-i,y1-i)
 								carda.sendToBack()
 								i+=12
+		if card in aryaduplicate and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.controller == me:
+			aryaduplicate.remove(card)
+			if len(aryaduplicate) == 0:
+				for card in table:
+					if card.model == "abf9c701-f480-4576-a5c0-44b4e9b04e6c" and card.controller == me:cardmarkers(card,"milicon",-1)
 		if card.type == "Attachment" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.controller == me:
 			for card in table:
 				if attach.has_key(args.cards[index]._id):
@@ -3809,7 +3845,7 @@ def onmoved(args):
 							stradd = re.search('\+\d\sSTR', args.cards[index].Text).group()
 							card.markers[STR_Up] -= int(stradd[1])
 						if re.search('\[INT]\sicon', args.cards[index].Text):cardmarkers(card,"inticon",-1)
-						if re.search('\[POW]\sicon', args.cards[index].Text):subPower(card)
+						if re.search('\[POW]\sicon', args.cards[index].Text):cardmarkers(card,"powicon",-1)
 						if re.search('\[MIL]\sicon', args.cards[index].Text) and args.cards[index].model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(card,"milicon",-1)
 			args.cards[index].resetProperties()
 		if args.cards[index].type == "Character" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.controller == me:
@@ -5921,6 +5957,13 @@ def next(group, x=0, y=0):
 		if len(selectedcard) != b:
 			whisper("You must select {} character.".format(b))
 			return
+			
+	if sessionpass == "playattach":
+		if len(selectedcard) == 1:
+			debug(nextcardtmp)
+			me.setGlobalVariable("playattach","1")
+			setGlobalVariable("selectmode", "0")
+			play(nextcardtmp)
 	if sessionpass == "attatchcardselect":
 		if len(selectedcard) > 1:
 			whisper("You must select only one character to attach.")
@@ -9876,10 +9919,30 @@ def checkcounter(args):
 
 def onsmoved(args):
 	index = 0
-
+	global aryaduplicate
 	for card in args.cards:
 		debug(args.toGroups[index].name)
 		debug(args.fromGroups[index].name)
+		if args.cards[index].model == "abf9c701-f480-4576-a5c0-44b4e9b04e6c" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if not confirm("place the top card of your deck on her facedown as arya's duplicate?"):return
+			if len(me.deck) > 1:
+				for cardatt in me.Deck.top(1):
+					x,y = args.cards[index].position
+					if me.isInverted: 
+						cardatt.moveToTable(x-12,y-12,True)
+					else:
+						cardatt.moveToTable(x+12,y+12,True)
+					cardatt.peek()
+					cardatt.filter = "#005c3521"
+					cardatt.sendToBack()
+					aryaduplicate.append(cardatt)
+				cardmarkers(args.cards[index],"milicon",1)
+				return
+		if card in aryaduplicate and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.controller == me:
+			aryaduplicate.remove(card)
+			if len(aryaduplicate) == 0:
+				for card in table:
+					if card.model == "abf9c701-f480-4576-a5c0-44b4e9b04e6c" and card.controller == me:cardmarkers(card,"milicon",-1)
 		if args.cards[index].model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
 			for cardadd in table:
 				if cardadd.controller == me and "Warship" in cardadd.traits:args.cards[index].markers[STR_Up] += 1

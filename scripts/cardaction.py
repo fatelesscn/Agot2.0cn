@@ -146,7 +146,7 @@ generalaction =  dict( # generalaction
             Handmaiden  =         ("Handmaiden","a575226f-fba6-4d79-bdf7-e5a0c2e0d192","standlady","table",1,""),
             WakingtheDragon =     ("Waking the Dragon","393fb603-c449-4043-a73f-21c4b47be039","standtc","Hand",1,""),
             TheBearandtheMaidenFair =("The Bear and the Maiden Fair","202b37de-c6bf-4c21-93fd-f3cf6bbad04d","5t3b","Hand",1,""),
-            Fealty =              ("Fealty","83754e87-8448-49af-a20f-bc4dc72d1dba","kneelfaction","table",1,""),
+            # Fealty =              ("Fealty","83754e87-8448-49af-a20f-bc4dc72d1dba","kneelfaction","table",1,""),
             PowerBehindtheThrone =   ("Power Behind the Throne","12f6e8de-5627-4e71-90f6-1f79f17be44e","standicon","table",1,""),
             Halder =              ("Halder","ba89a709-fe0b-4c19-bc2e-5a55c1ef4659","manual","table",1,""))#manual
 
