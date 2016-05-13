@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
-<game name="AGOT2.0 TEST"
+<game name="AGOT2.0 automation version"
       id="c79b3612-748e-430b-a578-033936365582"
       octgnVersion="3.1.0.0"
-      version="1.1.0.2"
+      version="1.0.0.0"
       scriptVersion="3.1.0.2"
       markersize="16"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -108,7 +108,7 @@
             <groupaction     menu="开局"                                      shortcut=""       default="False"      execute="setup"/>
             <groupaction     menu="计算手牌上限"                    shortcut="ALT+R"  default="False"      execute="getreserve"/>
             <groupaction     menu="计算权力标记"                     shortcut="CTRL+R" default="False"      execute="recalcPower"/>
-            <groupactions    menu="战略阶段">
+            <!-- <groupactions    menu="战略阶段">
                 <groupaction     menu="展示战略牌"                            shortcut="ALT+P"  default="False"      execute="revealplot"/>
                 <groupaction     menu="计算优先值"             shortcut=""       default="False"      execute="getInit"/>
                 <groupaction     menu="决定起始玩家"                 shortcut="ALT+I"  default="False"      execute="fp"/>
@@ -125,7 +125,7 @@
             <groupactions    menu="统御阶段">
                 <groupaction     menu="结算统御"                  shortcut="ALT+F"  default="False"      execute="dominance"/>
             </groupactions>
-            <groupaction     menu="结束本回合"                                   shortcut="ALT+E"  default="False"      execute="endturn"/>
+            <groupaction     menu="结束本回合"                                   shortcut="ALT+E"  default="False"      execute="endturn"/> -->
         </groupactions>
         <groupaction menu="test" default="False" shortcut="" execute="test" />
         <groupactions    menu="声明">

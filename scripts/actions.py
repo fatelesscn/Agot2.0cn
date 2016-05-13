@@ -3065,8 +3065,8 @@ def disc(card, x = 0, y = 0):
 			if attach[d] == card._id:
 				for cardd in table:
 					if cardd._id == d:
-						if cardd.Text.find('Terminal.') == -1 and cardd.Keywords.find('Terminal.') == -1:cardd.moveTo(me.hand)
-						else:cardd.moveTo(me.piles['Discard pile'])
+						if cardd.Text.find('Terminal.') == -1 and cardd.Keywords.find('Terminal.') == -1:remoteCall(cardd.owner, "returncard", cardd)
+						else:remoteCall(cardd.owner, "disccard", cardd)
 						del attach[d]
 						setGlobalVariable("attachmodify",str(attach))
 						debug(getGlobalVariable("attachmodify"))
@@ -3201,6 +3201,7 @@ def play(card):
 	mute()
 	global nextcardtmp
 	global selectedcard
+	me.setGlobalVariable("setupOk","")
 	ambush = 0
 	fll = 0
 	if getGlobalVariable("selectmode") == "1":return#and sessionpass == "savecardselect":return
@@ -3317,7 +3318,10 @@ def play(card):
 							if not "Limited" in targetcard.keywords and targetcard.type == "Location" and int(targetcard.cost) <= 3:
 								list.append(targetcard)
 						else:
-							if targetcard.type == "Character" and 'No attachments.' not in targetcard.Keywords:list.append(targetcard)
+							if "Opponent’s character only" in card.text:
+								if targetcard.type == "Character" and 'No attachments.' not in targetcard.Keywords and targetcard.controller != me:list.append(targetcard)
+							else:
+								if targetcard.type == "Character" and 'No attachments.' not in targetcard.Keywords:list.append(targetcard)
 				if len(me.piles['Plot Deck']) != 7:
 					nextcardtmp = card
 					targetTuple = [cardatt._id for cardatt in list]
@@ -3643,17 +3647,17 @@ def movetobottom(card):
 #------------------------------------------------------------------------------
 def on_table_load():
 	mute()
-	setGlobalVariable("Invertedloaddeck","0")
-	setGlobalVariable("selectgamemode","0")
-	# ver = "1.4.2.0"
-	# log = changelogcn["1.4.2.0"]
-	# log = '\n\n>>> '.join(log)
-	# choice = confirm("Changes in {}:\n>>> {}\n\nSee more info?".format(ver, log))
-	# if choice == True:openUrl('https://github.com/TassLehoff/AGoTv2-OCTGN')
+	# setGlobalVariable("Invertedloaddeck","0")
+	# setGlobalVariable("selectgamemode","0")
+	# # ver = "1.4.2.0"
+	# # log = changelogcn["1.4.2.0"]
+	# # log = '\n\n>>> '.join(log)
+	# # choice = confirm("Changes in {}:\n>>> {}\n\nSee more info?".format(ver, log))
+	# # if choice == True:openUrl('https://github.com/TassLehoff/AGoTv2-OCTGN')
 	
-	if not me.isInverted:
-		notify("waiting for HOST select game mode.")
-		selectgamemode()
+	# if not me.isInverted:
+	# 	notify("waiting for HOST select game mode.")
+	# 	selectgamemode()
 
 
 
@@ -3673,11 +3677,13 @@ def selectgamemode():
 
 def onloaddeck(args):
 	mute()
-	if args.player == me:
-		if getGlobalVariable("selectgamemode") =="1":afterload(me)
-		else:
-			setGlobalVariable("Invertedloaddeck","1")
-			notify("waiting for host select game mode")
+	setGlobalVariable("automode","1")
+	# if args.player == me:
+	# 	if getGlobalVariable("selectgamemode") =="1":afterload(me)
+	# 	else:
+	# 		setGlobalVariable("Invertedloaddeck","1")
+	# 		notify("waiting for host select game mode")
+	afterload(me)
 
 def afterload(player):
 	mute()
@@ -7870,6 +7876,11 @@ def checkmytableTraits(cardTraits):
 def returncard(card):
 	mute()
 	card.moveTo(me.hand)
+
+def disccard(card):
+	mute()
+	card.moveTo(me.piles['Discard pile'])
+
 
 def checkattachcard(card):
 	mute()
