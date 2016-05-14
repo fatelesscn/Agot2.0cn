@@ -3044,21 +3044,32 @@ def disc(card, x = 0, y = 0):
 					setGlobalVariable("attachmodify",str(attach))
 					debug(getGlobalVariable("attachmodify"))
 					#rollback
-					if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
-						cardc.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
+					# if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
+					# 	cardc.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
 					if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and cardc.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(cardc,"milicon",-1)#096
 					if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 						stradd = re.search('\+\d\sSTR', card.Text).group()
-						cardc.markers[STR_Up] -= int(stradd[1])
-					if re.search('\[INT]\sicon', card.Text):cardc.cardmarkers(card,"inticon",-1)
-					if re.search('\[POW]\sicon', card.Text):cardc.cardmarkers(card,"powicon",-1)
-					if re.search('\[MIL]\sicon', card.Text) and cardc.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(cardc,"milicon",-1)
+						#choose.markers[STR_Up] += int(stradd[1])
+						cardmarkers(cardc,"str",-int(stradd[1]))
+					if re.search('\-\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
+						stradd = re.search('\-\d\sSTR', card.Text).group()
+						#choose.markers[STR_Sub] += int(stradd[1])
+						cardmarkers(cardc,"str",int(stradd[1]))
+
+					if re.search('gains an \[INT]\sicon', card.Text):cardmarkers(cardc,"inticon",-1)
+					if re.search('gains a \[POW]\sicon', card.Text):cardmarkers(cardc,"powicon",-1)
+					if re.search('gains a \[MIL]\sicon', card.Text) and cardc.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(cardc,"milicon",-1)
+					if re.search('loses an \[INT]\sicon', card.Text):cardmarkers(cardc,"inticon",1)
+					if re.search('loses a \[POW]\sicon', card.Text):cardmarkers(cardc,"powicon",1)
+					if re.search('loses a [MIL]\sicon', card.Text):cardmarkers(cardc,"milicon",1)
 		if card.highlight == sacrificecolor:
 			card.highlight = None
 			notify("{} sacrifice {}.".format(me, card))
 		else:
 			notify("{} discard {}.".format(me, card))
-		card.moveTo(me.piles['Discard pile'])
+		if card.Text.find('Terminal.') == -1 and card.Keywords.find('Terminal.') == -1:remoteCall(card.owner, "returncard", card)
+		else:remoteCall(card.owner, "disccard", card)
+		# card.moveTo(me.piles['Discard pile'])
 		card.resetProperties()
 	elif card.type == "Character":
 		for d in attach:
@@ -3269,10 +3280,18 @@ def play(card):
 			else:
 				for targetcard in table:
 					if targetcard.filter == targetcardcolor:
-						if targetcard.Keywords == 'No attachments.':
+						if 'No attachments.' in targetcard.Keywords:
 							whisper("{} cannot be attached.".format(targetcard))
 							targetcard.filter = None
-							if cardtmp != []:cardtmp.arrow(cardtmp,False)
+						elif 'No attachments except Weapon.' in targetcard.Keywords:
+							if "Weapon." in card.traits:
+								list.append(targetcard)
+								targetcard.filter = None
+								if cardtmp != []:cardtmp.arrow(cardtmp,False)
+							else:
+								whisper("{} cannot be attached.".format(targetcard))
+								targetcard.filter = None
+								continue
 						elif re.search(r'(.*) or (.*) character only.', card.Text,re.I):
 							if targetcard.Traits.find('Lord') != -1 or targetcard.Traits.find('Lady') != -1:
 								list.append(targetcard)
@@ -3307,7 +3326,10 @@ def play(card):
 							if cardtmp != []:cardtmp.arrow(cardtmp,False)
 					elif len(me.piles['Plot Deck']) != 7:
 						debug(targetcard)
-						if re.search(r'(.*) or (.*) character only.', card.Text,re.I):
+						debug(card.type)
+						debug(targetcard.Keywords)
+						if not "Weapon." in card.traits and 'No attachments except Weapon.' in targetcard.Keywords:continue
+						elif re.search(r'(.*) or (.*) character only.', card.Text,re.I):
 							if targetcard.Traits.find('Lord') != -1 or targetcard.Traits.find('Lady') != -1:
 								list.append(targetcard)
 						elif re.search(r'\[(.*)] character only.', card.Text,re.I):
@@ -3326,7 +3348,7 @@ def play(card):
 					nextcardtmp = card
 					targetTuple = [cardatt._id for cardatt in list]
 					debug(nextcardtmp)
-					selectcardnext(targetTuple,"playattach",table,[],me,1,1)
+					selectcardnext(targetTuple,"playattach",table,[],"",1,1)
 					return
 			if len(list) == 1:cards=list
 			if list == []:
@@ -3365,7 +3387,7 @@ def play(card):
 						setGlobalVariable("attachmodify",str(attach))
 						debug(card.text)
 						if card.model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and choose.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(choose,"milicon",1)#096
-						if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":choose.markers[STR_Up] += countusedplot
+						# if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":choose.markers[STR_Up] += countusedplot
 						if re.search('\+\d\sSTR', card.Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
 							stradd = re.search('\+\d\sSTR', card.Text).group()
 							#choose.markers[STR_Up] += int(stradd[1])
@@ -3719,7 +3741,7 @@ def afterload(player):
 	setGlobalVariable("chaevent", "-1")
 	setGlobalVariable("attachmodify", "{}")
 	setGlobalVariable("mainstep", "0")
-	setGlobalVariable("ambush", "1")
+	setGlobalVariable("ambush", "0")
 	setGlobalVariable("aftercalculatestand", "[]")
 	setGlobalVariable("aftercalculatedraw", "[]")
 	setGlobalVariable("ignorestr", "[]")
@@ -3800,7 +3822,7 @@ def onmoved(args):
 			list.reverse()
 			for cardatt in table:
 				for listcard in table:
-					if cardatt.controller == me and cardatt.name == listcard.name and  listcard._id in (list) and cardatt.filter == WaitColor:
+					if cardatt.controller == listcard.controller and cardatt.name == listcard.name and  listcard._id in (list) and cardatt.filter == WaitColor:
 						list3.append(cardatt)
 			i = 12			
 			if len(list) > 0:
@@ -3808,17 +3830,25 @@ def onmoved(args):
 					for carda in table:
 						if carda._id == cardindex:
 							x1,y1 = card.position
-							if me.isInverted:carda.moveToTable(x1-i,y1-i)
-							else:carda.moveToTable(x1+i,y1+i)
-							carda.sendToBack()
+							if me.isInverted:
+								#carda.moveToTable(x1-i,y1-i)movecardp
+								remoteCall(carda.owner, "movecardp", [carda,x1-i,y1-i,1])
+							else:
+								#carda.moveToTable(x1+i,y1+i)
+								remoteCall(carda.owner, "movecardp", [carda,x1+i,y1+i,1])
+							#carda.sendToBack()
 							x2,y2 = carda.position
 							i+=12
 							k = 12
 							for cardattd in list3:
 								if cardattd.name == carda.name:
-									if me.isInverted:cardattd.moveToTable(x2-k,y2+k)
-									else:cardattd.moveToTable(x2+k,y2-k)
-									cardattd.sendToBack()
+									if me.isInverted:
+										#cardattd.moveToTable(x2-k,y2+k)
+										remoteCall(cardattd.owner, "movecardp", [cardattd,x2-k,y2+k,1])
+									else:
+										#cardattd.moveToTable(x2+k,y2-k)
+										remoteCall(cardattd.owner, "movecardp", [cardattd,x2+k,y2-k,1])
+									#cardattd.sendToBack()
 									k+=12
 								
 			i = 12
@@ -3844,15 +3874,24 @@ def onmoved(args):
 						setGlobalVariable("attachmodify",str(attach))
 						debug(getGlobalVariable("attachmodify"))
 					#rollback
-						if args.cards[index].model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
-							card.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
+						# if args.cards[index].model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":
+						# 	card.markers[STR_Up] -= len(me.piles['Used Plot Pile'])
 						if args.cards[index].model == "4dd074aa-af6c-4897-b7b2-bff3493bcf9e" and card.model == "df79718d-b01d-4338-8907-7b6abff58303":cardmarkers(card,"milicon",-1)#096
-						if re.search('\+\d\sSTR', args.cards[index].Text) and card.model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and card.model != "4c8a114e-106c-4460-846b-28f73914fc11":
+						if re.search('\+\d\sSTR', args.cards[index].Text) and args.cards[index].model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and args.cards[index].model != "4c8a114e-106c-4460-846b-28f73914fc11":
 							stradd = re.search('\+\d\sSTR', args.cards[index].Text).group()
-							card.markers[STR_Up] -= int(stradd[1])
-						if re.search('\[INT]\sicon', args.cards[index].Text):cardmarkers(card,"inticon",-1)
-						if re.search('\[POW]\sicon', args.cards[index].Text):cardmarkers(card,"powicon",-1)
-						if re.search('\[MIL]\sicon', args.cards[index].Text) and args.cards[index].model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(card,"milicon",-1)
+							cardmarkers(card,"str",-int(stradd[1]))
+						if re.search('\-\d\sSTR', args.cards[index].Text) and args.cards[index].model != "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c" and args.cards[index].model != "4c8a114e-106c-4460-846b-28f73914fc11":
+							stradd = re.search('\-\d\sSTR', args.cards[index].Text).group()
+							cardmarkers(card,"str",int(stradd[1]))
+						if re.search('gains an \[INT]\sicon', args.cards[index].Text):cardmarkers(card,"inticon",-1)
+						if re.search('gains a \[POW]\sicon', args.cards[index].Text):cardmarkers(card,"powicon",-1)
+						if re.search('gains a \[MIL]\sicon', args.cards[index].Text) and card.model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(card,"milicon",-1)
+						if re.search('loses an \[INT]\sicon', args.cards[index].Text):cardmarkers(card,"inticon",1)
+						if re.search('loses a \[POW]\sicon', args.cards[index].Text):cardmarkers(card,"powicon",1)
+						if re.search('loses a [MIL]\sicon', args.cards[index].Text):cardmarkers(card,"milicon",1)
+						# if re.search('\[INT]\sicon', args.cards[index].Text):cardmarkers(card,"inticon",-1)
+						# if re.search('\[POW]\sicon', args.cards[index].Text):cardmarkers(card,"powicon",-1)
+						# if re.search('\[MIL]\sicon', args.cards[index].Text) and args.cards[index].model != "4dd074aa-af6c-4897-b7b2-bff3493bcf9e":cardmarkers(card,"milicon",-1)
 			args.cards[index].resetProperties()
 		if args.cards[index].type == "Character" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.controller == me:
 			for d in attach:
@@ -9051,8 +9090,12 @@ def cardmarkers(card,marker,add):
 	if marker == "str":
 		addmodify = card.markers[STR_Up] - card.markers[STR_Sub] + add
 		debug(addmodify)
-		if addmodify > 0:card.markers[STR_Up] = addmodify
-		if addmodify < 0:card.markers[STR_Sub] = abs(addmodify)
+		if addmodify > 0:
+			card.markers[STR_Up] = addmodify
+			card.markers[STR_Sub] = 0
+		if addmodify < 0:
+			card.markers[STR_Up] = 0
+			card.markers[STR_Sub] = abs(addmodify)
 		if addmodify == 0:
 			card.markers[STR_Up] = 0
 			card.markers[STR_Sub] = 0
@@ -9847,7 +9890,7 @@ def startnextphase(count):
 		setGlobalVariable("chaevent", "-1")
 		setGlobalVariable("attachmodify", "{}")
 		setGlobalVariable("mainstep", "0")
-		setGlobalVariable("ambush", "1")
+		setGlobalVariable("ambush", "0")
 		setGlobalVariable("aftercalculatestand", "[]")
 		setGlobalVariable("aftercalculatedraw", "[]")
 		setGlobalVariable("ignorestr", "[]")
@@ -10005,3 +10048,7 @@ def onsmoved(args):
 				for cardadd in table:
 					if cardadd.controller == me and cardadd.Faction == "Night's Watch."and cardadd.type == "Character" and cardadd.filter != WaitColor:cardadd.markers[STR_Up] -= 1
 	index += 1
+def movecardp(card,x,y,back):
+	mute()
+	card.moveToTable(x,y)
+	if back == 1:card.sendToBack()
