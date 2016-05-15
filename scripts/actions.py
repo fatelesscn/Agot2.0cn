@@ -3062,14 +3062,17 @@ def disc(card, x = 0, y = 0):
 					if re.search('loses an \[INT]\sicon', card.Text):cardmarkers(cardc,"inticon",1)
 					if re.search('loses a \[POW]\sicon', card.Text):cardmarkers(cardc,"powicon",1)
 					if re.search('loses a [MIL]\sicon', card.Text):cardmarkers(cardc,"milicon",1)
+					if card.Text.find('Terminal.') == -1 and card.Keywords.find('Terminal.') == -1:remoteCall(card.owner, "returncard", card)
+					else:remoteCall(card.owner, "disccard", card)
+					return
 		if card.highlight == sacrificecolor:
 			card.highlight = None
 			notify("{} sacrifice {}.".format(me, card))
 		else:
 			notify("{} discard {}.".format(me, card))
-		if card.Text.find('Terminal.') == -1 and card.Keywords.find('Terminal.') == -1:remoteCall(card.owner, "returncard", card)
-		else:remoteCall(card.owner, "disccard", card)
-		# card.moveTo(me.piles['Discard pile'])
+		# if card.Text.find('Terminal.') == -1 and card.Keywords.find('Terminal.') == -1:remoteCall(card.owner, "returncard", card)
+		# else:remoteCall(card.owner, "disccard", card)
+		remoteCall(card.owner, "disccard", card)
 		card.resetProperties()
 	elif card.type == "Character":
 		for d in attach:
@@ -7216,7 +7219,12 @@ def next(group, x=0, y=0):
 		sessionpass = "actionok"
 		action("dominance",1)
 		return
-
+	if sessionpass == "ticklerdisc":
+		if len(selectedcard) == 1:
+			remoteCall(selectedcard[0].owner, "disc", selectedcard[0])
+		if cardtoaction == "generalaction":remoteCall(otherplayer, "action", ["general",1])
+		if cardtoaction == "dominanceaction":remoteCall(otherplayer, "action", ["dominance",1])
+		cardtoaction = []
 def stealthcard(group, x=0, y=0):
 	mute()
 	global sessionpass
@@ -8995,6 +9003,17 @@ def actionforability(card,repass):
 					notify("{}'s {} action draw 1 card".format(me,card))#MessengerRaven
 					card.moveTo(me.hand)
 					draw(me.deck)
+				if dominanceaction[d][2] == "disctop":
+					disccard = players[1].deck.top(1)
+					remoteCall(players[1], "disc", [disccard])
+					actionattach[card._id] -= 1
+					if actionattach[card._id] == 0:del actionattach[card._id]
+					for cardd in table:
+						if cardd.name == disccard.name:
+							targetTuple = [card._id for card in table if card.name == disccard]
+							selectcardnext(targetTuple,"ticklerdisc",table,[],"",1)
+							cardtoaction = repass
+							break
 		if c == 0:
 			actionattach[card._id] -= 1
 			if actionattach[card._id] == 0:del actionattach[card._id]
