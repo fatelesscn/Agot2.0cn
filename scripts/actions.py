@@ -55,7 +55,7 @@ standIcon = ("standIcon", "353db31d-b5d7-4f17-9683-08b03151ff83")
 betrayalIcon = ("betrayalIcon", "d042dab3-176a-471e-a917-1041c64c6579")
 cardtmp = []
 
-debugMode = True
+debugMode = False
 countusedplot = 0
 Heartsbaneused = 0
 countmil = 1
@@ -6010,17 +6010,17 @@ def next(group, x=0, y=0):
 			setGlobalVariable("selectmode", "0")
 			play(nextcardtmp)
 	if sessionpass == "attatchcardselect":
-		if len(selectedcard) > 1:
+		if len(selectedcard) > 1 or len(selectedcard) == 0:
 			whisper("You must select only one character to attach.")
 			return
-		if len(selectedcard) == 0:
-			disc(listattach[0])
-			del listattach[0]
-			selectedcard = []
-			if len(listattach) > 0:attatchcard(listattach)
-			else:
-				reordertable(table)
-			return
+		# if len(selectedcard) == 0:
+		# 	disc(listattach[0])
+		# 	del listattach[0]
+		# 	selectedcard = []
+		# 	if len(listattach) > 0:attatchcard(listattach)
+		# 	else:
+		# 		reordertable(table)
+		# 	return
 	if sessionpass == "discattch":
 		if len(selectedcard) > 1:
 			whisper("You must select only one attachment to discard.")
