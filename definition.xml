@@ -3,7 +3,7 @@
 <game name="AGOT2.0 automation version"
       id="c79b3612-748e-430b-a578-033936365582"
       octgnVersion="3.1.0.0"
-      version="1.0.0.0"
+      version="1.0.0.1"
       scriptVersion="3.1.0.2"
       markersize="16"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -100,9 +100,9 @@
         <size name="nextbutton" width="250" height="60" back="cards/front.png" front="cards/front.png"/>
     </card>
 
-    <gameboards x="-500" y="-375" width="1000" height="750" src="background/background2.jpg" >
+<!--     <gameboards x="-500" y="-375" width="1000" height="750" src="background/background2.jpg" >
         <gameboard name="setup" x="-500" y="-375" width="1000" height="750" src="background/403429.jpg" />
-    </gameboards>
+    </gameboards> -->
     <table name="Table" visibility="undefined" ordered="False" width="960" height="540" background="background/background.jpg" backgroundStyle="uniformToFill">       
        <groupactions    menu="游戏操作">
             <groupaction     menu="开局"                                      shortcut=""       default="False"      execute="setup"/>
@@ -127,7 +127,7 @@
             </groupactions>
             <groupaction     menu="结束本回合"                                   shortcut="ALT+E"  default="False"      execute="endturn"/> -->
         </groupactions>
-        <groupaction menu="test" default="False" shortcut="" execute="test" />
+        <!-- <groupaction menu="test" default="False" shortcut="" execute="test" /> -->
         <groupactions    menu="声明">
             <groupaction     menu="声明：行动完毕."                        shortcut="CTRL+D"  default="False"      execute="turnDone"/>
             <groupaction     menu="声明：有行动/有疑问."                  shortcut="CTRL+Q" default="False"      execute="holdOn"/>
