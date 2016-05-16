@@ -3065,6 +3065,7 @@ def disc(card, x = 0, y = 0):
 					if card.Text.find('Terminal.') == -1 and card.Keywords.find('Terminal.') == -1:remoteCall(card.owner, "returncard", card)
 					else:remoteCall(card.owner, "disccard", card)
 					return
+		remoteCall(card.owner, "disccard", card)
 		if card.highlight == sacrificecolor:
 			card.highlight = None
 			notify("{} sacrifice {}.".format(me, card))
@@ -3072,7 +3073,6 @@ def disc(card, x = 0, y = 0):
 			notify("{} discard {}.".format(me, card))
 		# if card.Text.find('Terminal.') == -1 and card.Keywords.find('Terminal.') == -1:remoteCall(card.owner, "returncard", card)
 		# else:remoteCall(card.owner, "disccard", card)
-		remoteCall(card.owner, "disccard", card)
 		card.resetProperties()
 	elif card.type == "Character":
 		for d in attach:
@@ -3086,11 +3086,11 @@ def disc(card, x = 0, y = 0):
 						debug(getGlobalVariable("attachmodify"))
 		if card.highlight == sacrificecolor:
 			card.highlight = None
-			notify("{} sacrifice {}.".format(me, card))
 			card.moveTo(me.piles['Dead pile'])
+			notify("{} sacrifice {}.".format(me, card))
 		else:
-			notify("{} discard {}.".format(me, card))
 			card.moveTo(me.piles['Discard pile'])
+			notify("{} discard {}.".format(me, card))
 	elif card.type == "Event":
 		card.moveTo(me.piles['Discard pile'])
 		notify("{} discard {}.".format(me, card))
@@ -3215,7 +3215,6 @@ def play(card):
 	mute()
 	global nextcardtmp
 	global selectedcard
-	me.setGlobalVariable("setupOk","")
 	ambush = 0
 	fll = 0
 	if getGlobalVariable("selectmode") == "1":return#and sessionpass == "savecardselect":return
@@ -6513,10 +6512,10 @@ def next(group, x=0, y=0):
 			for card in me.hand:card.target(False)
 			nextcardtmp = selectedcard[0]
 			sessionpass = "5t3bselectok"
-		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Fealty'][1]:
-			for card in table:card.target(False)
-			nextcardtmp = selectedcard[0]
-			sessionpass = "kneelfactionselectok"
+		# if len(selectedcard) == 1 and selectedcard[0].model == generalaction['Fealty'][1]:
+		# 	for card in table:card.target(False)
+		# 	nextcardtmp = selectedcard[0]
+		# 	sessionpass = "kneelfactionselectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == generalaction['PowerBehindtheThrone'][1]:
 			for card in table:card.target(False)
 			nextcardtmp = selectedcard[0]
@@ -6534,8 +6533,11 @@ def next(group, x=0, y=0):
 			nextcardtmp = selectedcard[0]
 			sessionpass = "returndraw1selectok"
 		if len(selectedcard) == 1 and selectedcard[0].model == dominanceaction['TheTickler'][1]:
-			setGlobalVariable("selectmode", "0")
-			manualprocess(selectedcard[0],"dominance")
+			# setGlobalVariable("selectmode", "0")
+			# manualprocess(selectedcard[0],"dominance")
+			for card in table:card.target(False)
+			nextcardtmp = selectedcard[0]
+			sessionpass = "disctopselectok"
 
 	if sessionpass == "dominancestart":
 		if len(selectedcard) > 1:
@@ -7214,7 +7216,7 @@ def next(group, x=0, y=0):
 		sessionpass = "reactiondswinok"
 		reaction("dominancewin",1)
 		return
-	if sessionpass in ("returndraw1selectok","12131313"):
+	if sessionpass in ("returndraw1selectok","disctopselectok"):
 		nextcardtmp = []
 		sessionpass = "actionok"
 		action("dominance",1)
@@ -7222,9 +7224,9 @@ def next(group, x=0, y=0):
 	if sessionpass == "ticklerdisc":
 		if len(selectedcard) == 1:
 			remoteCall(selectedcard[0].owner, "disc", selectedcard[0])
-		if cardtoaction == "generalaction":remoteCall(otherplayer, "action", ["general",1])
-		if cardtoaction == "dominanceaction":remoteCall(otherplayer, "action", ["dominance",1])
-		cardtoaction = []
+		remoteCall(players[1], "action", ["dominance",1])
+
+
 def stealthcard(group, x=0, y=0):
 	mute()
 	global sessionpass
@@ -7334,6 +7336,10 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
+	me.setGlobalVariable("setupOk","")
+	setGlobalVariable("dominancephase","1")
+	setGlobalVariable("dominanceaction", "1")
+	actiondominance(2)
 	#dominancestartreaction(2)
 	#challengedeficon("pow")
 	#actiongeneral(2)
@@ -7346,7 +7352,7 @@ def test(group, x=0, y=0):
 	#setGlobalVariable("drawphase","2")
 	#standcharacter("stand1")
 	#actiongeneral(1)
-	reavelplot(table)
+	#reavelplot(table)
 	#dominancewinreaction(1)
 	#dominancestartreaction(1)
 	#debug(checkstannis())
@@ -8739,6 +8745,7 @@ def actionforability(card,repass):
 	sessionpass = ""
 	c = 0
 	f = 0
+	g = 0
 	debug(actionattach)
 	if repass == "challengeaction":
 		for d in actionchallenge:
@@ -9004,22 +9011,35 @@ def actionforability(card,repass):
 					card.moveTo(me.hand)
 					draw(me.deck)
 				if dominanceaction[d][2] == "disctop":
-					disccard = players[1].deck.top(1)
-					remoteCall(players[1], "disc", [disccard])
-					actionattach[card._id] -= 1
-					if actionattach[card._id] == 0:del actionattach[card._id]
-					for cardd in table:
-						if cardd.name == disccard.name:
-							targetTuple = [card._id for card in table if card.name == disccard]
-							selectcardnext(targetTuple,"ticklerdisc",table,[],"",1)
-							cardtoaction = repass
-							break
+					remoteCall(players[1], "ticklerdisc", [card])
+					g = 1
+				cardtoaction == []
+				if not actioncardlimit.has_key(card._id):
+					actioncardlimit[card._id] = 1
+				else:actioncardlimit[card._id] += 1
+				if actioncardlimit[card._id] == generalaction[d][4]:
+					debug(actionattach)
+					del actionattach[card._id]
+					c = 1
 		if c == 0:
 			actionattach[card._id] -= 1
 			if actionattach[card._id] == 0:del actionattach[card._id]
 		debug(repass)
-		if repass == "generalaction":remoteCall(otherplayer, "action", ["general",1])
-		if repass == "dominanceaction":remoteCall(otherplayer, "action", ["dominance",1])
+		if g == 0:
+			if repass == "generalaction":remoteCall(otherplayer, "action", ["general",1])
+			if repass == "dominanceaction":remoteCall(otherplayer, "action", ["dominance",1])
+
+def ticklerdisc(cardcation):
+	mute()
+	disccard = me.deck.top()
+	disc(disccard)
+	notify("{}'s {} action disc {}".format(players[1],cardcation,disccard))#TheTickler
+	for cardd in table:
+		if cardd.name == disccard.name:
+			targetTuple = [card._id for card in table if card.name == disccard.name]
+			remoteCall(players[1], "selectcardnext", [targetTuple,"ticklerdisc",table,[],"",1])
+			# selectcardnext(targetTuple,"ticklerdisc",table,[],"",1)
+			return
 		
 def handview(vs):
 	mute()
