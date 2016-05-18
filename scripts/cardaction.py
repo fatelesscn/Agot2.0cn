@@ -171,3 +171,13 @@ def debug(str):
 	global debugMode
 	if debugMode:
 		whisper("Debug Msg: {}".format(str))
+
+def debugmode(group, x = 0, y = 0):
+      mute()
+      global debugMode
+      if debugMode:
+            debugMode = False
+            notify("Debug Off")
+      else:
+            debugMode = True
+            notify("Debug On")

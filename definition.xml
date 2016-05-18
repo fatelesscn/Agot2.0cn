@@ -3,7 +3,7 @@
 <game name="AGOT2.0 automation version"
       id="c79b3612-748e-430b-a578-033936365582"
       octgnVersion="3.1.0.0"
-      version="1.0.0.1"
+      version="1.0.0.2"
       scriptVersion="3.1.0.2"
       markersize="16"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -127,7 +127,6 @@
             </groupactions>
             <groupaction     menu="结束本回合"                                   shortcut="ALT+E"  default="False"      execute="endturn"/> -->
         </groupactions>
-        <!-- <groupaction menu="test" default="False" shortcut="" execute="test" /> -->
         <groupactions    menu="声明">
             <groupaction     menu="声明：行动完毕."                        shortcut="CTRL+D"  default="False"      execute="turnDone"/>
             <groupaction     menu="声明：有行动/有疑问."                  shortcut="CTRL+Q" default="False"      execute="holdOn"/>
@@ -147,6 +146,7 @@
             <groupaction     menu="Download: Images Packs"                     shortcut=""       default="False"      execute="googleDriveWebsite"/>
             <groupaction     menu="Download: FFG's AGoT FAQ"                   shortcut=""       default="False"      execute="faqWebsite"/>
         </groupactions>
+        <groupaction menu="开发者模式" default="False" shortcut="" execute="debugmode" />
         <cardaction      menu="横置/未横置"                                    shortcut="F9"     default="False"     execute="kneel"/>
         <cardaction      menu="翻面"                                      shortcut="F8"     default="False"     execute="flipcard"/>
         <cardaction      menu="弃牌"                                        shortcut="DELETE" default="False"   execute="disc"/>

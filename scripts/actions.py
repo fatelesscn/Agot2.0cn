@@ -55,7 +55,7 @@ standIcon = ("standIcon", "353db31d-b5d7-4f17-9683-08b03151ff83")
 betrayalIcon = ("betrayalIcon", "d042dab3-176a-471e-a917-1041c64c6579")
 cardtmp = []
 
-debugMode = False
+debugMode = True
 countusedplot = 0
 Heartsbaneused = 0
 countmil = 1
@@ -123,6 +123,8 @@ manualcard = []
 listattach = []
 aryaduplicate = []
 #turnreset
+
+usedplot = []
 
 addiconmil_turn = []
 addiconint_turn = []
@@ -1217,13 +1219,15 @@ def reordertable(group, x = 0, y = 0):
 								cardattd.sendToBack()
 								k+=12
 		i = 12
-		if card.unique == "Yes":
+		if card.unique == "Yes" and card.controller == me and card.filter != WaitColor:
 			if len(list2) > 0:
 				for cardindex in list2:
 					for carda in table:
-						if carda._id == cardindex:
+						if carda._id == cardindex and carda.controller == me:
+							debug(carda._id)
 							x1,y1 = card.position
-							carda.moveToTable(x1-i,y1-i)
+							if me.isInverted:carda.moveToTable(x1+i,y1+i)
+							else:carda.moveToTable(x1-i,y1-i)
 							carda.sendToBack()
 							i+=12
 	for cards in table:
@@ -1249,8 +1253,9 @@ def reordertable(group, x = 0, y = 0):
 	# targetTuple = (["setupOk"], me._id)
 	# me.setGlobalVariable("tableTargets", str(targetTuple))
 	# setGlobalVariable("selectmode", "1")
-	if me.isInverted:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,-250)
-	else:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,200)
+	if fplay(1) == me:
+		if me.isInverted:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,-250)
+		else:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,200)
 	# notify("**{} into selectmode**".format(me))
 
 def setupnext(group, x = 0, y = 0):
@@ -1264,6 +1269,18 @@ def setupnext(group, x = 0, y = 0):
 		notify("Plot phase start")
 		remoteCall(me, "revealplot", [table])
 		remoteCall(players[1], "revealplot", [table])
+	else:
+		c = 0
+		for cardn in table:
+			if cardn.name == "setupnextbutton" and cardn.controller != me:
+				c = 1
+		if c == 0:remoteCall(players[1], "plotphasestart", [3])
+
+def drawphasestart(count):
+	mute()
+	if me.isInverted:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-375,-250)
+	else:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-375,200)
+	#if count == 1:remoteCall(players[1], "drawphasestart", [2])
 
 def plotnext(group, x = 0, y = 0):
 	mute()
@@ -1279,7 +1296,19 @@ def plotnext(group, x = 0, y = 0):
 		setGlobalVariable("drawphase","1")
 		notify("draw phase start")
 		drawphase(table)
-		return
+	else:
+		c = 0
+		for cardn in table:
+			if cardn.name == "plotnextbutton" and cardn.controller != me:
+				c = 1
+		if c == 0:remoteCall(players[1], "drawphasestart", [3])
+
+def marshalphasestart(count):
+	mute()
+	if me.isInverted:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-375,-250)
+	else:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-375,200)
+	#if count == 1:remoteCall(players[1], "marshalphasestart", [2])
+
 
 def drawnext(group, x = 0, y = 0):
 	mute()
@@ -1293,61 +1322,12 @@ def drawnext(group, x = 0, y = 0):
 		setGlobalVariable("drawphase","0")
 		notify("marshal phase start")
 		marshalcountincome()
-		return
-
-def endturn(group, x = 0, y = 0): 
-	count = 0
-	discAmount = None
-	mute()
-	if not confirm("Are you sure to end this turn?"): return
-	myCards = (card for card in table  #restore all cards
-			if card.controller == me)
-	for card in myCards:
-		if card.isFaceUp:
-			card.orientation &= ~Rot90
-			card.highlight = None
-			card.target(False)
-	me.counters['Gold'].value = 0  #reset gold counters
-	goldcard = (card for card in table
-			if card.controller == me)
-	for card in goldcard: 
-		card.markers[Gold] = 0
-	getreserve(group)
-	if len(me.hand) > me.counters['Reserve'].value:  #check reserve
-		if discAmount == None: 
-			whisper("The number of cards in {}'s hand is more than your reserve.You should discard {} cards.".format(me, len(me.hand)-me.counters['Reserve'].value))
-			discAmount = askInteger("How many cards to discard?", len(me.hand)-me.counters['Reserve'].value) 
-		if discAmount == None: return
-		dlg = cardDlg([c for c in me.hand])
-		dlg.title = "These cards are in your hand:"
-		dlg.text = "Choose {} cards to discard.".format(discAmount)
-		dlg.min = discAmount
-		dlg.max = discAmount
-		cards = dlg.show()
-		if cards != None:
-			for card in cards:
-				card.moveTo(me.piles['Discard pile'])
-				notify("{} discard {}.".format(me, card))
-		else:return
 	else:
-		notify("Hand size is ok.")
-	
-	global countusedplot
-	oldcountusedplot = countusedplot
-	countusedplot = len(me.piles['Used Plot Pile'])
-	# for card in table:
-	# 	if card.model == "9e6bf142-159b-4a3b-9d4c-d8bf233a6f0c":#just for Dawn
-	# 		attach = card.name+str(card.position)
-	# 		for cards in table:
-	# 			f = cards.name+str(cards.position)
-	# 			if f == attachmodify[attach]:cards.markers[STR_Up] += countusedplot-oldcountusedplot
-	me.counters['Reserve'].value = 0
-	me.counters['Initiative'].value = 0
-	me.counters['Str'].value = 0
-	me.setGlobalVariable("turn", "0")
-	global countmil
-	countmil = 1
-	notify("{} is ready for a new turn.".format(me))
+		c = 0
+		for cardn in table:
+			if cardn.name == "drawnextbutton" and cardn.controller != me:
+				c = 1
+		if c == 0:remoteCall(players[1], "marshalphasestart", [3])
 
 def countincome(group, x=0, y=0):
 	mute()
@@ -1480,6 +1460,13 @@ def recalcPower(group, x = 0, y = 0):
 				person.counters['Power'].value += card.markers[Power]
 		#notify("{} has a total of {} power.".format(person.name,person.counters['Power'].value))
 
+def delendbutton(count):
+	mute()
+	me.setGlobalVariable("finished","0")
+	for cardn in table:
+		if cardn.name == "endbutton" and cardn.controller == me:
+			cardn.delete()
+	if count == 1:remoteCall(players[1], "delendbutton", [2])
 
 def checkcardmodel(model,controller = me):
 	mute()
@@ -1490,144 +1477,159 @@ def checkcardmodel(model,controller = me):
 
 def endphase(group, x=0, y=0):
 	mute()
+	me.setGlobalVariable("finished","1")
 	for cardn in table:
 		if cardn.name == "endbutton" and cardn.controller == me:
 			cardn.delete()
-	if getGlobalVariable("dominancephase") == "1":
-		setGlobalVariable("dominancephase","2")
-		return
-	if getGlobalVariable("dominancephase") == "2":
-		resetperturn()
-		setGlobalVariable("dominancephase","0")
-		notify("dominanceend")
-		standingphasestart(1)
-		return
-	if getGlobalVariable("standingphase") == "1":
-		setGlobalVariable("standingphase","2")
-		return
-	if getGlobalVariable("standingphase") == "2":
-		resetperturn()
-		setGlobalVariable("standingphase","0")
-		notify("standingend")
-		taxationphasestart(1)
-		return
-	if getGlobalVariable("marshalphase") == "1":
-		setGlobalVariable("marshalphase","2")
-		return
-	if getGlobalVariable("marshalphase") == "2":
-		resetperturn()
-		setGlobalVariable("marshalphase","0")
-		for card in table:
-			if card.highlight == PowerColor:card.highlight = None
-		notify("marshalend")
-		challengephasestart(1)
-		return
-	if getGlobalVariable("taxationphase") == "1":
-		setGlobalVariable("taxationphase","2")
-		return
-	if getGlobalVariable("taxationphase") == "2":
-		resetperturn()
-		setGlobalVariable("taxationphase","0")
-		notify("taxationend")
-		startnextphase(1)
-		return
-	if getGlobalVariable("challengephase") == "2":
-		setGlobalVariable("challengephase","3")
-		return
-	if getGlobalVariable("challengephase") == "3":
-		resetperturn()
-		setGlobalVariable("challengephase","0")
-		setGlobalVariable("activeplayer","")
-		for card in table:
-			if card.highlight == PowerColor:card.highlight = None
-		notify("challengephaseend")
-		dominancephasestart(1)
-		return
-
-
-def taxationphasetmp(group, x = 0, y = 0): 
-	count = 0
-	discAmount = None
-	mute()
-	if getGlobalVariable("taxationphase") == "1" or getGlobalVariable("taxationphase") == "2":
-		me.counters['Gold'].value = 0  #reset gold counters
-		goldcard = (card for card in table
-				if card.controller == me)
-		for card in goldcard: 
-			card.markers[Gold] = 0
-		getreserve(group)
-		if getGlobalVariable("taxationphase") == "1":setGlobalVariable("taxationphase","1.5")
-		if getGlobalVariable("taxationphase") == "2":setGlobalVariable("taxationphase","2.5")
-	if len(me.hand) > me.counters['Reserve'].value:  #check reserve
-		if discAmount == None: 
-			whisper("The number of cards in {}'s hand is more than your reserve.You should discard {} cards.".format(me, len(me.hand)-me.counters['Reserve'].value))
-			discAmount = len(me.hand)-me.counters['Reserve'].value
-		dlg = cardDlg([c for c in me.hand])
-		dlg.title = "These cards are in your hand:"
-		dlg.text = "Choose {} cards to discard.".format(discAmount)
-		dlg.min = discAmount
-		dlg.max = discAmount
-		cards = dlg.show()
-		if cards != None:
-			for card in cards:
-				card.moveTo(me.piles['Discard pile'])
-				notify("{} discard {}.".format(me, card))
+	if getGlobalVariable("reavelplot") == "2":
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("reavelplot","0")
+			notify("plotend")
+			delendbutton(1)
+			#drawphasestart(1)
+			remoteCall(fplay(1), "drawphasestart", [1])
 		else:
-			taxationphase(table)
-			return
-	else:
-		notify("Hand size is ok.")
-	for c in table: 
-		if c.Type == "Plot" and c.controller == me:
-			if len(me.piles['Plot Deck']) > 0:
-				c.filter = "#0099ffff"
-				x, y = c.position
-				if me.isInverted:c.moveToTable(x, y-20)
-				else:c.moveToTable(x, y+20)
-			else:
-				if c.filter == usedplotcolor:
-					c.moveTo(me.piles['Plot Deck'])
-				else:
-					c.filter = "#0099ffff"
-	
-	me.counters['Reserve'].value = 0
-	me.counters['Initiative'].value = 0
-	me.counters['Str'].value = 0
-	me.setGlobalVariable("turn", "0")
-	me.setGlobalVariable("firstevent", "0")	
-	me.setGlobalVariable("milcount","0")
-	me.setGlobalVariable("milcountmax","1")	
-	me.setGlobalVariable("intcount","0")
-	me.setGlobalVariable("intcountmax","1")
-	me.setGlobalVariable("powcount","0")
-	me.setGlobalVariable("powcountmax","1")
-	me.setGlobalVariable("active","0")
-	me.setGlobalVariable("reduceloyal_turn", "0")
-
-	if getGlobalVariable("taxationphase") == "1.5":
-		setGlobalVariable("taxationphase","2")
-		notify("{} is ready for a new turn.".format(me))
-		remoteCall(players[1], "taxationphase", table)
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
 		return
-	if getGlobalVariable("taxationphase") == "2.5":
-		setGlobalVariable("ignorestr", "[]")
-		setGlobalVariable("addclaim","0")
-		setGlobalVariable("addclaimall","0")
-		setGlobalVariable("reavelplot","0")
-		setGlobalVariable("drawphase","0")
-		setGlobalVariable("marshalphase","0")
-		setGlobalVariable("challengephase","1")
-		setGlobalVariable("standingphase","0")
-		setGlobalVariable("taxationphase","0")
-		setGlobalVariable("action","0")
-		setGlobalVariable("activeplayer","")
-		setGlobalVariable("generalaction", "0")
-		notify("{} is ready for a new turn.".format(me))
-		notify("Taxation phase over")
-		notify("A new turn start")
-		notify("Plot phase start")
-		remoteCall(me, "revealplot", [table])
-		remoteCall(players[1], "revealplot", [table])
+	if getGlobalVariable("drawphase") == "2":
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("reavelplot","0")
+			notify("drawend")
+			delendbutton(1)
+			#marshalphasestart(1)
+			remoteCall(fplay(1), "marshalphasestart", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
+		return
+	if getGlobalVariable("dominancephase") == "1":
+		# debug(getGlobalVariable("dominancephase"))
+		# setGlobalVariable("dominancephase","2")
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("dominancephase","0")
+			notify("dominanceend")
+			delendbutton(1)
+			#standingphasestart(1)
+			remoteCall(fplay(1), "standingphasestart", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
+		return
+	# if getGlobalVariable("dominancephase") == "2":
+	# 	debug(getGlobalVariable("dominancephase"))
+	# 	resetperturn()
+	# 	setGlobalVariable("dominancephase","0")
+	# 	notify("dominanceend")
+	# 	#standingphasestart(1)
+	# 	test(table)
+	# 	return
+	if getGlobalVariable("standingphase") == "1":
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("standingphase","0")
+			notify("standingend")
+			delendbutton(1)
+			#taxationphasestart(1)
+			remoteCall(fplay(1), "taxationphasestart", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
+		return
+	# if getGlobalVariable("standingphase") == "2":
+	# 	resetperturn()
+	# 	setGlobalVariable("standingphase","0")
+	# 	notify("standingend")
+	# 	taxationphasestart(1)
+	# 	return
+	if getGlobalVariable("marshalphase") == "1":
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("marshalphase","0")
+			for card in table:
+				if card.highlight == PowerColor:card.highlight = None
+			notify("marshalend")
+			delendbutton(1)
+			#challengephasestart(1)
+			remoteCall(fplay(1), "challengephasestart", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
+		return
+	# if getGlobalVariable("marshalphase") == "2":
+	# 	resetperturn()
+	# 	setGlobalVariable("marshalphase","0")
+	# 	for card in table:
+	# 		if card.highlight == PowerColor:card.highlight = None
+	# 	notify("marshalend")
+	# 	challengephasestart(1)
+	# 	return
+	if getGlobalVariable("taxationphase") == "1":
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("taxationphase","0")
+			notify("taxationend")
+			delendbutton(1)
+			#startnextphase(1)
+			remoteCall(fplay(1), "startnextphase", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
+		return
+	# if getGlobalVariable("taxationphase") == "2":
+	# 	resetperturn()
+	# 	setGlobalVariable("taxationphase","0")
+	# 	notify("taxationend")
+	# 	startnextphase(1)
+	# 	return
+	if getGlobalVariable("challengephase") == "2":
+		if fplay(1) != me:
+			resetperturn()
+			setGlobalVariable("challengephase","0")
+			setGlobalVariable("activeplayer","")
+			for card in table:
+				if card.highlight == PowerColor:card.highlight = None
+			notify("challengephaseend")
+			delendbutton(1)
+			#dominancephasestart(1)
+			remoteCall(fplay(1), "dominancephasestart", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "endbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephaseend", [table])
+		return
+	# if getGlobalVariable("challengephase") == "3":
+	# 	resetperturn()
+	# 	setGlobalVariable("challengephase","0")
+	# 	setGlobalVariable("activeplayer","")
+	# 	for card in table:
+	# 		if card.highlight == PowerColor:card.highlight = None
+	# 	notify("challengephaseend")
+	# 	dominancephasestart(1)
+	# 	return
 
 
 def challenge(group, x=0, y=0):
@@ -1966,23 +1968,32 @@ def challengebalanceover(count):
 
 def challengephasestart(count):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("2d4834e4-bd76-4e8d-9e5a-638cd25e6107",-375,-250)
 	else:table.create("2d4834e4-bd76-4e8d-9e5a-638cd25e6107",-375,200)
-	if count == 1:remoteCall(players[1], "challengephasestart", [2])
+	#if count == 1:remoteCall(players[1], "challengephasestart", [2])
 
 def challengenext():
 	mute()
+	me.setGlobalVariable("finished","1")
 	for cardn in table:
 		if cardn.name == "challengenextbutton" and cardn.controller == me:
 			cardn.delete()
 	if getGlobalVariable("challengephase") == "0":
-		setGlobalVariable("challengephase", "1")
+		if me.getGlobalVariable("finished") == players[1].getGlobalVariable("finished") == "1":
+			setGlobalVariable("challengephase", "1")
+			setGlobalVariable("activeplayer",str(fplay(1)._id))
+			fplay(1).setGlobalVariable("active","1")
+			if fplay(1) == me:challengeAnnounce(table)
+			else:remoteCall(players[1], "challengeAnnounce", [table])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "challengenextbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "challengephasestart", [3])
 		return
-	if getGlobalVariable("challengephase") == "1":
-		setGlobalVariable("activeplayer",str(fplay(1)._id))
-		fplay(1).setGlobalVariable("active","1")
-		if fplay(1) == me:challengeAnnounce(table)
-		else: remoteCall(players[1], "challengeAnnounce", [table])
+
 
 def challengeAnnounce(group, x=0, y=0):
 	mute()
@@ -2174,8 +2185,8 @@ def selectchallenge(ctype):
 			for card in table:
 				card.highlight = None
 				card.target(False)
-			challengephaseend(table)
-			remoteCall(players[1], "challengephaseend", [table])
+			if fplay(1) == me:challengephaseend(table)
+			else:remoteCall(players[1], "challengephaseend", [table])
 			return
 	if ctype == "nodef":
 		notify("{} declares no defenders.".format(me))
@@ -2189,6 +2200,7 @@ def deletecicon():
 
 def challengephaseend(group, x=0, y=0):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
 	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
@@ -2311,6 +2323,7 @@ def getcardkilllist(listkill):
 
 def revealplot(group, x = 0, y = 0):
 	mute()
+	global usedplot
 	plot = 0
 	me.piles['Plot Deck'].addViewer(me)
 	if len(me.piles['Plot Deck']) == 0:return
@@ -2337,12 +2350,14 @@ def revealplot(group, x = 0, y = 0):
 		setGlobalVariable("firstreveal", "")
 		
 		countxy = 5
+		usedplot = []
 		for c in table: 
 			if c.Type == "Plot" and c.controller == me and c not in cards:
 				c.markers[standIcon] = 0
 				c.filter = "#0099ffff"
 				x, y = c.position
 				plot = 1
+				usedplot.append(c)
 				#if me.isInverted:c.moveToTable(x, y-30)
 				#else:c.moveToTable(x, y+30)
 		for card in cards:
@@ -2460,16 +2475,7 @@ def reavelplot(group, x = 0, y = 0):
 			notify("use {}'s ability".format(card))
 			plotability(card)
 			return
-	if getGlobalVariable("reavelplot") == "1":
-		setGlobalVariable("reavelplot","2")
-		remoteCall(players[1], "reavelplot", table)
-		return
-	if getGlobalVariable("reavelplot") == "2":
-		notify("plot phase over")
-		setGlobalVariable("reavelplot","0")
-		setGlobalVariable("drawphase","1")
-		notify("draw phase start")
-		drawphase(table)
+
 
 def plotability(card):
 	mute()
@@ -2736,21 +2742,24 @@ def plotability(card):
 		else:reavelplot(table)
 		return
 	if getGlobalVariable("reavelplot") == "2":
-		#resetplot()
-		#remoteCall(players[1], "resetplot", [])
+		resetplot()
+		remoteCall(players[1], "resetplot", [])
 		if fplay(1) == me:actiongeneral(1)
 		else:remoteCall(players[1], "actiongeneral", 1)
 		return
 
 def resetplot():
+	mute()
+	global usedplot
 	if len(me.piles['Plot Deck']) == 0:
 		for card in table:
-				if card.Type == "Plot" and card.controller == me and card.filter == usedplotcolor:
-					card.moveTo(me.piles['Plot Deck'])
-	for card in table:
-		if card.Type == "Plot" and card.controller == me:
-			if me.isInverted:card.moveToTable(-430,-75,True)
-			else:card.moveToTable(-430,10,True)
+			if card in usedplot:
+				card.moveTo(me.piles['Plot Deck'])
+		usedplot = []
+		for card in table:
+			if card.Type == "Plot" and card.controller == me:
+				if me.isInverted:card.moveToTable(-430,-75,True)
+				else:card.moveToTable(-430,10,True)
 
 def addplotgold(group, x = 0, y = 0):
 	mute()
@@ -2871,6 +2880,8 @@ def plotdisccard(count):
 			else:reavelplot(table)
 			return
 		if getGlobalVariable("reavelplot") == "2":
+			resetplot()
+			remoteCall(players[1], "resetplot", [])
 			if fplay(1) == me:actiongeneral(1)
 			else:remoteCall(players[1], "actiongeneral", 1)
 
@@ -2890,8 +2901,16 @@ def HeadsonSpikes(card,cards):
 		else:reavelplot(table)
 		return
 	if getGlobalVariable("reavelplot") == "2":
+		resetplot()
+		remoteCall(players[1], "resetplot", [])
 		if fplay(1) == me:actiongeneral(1)
 		else:remoteCall(players[1], "actiongeneral", 1)
+
+def plotphaseend():
+	mute()
+	me.setGlobalVariable("finished","0")
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)		
 
 def drawphase(group, x = 0, y = 0):
 	mute()
@@ -2913,6 +2932,12 @@ def drawphase(group, x = 0, y = 0):
 		# me.setGlobalVariable("inmarshal","1")
 		# if fplay(1) == me:marshalphase(table)
 		# else:remoteCall(players[1], "marshalphase", table)
+
+def drawphaseend():
+	mute()
+	me.setGlobalVariable("finished","0")
+	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
+	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def marshalphase(group, x = 0, y = 0):
 	mute()
@@ -2959,8 +2984,8 @@ def marshalend():
 			cardn.delete()
 	if fplay(1) == me:remoteCall(players[1], "marshalaction", [])
 	else:
-		marshalphaseend()
-		remoteCall(players[1], "marshalphaseend", [])
+		if fplay(1) == me:marshalphaseend()
+		else:remoteCall(players[1], "marshalphaseend", [])
 
 	
 def marshalaction():
@@ -2971,6 +2996,7 @@ def marshalaction():
 
 def marshalphaseend():
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
 	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
@@ -3623,6 +3649,7 @@ def checkdeck():
 		notify("Deck of {} is OK".format(me))
 	else:
 		notify("Deck of {} is NOT OK".format(me))
+	setup(table)
 	
 def shuffleToPlot(group):
 	mute()
@@ -3671,6 +3698,7 @@ def movetobottom(card):
 #------------------------------------------------------------------------------
 def on_table_load():
 	mute()
+	me.setGlobalVariable("finished","0")
 	# setGlobalVariable("Invertedloaddeck","0")
 	# setGlobalVariable("selectgamemode","0")
 	# # ver = "1.4.2.0"
@@ -3801,7 +3829,7 @@ def afterload(player):
 	me.setGlobalVariable("reduceloyal_turn", "0")
 	if player == me:
 		checkdeck()
-		setup(table)
+		#setup(table)
 		
 def onmoved(args):
 	mute()
@@ -3860,7 +3888,8 @@ def onmoved(args):
 						for carda in table:
 							if carda._id == cardindex:
 								x1,y1 = card.position
-								carda.moveToTable(x1-i,y1-i)
+								if me.isInverted:carda.moveToTable(x1+i,y1+i)
+								else:carda.moveToTable(x1-i,y1-i)
 								carda.sendToBack()
 								i+=12
 		if card in aryaduplicate and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and card.controller == me:
@@ -7336,10 +7365,14 @@ def ondbclick(args):
 
 def test(group, x=0, y=0):
 	mute()
-	me.setGlobalVariable("setupOk","")
+	#taxationnext()
+	# me.setGlobalVariable("setupOk","")
+	me.setGlobalVariable("finished","0")
 	setGlobalVariable("dominancephase","1")
-	setGlobalVariable("dominanceaction", "1")
-	actiondominance(2)
+	dominancephaseend(table)
+	remoteCall(players[1], "dominancephaseend", [table])
+	# setGlobalVariable("dominanceaction", "1")
+	# actiondominance(2)
 	#dominancestartreaction(2)
 	#challengedeficon("pow")
 	#actiongeneral(2)
@@ -8022,22 +8055,23 @@ def clearaction(count):
 	global sessionpass
 	actionattach = {}
 	sessionpass = ""
-	debug(getGlobalVariable("drawphase"))
-	if getGlobalVariable("reavelplot") == "2":
-		if me.isInverted:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-375,-250)
-		else:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-375,200)
-	if getGlobalVariable("drawphase") == "2":
-		if me.isInverted:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-375,-250)
-		else:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-375,200)
+	# if getGlobalVariable("reavelplot") == "2":
+	# 	if me.isInverted:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-375,-250)
+	# 	else:table.create("634c8980-9e07-40ba-a259-df1fe8fd184a",-375,200)
+	# if getGlobalVariable("drawphase") == "2":
+	# 	if me.isInverted:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-375,-250)
+	# 	else:table.create("76d32ba3-bb1b-4c88-8e99-4381e45595e9",-375,200)
 	if count == 1:
 
 		remoteCall(players[1], "clearaction", [2])
 	if count == 2:
 		if getGlobalVariable("reavelplot") == "2":
-
+			if fplay(1) == me:plotphaseend()
+			else:remoteCall(players[1], "plotphaseend", [])
 			return
 		if getGlobalVariable("drawphase") == "2":
-
+			if fplay(1) == me:drawphaseend()
+			else:remoteCall(players[1], "drawphaseend", [])
 			return
 		if getGlobalVariable("dominanceaction") == "2":
 			setGlobalVariable("dominanceaction","0")
@@ -9350,21 +9384,31 @@ def resumeprocess():
 
 def dominancephasestart(count):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("bd153c97-1108-4e65-bd46-88852ec7d5bc",-375,-250)
 	else:table.create("bd153c97-1108-4e65-bd46-88852ec7d5bc",-375,200)
-	if count == 1:remoteCall(players[1], "dominancephasestart", [2])
+	#if count == 1:remoteCall(players[1], "dominancephasestart", [2])
+
 
 def dominancenext():
 	mute()
+	me.setGlobalVariable("finished","1")
 	for cardn in table:
 		if cardn.name == "dominancenextbutton" and cardn.controller == me:
 			cardn.delete()
 	if getGlobalVariable("dominancephase") == "0":
-		setGlobalVariable("dominancephase", "1")
+		if me.getGlobalVariable("finished") == players[1].getGlobalVariable("finished") == "1":
+			setGlobalVariable("dominancephase", "1")
+			if fplay(1) == me:dominancestartreaction(1)
+			else: remoteCall(players[1], "dominancestartreaction", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "dominancenextbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "dominancephasestart", [3])
 		return
-	if getGlobalVariable("dominancephase") == "1":
-		if fplay(1) == me:dominancestartreaction(1)
-		else: remoteCall(players[1], "dominancestartreaction", [1])
+
 
 def dominancestartreaction(count):
 	mute()
@@ -9500,11 +9544,12 @@ def dominanceendreaction(count):
 			if fplay(1) == me:reaction("dominanceend",1)
 			else: remoteCall(players[1], "reaction", ["dominanceend",1])
 		else:
-			dominancephaseend(table)
-			remoteCall(players[1], "dominancephaseend", [table])
+			if fplay(1) == me:dominancephaseend(table)
+			else:remoteCall(players[1], "dominancephaseend", [table])
 
 def dominancephaseend(group, x=0, y=0):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
 	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
@@ -9554,21 +9599,29 @@ def actiondominance(count):
 
 def standingphasestart(count):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("4d8aa7b0-f5ef-4584-be8c-601c45579dc6",-375,-250)
 	else:table.create("4d8aa7b0-f5ef-4584-be8c-601c45579dc6",-375,200)
-	if count == 1:remoteCall(players[1], "standingphasestart", [2])
+	#if count == 1:remoteCall(players[1], "standingphasestart", [2])
 
 def standingnext():
 	mute()
+	me.setGlobalVariable("finished","1")
 	for cardn in table:
 		if cardn.name == "standingnextbutton" and cardn.controller == me:
 			cardn.delete()
 	if getGlobalVariable("standingphase") == "0":
-		setGlobalVariable("standingphase", "1")
+		if me.getGlobalVariable("finished") == players[1].getGlobalVariable("finished") == "1":
+			setGlobalVariable("standingphase", "1")
+			if fplay(1) == me:standingstartreaction(1)
+			else: remoteCall(players[1], "standingstartreaction", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "standingnextbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "standingphasestart", [3])
 		return
-	if getGlobalVariable("standingphase") == "1":
-		if fplay(1) == me:standingstartreaction(1)
-		else: remoteCall(players[1], "standingstartreaction", [1])
 
 def standingstartreaction(count):
 	mute()
@@ -9706,32 +9759,41 @@ def standingendreaction(count):
 			if fplay(1) == me:reaction("standingend",1)
 			else: remoteCall(players[1], "reaction", ["standingend",1])
 		else:
-			standingphaseend(table)
-			remoteCall(players[1], "standingphaseend", [table])
+			if fplay(1) == me:standingphaseend(table)
+			else:remoteCall(players[1], "standingphaseend", [table])
 			
 
 def standingphaseend(group, x=0, y=0):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
 	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
 def taxationphasestart(count):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("c38f6f47-54dc-4853-8000-ff2da81370ee",-375,-250)
 	else:table.create("c38f6f47-54dc-4853-8000-ff2da81370ee",-375,200)
-	if count == 1:remoteCall(players[1], "taxationphasestart", [2])
+	#if count == 1:remoteCall(players[1], "taxationphasestart", [2])
 
 def taxationnext():
 	mute()
+	me.setGlobalVariable("finished","1")
 	for cardn in table:
 		if cardn.name == "taxationnextbutton" and cardn.controller == me:
 			cardn.delete()
 	if getGlobalVariable("taxationphase") == "0":
-		setGlobalVariable("taxationphase", "1")
+		if me.getGlobalVariable("finished") == players[1].getGlobalVariable("finished") == "1":
+			setGlobalVariable("taxationphase", "1")
+			if fplay(1) == me:taxationstartreaction(1)
+			else: remoteCall(players[1], "taxationstartreaction", [1])
+		else:
+			c = 0
+			for cardn in table:
+				if cardn.name == "taxationnextbutton" and cardn.controller != me:
+					c = 1
+			if c == 0:remoteCall(players[1], "taxationphasestart", [3])
 		return
-	if getGlobalVariable("taxationphase") == "1":
-		if fplay(1) == me:taxationstartreaction(1)
-		else: remoteCall(players[1], "taxationstartreaction", [1])
 
 def taxationstartreaction(count):
 	mute()
@@ -9853,11 +9915,12 @@ def taxationendreaction(count):
 			if fplay(1) == me:reaction("taxationend",1)
 			else: remoteCall(players[1], "reaction", ["taxationend",1])
 		else:
-			taxationphaseend(table)
-			remoteCall(players[1], "taxationphaseend", [table])
+			if fplay(1) == me:taxationphaseend(table)
+			else:remoteCall(players[1], "taxationphaseend", [table])
 
 def taxationphaseend(group, x=0, y=0):
 	mute()
+	me.setGlobalVariable("finished","0")
 	if me.isInverted:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,-215)
 	else:table.create("cb48782b-3bdd-4024-af85-fb0eb65a8f51",-320,125)
 
@@ -9958,13 +10021,12 @@ def startnextphase(count):
 		notify("Taxation phase over")
 		notify("A new turn start")
 		notify("Plot phase start")
-		plotphasestart(1)
+		remoteCall(fplay(1), "plotphasestart", [1])
 
 def plotphasestart(count):
 	mute()
 	if me.isInverted:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,-250)
 	else:table.create("62bad042-fbb0-4121-85d2-92149576308b",-375,200)
-	if count == 1:remoteCall(players[1], "plotphasestart", [2])
 
 def resetperturn():
 	mute()
@@ -10014,8 +10076,6 @@ def onsmoved(args):
 	index = 0
 	global aryaduplicate
 	for card in args.cards:
-		debug(args.toGroups[index].name)
-		debug(args.fromGroups[index].name)
 		if args.cards[index].model == "abf9c701-f480-4576-a5c0-44b4e9b04e6c" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
 			if not confirm("place the top card of your deck on her facedown as arya's duplicate?"):return
 			if len(me.deck) > 1:
