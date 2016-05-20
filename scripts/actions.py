@@ -55,7 +55,7 @@ standIcon = ("standIcon", "353db31d-b5d7-4f17-9683-08b03151ff83")
 betrayalIcon = ("betrayalIcon", "d042dab3-176a-471e-a917-1041c64c6579")
 cardtmp = []
 
-debugMode = True
+debugMode = False
 countusedplot = 0
 Heartsbaneused = 0
 countmil = 1
@@ -1232,9 +1232,25 @@ def reordertable(group, x = 0, y = 0):
 							i+=12
 	for cards in table:
 		if cards.controller == me and cards.filter != WaitColor:
-			if "Warship" in cards.traits:
+			if cards.model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d":
 				for cardadd in table:
-					if cardadd.controller == me and cardadd.model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002":cardadd.markers[STR_Up] += 1
+					if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != cards._id:
+						cardmarkers(cards,"str",1)
+						cardmarkers(cards,"powicon",1)
+			if cards.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+						cardmarkers(cards,"str",1)
+						cardmarkers(cards,"powicon",1)
+			if cards.model == "a5512893-cf5c-4e54-a8a7-87114492a50b":
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+						cardmarkers(cards,"str",1)
+						cardmarkers(cards,"inticon",1)
+
+			if "Drowned God." in cards.traits:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb":cardmarkers(cards,"str",1)
 			if "The Reach" in cards.traits:
 				for cardadd in table:
 					if cardadd.controller == me and cardadd.model == "3e1a5952-f5d1-4bca-9226-2b94531cfa54":cardadd.markers[STR_Up] += 1
@@ -3647,9 +3663,10 @@ def checkdeck():
 	
 	if ok:
 		notify("Deck of {} is OK".format(me))
+		setup(table)
 	else:
 		notify("Deck of {} is NOT OK".format(me))
-	setup(table)
+		#setup(table)
 	
 def shuffleToPlot(group):
 	mute()
@@ -3735,7 +3752,7 @@ def onloaddeck(args):
 	# 	else:
 	# 		setGlobalVariable("Invertedloaddeck","1")
 	# 		notify("waiting for host select game mode")
-	afterload(me)
+	if args.player == me:afterload(me)
 
 def afterload(player):
 	mute()
@@ -3934,6 +3951,80 @@ def onmoved(args):
 							setGlobalVariable("attachmodify",str(attach))
 							debug(getGlobalVariable("attachmodify"))
 		#Warship and Drowned Men
+		if args.cards[index].model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					cardmarkers(args.cards[index],"str",1)
+					cardmarkers(args.cards[index],"powicon",1)
+					break
+		if "Knight." in args.cards[index].traits and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			i = 0
+			for cardadd in table:
+				if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					i += 1
+			if i == 1:
+				for cardaddd in table:
+					if cardaddd.controller == me and cardaddd.model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d" and cardaddd._id != args.cards[index]._id:
+						cardmarkers(cardaddd,"str",1)
+						cardmarkers(cardaddd,"powicon",1)
+		if "Knight." in args.cards[index].traits and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			i = 0
+			for cardadd in table:
+				if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					i += 1
+			if i == 1:
+				for cardaddd in table:
+					if cardaddd.controller == me and cardaddd.model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d":
+						cardmarkers(cardaddd,"str",-1)
+						cardmarkers(cardaddd,"powicon",-1)
+		if args.cards[index].model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and "Drowned God." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					cardmarkers(cardadd,"str",1)
+				elif cardadd._id == args.cards[index]._id:
+					for cardaddd in table:
+						if cardaddd.model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and cardaddd.controller == me:
+							cardmarkers(cardadd,"str",1)
+		if args.cards[index].model != "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if "Drowned God." in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and cardadd.controller == me:
+						cardmarkers(args.cards[index],"str",1)
+		if args.cards[index].model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+				for cardaddd in table:
+					if "Drowned God." in cardaddd.traits and cardaddd.controller == me:
+						cardmarkers(cardaddd,"str",-1)
+		if args.cards[index].model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardaddd in table:
+				if cardaddd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardaddd.filter != WaitColor:
+					for cardadd in table:
+						if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"inticon",1)
+						if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"powicon",1)
+
+		if args.cards[index].model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardaddd in table:
+				if cardaddd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardaddd.filter != WaitColor:
+					for cardadd in table:
+						if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"inticon",1)
+						if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"powicon",1)
+
+		if args.cards[index].model in ("597acd7c-3424-4e8c-82e6-d6682d662c8c","a5512893-cf5c-4e54-a8a7-87114492a50b") and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+						cardmarkers(cardadd,"str",-1)
+						cardmarkers(cardadd,"inticon",-1)
+					if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+						cardmarkers(cardadd,"str",-1)
+						cardmarkers(cardadd,"powicon",-1)
+
 		if args.cards[index].model == "cbeb3a37-d4c1-4697-b8d2-e366b4569002" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
 			for cardadd in table:
 				if cardadd.controller == me and "Warship" in cardadd.traits:args.cards[index].markers[STR_Up] += 1
@@ -6477,6 +6568,7 @@ def next(group, x=0, y=0):
 			setGlobalVariable("selectmode", "0")
 			actioncancelcount = int(getGlobalVariable("actioncancel"))+1
 			setGlobalVariable("actioncancel", str(actioncancelcount))
+			debug(actioncancelcount)
 			if actioncancelcount == 2:
 				setGlobalVariable("actioncancel", "0")
 				notify("action over")
@@ -8036,8 +8128,8 @@ def clearreaction(count):
 			return
 		if getGlobalVariable("dominanceend") == "2":
 			setGlobalVariable("dominanceend", "0")
-			dominancephaseend(table)
-			remoteCall(players[1], "dominancephaseend", [table])
+			#dominancephaseend(table)
+			remoteCall(fplay(1), "dominancephaseend", [table])
 			return
 		challengeaction(1)
 	if count == 3:remoteCall(otherplayer, "clearreaction", [4])
@@ -9225,6 +9317,8 @@ def checkwinner(args):
 			choiceList = ['You Win']
 			colorList = ['#006b34']
 			choice = askChoice("Game over", choiceList,colorList)
+	# if args.marker == "Gold":
+	# 	if args.card.model == "170f6c43-1cf5-460a-bd32-996d26dc0cd9":args.card.markers[STR_Up] += args.card.markers[Gold]-args.value
 
 def checkactionattach(checkpass):
 	mute()
@@ -9452,7 +9546,7 @@ def dominance(group, x=0, y=0):
 					if card.name not in uniquecards:
 						uniquecards.append(card.name)
 		personCards = (card for card in table
-						if card.controller == person)
+						if card.controller == person and card.model != "c8c63b0d-d3ea-4529-8022-1447655e740f")
 		for card in personCards:
 			if card.isFaceUp:
 				if card.orientation != Rot90:
@@ -10076,6 +10170,81 @@ def onsmoved(args):
 	index = 0
 	global aryaduplicate
 	for card in args.cards:
+		if args.cards[index].model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					cardmarkers(args.cards[index],"str",1)
+					cardmarkers(args.cards[index],"powicon",1)
+					break
+		if "Knight." in args.cards[index].traits and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			i = 0
+			for cardadd in table:
+				if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					i += 1
+			if i == 1:
+				for cardaddd in table:
+					if cardaddd.controller == me and cardaddd.model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d" and cardaddd._id != args.cards[index]._id:
+						cardmarkers(cardaddd,"str",1)
+						cardmarkers(cardaddd,"powicon",1)
+		if "Knight." in args.cards[index].traits and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			i = 0
+			for cardadd in table:
+				if cardadd.controller == me and "Knight." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					i += 1
+			if i == 1:
+				for cardaddd in table:
+					if cardaddd.controller == me and cardaddd.model == "fdf1989a-ee7d-4972-9d12-b299bfe3ba6d":
+						cardmarkers(cardaddd,"str",-1)
+						cardmarkers(cardaddd,"powicon",-1)
+
+		if args.cards[index].model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardadd in table:
+				if cardadd.controller == me and "Drowned God." in cardadd.traits and cardadd.filter != WaitColor and cardadd._id != args.cards[index]._id:
+					cardmarkers(cardadd,"str",1)
+				elif cardadd._id == args.cards[index]._id:
+					for cardaddd in table:
+						if cardaddd.model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and cardaddd.controller == me:
+							cardmarkers(cardadd,"str",1)
+		if args.cards[index].model != "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			if "Drowned God." in args.cards[index].traits:
+				for cardadd in table:
+					if cardadd.model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and cardadd.controller == me:
+						cardmarkers(args.cards[index],"str",1)
+		if args.cards[index].model == "91b7190f-d0ba-4c3b-b9e2-5e7d2c872acb" and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+				for cardaddd in table:
+					if "Drowned God." in cardaddd.traits and cardaddd.controller == me:
+						cardmarkers(cardaddd,"str",-1)
+		if args.cards[index].model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardaddd in table:
+				if cardaddd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardaddd.filter != WaitColor:
+					for cardadd in table:
+						if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"powicon",1)
+						if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"inticon",1)
+
+		if args.cards[index].model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+			for cardaddd in table:
+				if cardaddd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardaddd.filter != WaitColor:
+					for cardadd in table:
+						if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"inticon",1)
+						if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+							cardmarkers(cardadd,"str",1)
+							cardmarkers(cardadd,"powicon",1)
+
+		if args.cards[index].model in ("597acd7c-3424-4e8c-82e6-d6682d662c8c","a5512893-cf5c-4e54-a8a7-87114492a50b") and args.toGroups[index].name != "Table" and args.fromGroups[index].name == "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
+				for cardadd in table:
+					if cardadd.controller == me and cardadd.model == "a5512893-cf5c-4e54-a8a7-87114492a50b" and cardadd.filter != WaitColor:
+						cardmarkers(cardadd,"str",-1)
+						cardmarkers(cardadd,"powicon",-1)
+					if cardadd.controller == me and cardadd.model == "597acd7c-3424-4e8c-82e6-d6682d662c8c" and cardadd.filter != WaitColor:
+						cardmarkers(cardadd,"str",-1)
+						cardmarkers(cardadd,"inticon",-1)
+
 		if args.cards[index].model == "abf9c701-f480-4576-a5c0-44b4e9b04e6c" and args.toGroups[index].name == "Table" and args.fromGroups[index].name != "Table" and args.cards[index].controller == me and args.cards[index].filter != WaitColor:
 			if not confirm("place the top card of your deck on her facedown as arya's duplicate?"):return
 			if len(me.deck) > 1:
